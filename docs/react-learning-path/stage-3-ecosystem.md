@@ -11,6 +11,62 @@
 - [ ] 状态持久化
 - [ ] 异步状态处理
 
+**详细概念：**
+
+**1.1 Redux Toolkit 核心思想**
+
+Redux Toolkit 是 Redux 官方推荐的状态管理方案，它大幅简化了传统 Redux 的使用方式，解决了样板代码过多、配置复杂等痛点。
+
+Redux Toolkit 的核心 API：
+- **configureStore**：简化 store 配置，自动组合 reducers，自动添加中间件
+- **createSlice**：自动生成 action creators 和 action types，基于 immer 允许"可变"式更新
+- **createAsyncThunk**：处理异步逻辑，自动生成 pending/fulfilled/rejected action types
+- **createEntityAdapter**：高效管理实体集合，提供标准化的 CRUD reducers
+
+为什么企业首选 Redux Toolkit：
+- **极简的配置**：几行代码即可完成复杂的状态管理配置
+- **Immer 集成**：可以直接修改 state 对象，无需手动返回新状态
+- **RTK Query**：内置的数据请求解决方案，支持缓存、自动刷新等高级特性
+- **DevTools 集成**：开箱即用的 Redux DevTools 支持
+
+**1.2 Zustand 轻量方案**
+
+Zustand 是一个极度轻量级的状态管理库，核心只有约 1kb，却提供了完整的状态管理能力。它的 API 设计非常直观，深受 Hooks 开发者喜爱。
+
+Zustand 的核心优势：
+- **极简 API**：使用 `create` 函数即可创建 store，无需 Provider 包裹
+- **订阅机制灵活**：可以在组件外订阅状态变化
+- **中间件支持**：支持 persist、devtools、immer 等中间件扩展
+- **TypeScript 友好**：完整的类型推断，几乎不需要手动标注类型
+
+Zustand vs Redux Toolkit：
+- Zustand 更轻量，适合中小型项目
+- Redux Toolkit 功能更全面，适合大型复杂应用
+- 两者都基于 immer，允许"可变"式更新
+
+**1.3 状态持久化**
+
+状态持久化是将内存中的状态保存到存储介质（localStorage、sessionStorage、IndexedDB 等），在页面刷新或重新打开时恢复状态。
+
+常见的持久化策略：
+- **全量持久化**：整个 store 整体保存，适合配置类、用户偏好设置
+- **增量持久化**：只保存必要字段，减少存储空间和序列化开销
+- **混合持久化**：部分状态持久化，部分状态不持久化（如登录状态）
+
+实现方式：
+- Zustand/Redux 的 persist 中间件
+- 自定义 localStorage/sessionStorage 读写逻辑
+- IndexedDB 用于存储大量结构化数据
+
+**1.4 异步状态处理**
+
+异步状态是指从服务器获取的、随时间可能变化的数据。处理异步状态需要考虑：加载中、加载成功、加载失败三种状态。
+
+常见的异步状态管理方案：
+- **createAsyncThunk（Redux Toolkit）**：将异步逻辑封装为可复用的 thunk
+- **RTK Query**：基于 Redux Toolkit 的数据获取和缓存方案
+- **React Query/SWR**：独立于状态管理库的数据获取方案
+
 **经典案例：Redux Toolkit 完整使用**
 
 ```typescript
@@ -329,6 +385,72 @@ export default Cart;
 - [ ] Tailwind CSS（企业主流）
 - [ ] Ant Design / Material UI 组件库
 
+**详细概念：**
+
+**2.1 CSS Modules 原理与应用**
+
+CSS Modules 是一种 CSS  scoping（作用域）解决方案，通过将类名编译为唯一哈希值来实现样式隔离，避免全局污染。
+
+核心特性：
+- **局部作用域**：类名自动转换为唯一哈希，天然避免冲突
+- **组合式类名**：支持 `.button.primary` 组合 `.button` 和 `.primary` 的样式
+- **引用导出**：通过 `styles.xxx` 方式引用类名，IDE 自动补全支持
+- **零运行时开销**：编译时处理，不影响运行时性能
+
+使用场景：
+- 适合需要组件级样式隔离的项目
+- 适合团队协作，避免样式冲突
+- 适合已有 CSS 资产的项目渐进迁移
+
+**2.2 Styled Components 动态样式**
+
+Styled Components 是 CSS-in-JS 方案的代表，它使用模板字符串定义样式，生成带唯一类名的 React 组件。
+
+核心优势：
+- **组件化**：样式本身就是组件，可复用、可嵌套
+- **Props 驱动**：样式可根据 props 动态变化
+- **主题系统**：内置 ThemeProvider，支持深色/浅色主题切换
+- **自动关键CSS**：只会注入页面使用到的样式
+
+使用建议：
+- 适合需要大量动态样式的场景（如主题切换、数据可视化）
+- 适合追求极致开发体验的项目
+- 注意运行时性能，大规模使用可能影响首屏性能
+
+**2.3 Tailwind CSS 实用主义美学**
+
+Tailwind CSS 是一个以"实用类"为核心的 CSS 框架，通过组合小粒度类名（如 `flex p-4 text-center`）来实现样式，颠覆了传统 CSS 开发方式。
+
+核心理念：
+- **原子化设计**：每个类只做一个样式属性，高度可组合
+- **直观的命名**：语义化的类名，如 `text-lg`（大文本）、`bg-blue-500`（蓝色背景）
+- **响应式设计**：前缀支持（`md:`、`lg:`），轻松适配多端
+- **暗色模式**：`dark:` 前缀支持主题切换
+
+企业主流原因：
+- **开发效率极高**：无需切换文件，组件和样式同处一地
+- **一致性保证**：预定义的设计令牌保证视觉统一
+- **体积优化**：支持 Tree-shaking，未使用的类不打包
+- **生态系统成熟**：配套工具完善（VSCode 插件、预ttier 插件等）
+
+**2.4 UI 组件库选型**
+
+UI 组件库是现成的组件集合，可以快速构建功能完整、视觉统一的应用界面。
+
+主流 React 组件库对比：
+
+| 组件库 | 特点 | 适用场景 |
+|--------|------|----------|
+| Ant Design | 阿里出品，企业级，中后台首选 | 中后台系统、数据密集型应用 |
+| Material UI | Google Material Design 实现 | 追求国际化、通用型应用 |
+| Chakra UI | 现代化设计，高度可定制 | 快速原型、需要品牌定制化 |
+| Radix UI | 无样式、语义化、可访问性好 | 需要深度定制设计系统 |
+
+选型建议：
+- 中后台系统优先考虑 Ant Design（组件丰富、生态完善）
+- 追求现代感 UI 可考虑 Chakra UI 或 Radix UI
+- 需要快速交付可先用组件库，再按需定制
+
 **经典案例：CSS Modules**
 
 ```css
@@ -533,6 +655,47 @@ export default AntDesignExample;
 
 - [ ] Axios 封装：请求拦截、响应拦截、错误统一处理
 - [ ] React Query / SWR：数据请求、缓存、自动刷新（进阶必备）
+
+**详细概念：**
+
+**3.1 Axios 封装最佳实践**
+
+Axios 是最流行的 HTTP 请求库，提供 Promise API，支持请求/响应拦截、自动转换 JSON、取消请求等功能。
+
+封装的核心价值：
+- **统一配置**：集中管理 baseURL、超时时间、请求头等公共配置
+- **请求拦截**：自动添加认证 token、loading 状态
+- **响应拦截**：统一处理错误、token 过期自动刷新
+- **类型支持**：完整的 TypeScript 类型提示
+
+企业级封装要点：
+- **统一的错误处理**：区分网络错误、服务器错误、业务错误
+- **Token 管理**：自动刷新 token 机制
+- **请求取消**：防止竞态条件（如搜索联想）
+- **日志记录**：方便调试和问题排查
+
+**3.2 React Query 数据获取革命**
+
+React Query（现为 TanStack Query）是服务端状态管理的革命性方案，它将服务器数据（API 响应）视为独立的状态进行管理。
+
+核心概念：
+- **声明式数据获取**：只需声明数据来源，React Query 自动管理获取、缓存、更新
+- **自动缓存**：数据会被缓存，重复请求直接使用缓存，减少 API 调用
+- **后台刷新**：页面重新聚焦时自动更新数据，保证数据新鲜
+- **乐观更新**：先更新 UI，再发送请求，提供即时反馈
+
+对比 Redux 处理 API：
+- Redux：需要手动管理 loading/error/data 状态，代码量大
+- React Query：自动管理，代码简洁，专注业务逻辑
+
+**3.3 SWR 轻量选择**
+
+SWR（Stale-While-Revalidate）是 Vercel 开发的轻量级数据请求库，理念与 React Query 类似，但 API 更简洁。
+
+SWR 的优势：
+- **极小的体积**：比 React Query 小很多
+- **内置轮询**：简单的 `refreshInterval` 配置即可实现轮询
+- **聚焦简单**：没有 React Query 那么多功能，但足够日常使用
 
 **经典案例：Axios 封装**
 
@@ -782,6 +945,67 @@ export default UserList;
 - [ ] 类型推导
 - [ ] 避免 any 代码
 - [ ] TS 常用类型：interface、type、泛型
+
+**详细概念：**
+
+**4.1 TypeScript 在 React 中的价值**
+
+TypeScript 是 JavaScript 的超集，添加了可选的静态类型系统。React 项目使用 TypeScript 可以获得：
+- **编译时检查**：很多错误在编译时就能发现，而不是等到运行时
+- **智能提示**：IDE 提供准确的属性、方法提示，提高开发效率
+- **代码文档**：类型本身就是最好的文档
+- **重构支持**：类型系统让重构更安全、更自信
+
+为什么要避免 any：
+- `any` 类型会绕过所有类型检查，失去 TypeScript 的保护
+- 使用 `any` 意味着放弃 IDE 的智能提示
+- 正确做法是使用 `unknown` 或具体类型
+
+**4.2 Props 类型定义规范**
+
+Props 是组件的输入，良好的类型定义让组件接口清晰可预测。
+
+常见 Props 类型模式：
+- **基础类型**：`string`、`number`、`boolean` 直接标注
+- **可选属性**：使用 `?` 标记可选 props
+- **函数类型**：明确函数签名，包括参数和返回值类型
+- **联合类型**：限制 props 只能是特定值之一
+- **默认Props**：使用默认值或 `?` 配合默认值处理
+
+最佳实践：
+```tsx
+interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'danger';
+  size?: 'small' | 'medium' | 'large';  // 可选
+  disabled?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;  // 支持 JSX 子元素
+}
+```
+
+**4.3 泛型组件设计**
+
+泛型组件是能够处理多种数据类型的组件，在保持类型安全的同时提供最大的灵活性。
+
+常见泛型场景：
+- **列表组件**：可以展示任何类型的列表
+- **表格组件**：可以渲染任何数据结构
+- **表单组件**：可以处理各种表单数据
+- **选择组件**：支持各种选项类型
+
+泛型约束：
+- 使用 `extends` 约束泛型必须具有特定属性
+- 如 `<T extends Record<string, unknown>>` 确保 T 是对象类型
+
+**4.4 Hooks 类型标注**
+
+React Hooks 都有对应的类型定义，正确标注可以让 Hooks 的返回值类型准确。
+
+常用 Hooks 类型：
+- `useState<T>`：指定 state 类型
+- `useRef<T>`：指定 ref 绑定的元素或值的类型
+- `useCallback<T>`：函数类型由参数和返回值自动推断
+- `useMemo<T>`：指定计算结果的类型
 
 **经典案例：Props 与 State 类型定义**
 
@@ -1041,6 +1265,80 @@ export default EventHandling;
 - [ ] Git 版本管理、Commitlint 提交规范
 - [ ] 环境变量配置
 - [ ] 打包构建优化
+
+**详细概念：**
+
+**5.1 ESLint + Prettier 代码规范**
+
+代码规范是团队协作的基础。ESLint 负责代码质量检查（潜在错误、坏味道），Prettier 负责代码格式统一（风格一致）。
+
+分工协作：
+- **ESLint**：检查逻辑问题、强制最佳实践（如禁止 `var`、要求 `const`）
+- **Prettier**：处理格式化（缩进、分号、引号、换行）
+- **两者互补**：ESLint 的 --cache 选项和 Prettier 的 --write 选项配合使用
+
+企业配置建议：
+- 使用主流共享配置（如 eslint-config-airbnb、eslint-config-standard）
+- 根据项目需求自定义规则
+- CI/CD 中集成 lint 检查
+
+**5.2 Git 提交规范**
+
+统一的提交信息规范让团队协作更高效，便于生成 CHANGELOG 和追溯问题。
+
+Angular 提交规范格式：
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+常用 Type：
+- `feat`：新功能
+- `fix`：Bug 修复
+- `docs`：文档更新
+- `style`：格式调整（不影响代码运行）
+- `refactor`：重构
+- `test`：测试相关
+- `chore`：构建/工具/依赖更新
+
+Commitlint 作用：
+- 校验提交信息是否符合规范
+- 防止不规范提交进入仓库
+- 配合 Conventional Commits 生成版本日志
+
+**5.3 环境变量配置**
+
+不同环境（开发、测试、生产）通常需要不同的配置，环境变量是管理这些配置的标准方式。
+
+前端环境变量规则：
+- 以 `VITE_` 开头的变量可在客户端代码中使用
+- 以 `VITE_` 开头的变量会在构建时被嵌入到输出代码中
+- 敏感信息不要暴露在前端代码中
+
+多环境配置策略：
+- `.env`：默认/共享配置
+- `.env.development`：开发环境覆盖
+- `.env.production`：生产环境覆盖
+- `.env.local`：本地覆盖（通常加入 .gitignore）
+
+**5.4 打包构建优化**
+
+生产环境打包优化直接影响应用性能和用户体验。
+
+核心优化方向：
+- **代码分割**：按路由或组件分割，减少首屏加载体积
+- **Tree Shaking**：移除未使用的代码
+- **压缩优化**：JS/CSS 压缩、混淆
+- **资源优化**：图片压缩、字体子集化
+- **缓存策略**：长期缓存（hash 命名）
+
+构建工具选择：
+- **Vite**：开发体验好，Rollup 打包，生态成熟
+- **Webpack**：功能全面，配置灵活，大型项目首选
+- **esbuild**：极快的构建速度，适合对速度敏感的场景
 
 **经典案例：ESLint + Prettier 配置**
 

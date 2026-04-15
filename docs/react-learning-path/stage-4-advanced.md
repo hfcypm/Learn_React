@@ -13,6 +13,115 @@
 - [ ] 图片优化、打包体积优化
 - [ ] 首屏加载优化
 
+**详细概念：**
+
+**1.1 React 渲染原理**
+
+React 的渲染过程分为两个阶段：Render 阶段和 Commit 阶段。
+
+Render 阶段（可中断）：
+- 计算需要 DOM 更新的部分
+- 创建新的 React Element 树
+- 比较新旧 Element 树（Reconciliation/调和）
+- 确定需要更新的最小集合
+- 此阶段可能被高优先级任务中断
+
+Commit 阶段（不可中断）：
+- 将 Render 阶段的变更应用到 DOM
+- 调用 componentDidMount/DidUpdate
+- 执行 ref 的 attach/detach
+- 此阶段必须完整执行
+
+React 17 的并发模式改进：
+- 使用 `startTransition` 标记非紧急更新
+- 使用 `useDeferredValue` 延迟值更新
+- 允许在渲染过程中被打断
+
+**1.2 Fiber 架构**
+
+Fiber 是 React 16 引入的核心架构改造，将之前的同步递归渲染改为链表结构的可中断渲染。
+
+Fiber 的核心目标：
+- **可中断**：将渲染工作拆分成小单元，可以暂停、恢复
+- **优先级调度**：高优先级（如用户输入）可以打断低优先级（如数据列表渲染）
+- **时间切片**：将工作分散到多帧，避免阻塞主线程
+
+Fiber 节点结构：
+- `type`：元素类型
+- `key`：元素标识
+- `child`：第一个子元素
+- `sibling`：下一个兄弟元素
+- `return`：父元素
+- `memoizedProps`/`pendingProps`：属性状态
+
+**1.3 调和（Reconciliation）机制**
+
+调和是 React 比较新旧 Virtual DOM 树，决定如何高效更新真实 DOM 的算法过程。
+
+Diffing 算法原则：
+- **不同类型元素产生不同树**：`<div>` 变成 `<span>` 会触发完整重建
+- **同类型元素只更新属性**：只更新变化的部分
+- **子元素列表 Diff**：使用 key 作为标识，支持高效移动
+
+Key 的重要性：
+- 列表渲染时 key 帮助 React 识别元素身份
+- 错误的 key（如 index）会导致性能问题和状态错乱
+- 推荐使用唯一 ID 作为 key，避免使用数组索引
+
+**1.4 性能分析与优化策略**
+
+性能优化的核心是找到瓶颈并针对性解决。
+
+React DevTools Profiler 使用：
+- 录制渲染过程，分析每个组件的渲染时间
+- 识别不必要的重渲染
+- 分析组件树的结构
+
+常见性能问题：
+- **父组件重渲染导致子组件不必要重渲染**
+- **组件内创建新的对象/函数导致子组件 props 变化**
+- **大列表渲染没有优化，卡顿明显**
+- **不必要的订阅和副作用清理**
+
+优化工具：
+- `React.memo`：缓存组件渲染结果
+- `useMemo`：缓存计算结果
+- `useCallback`：缓存回调函数
+- `useTransition`/`useDeferredValue`：标记非紧急更新
+
+**1.5 内存泄漏排查**
+
+内存泄漏会导致应用越用越卡、占用内存持续增长。
+
+常见内存泄漏场景：
+- **未清理的定时器**：setInterval/setTimeout 未 clear
+- **未取消的事件监听**：addEventListener 后未 removeEventListener
+- **未取消的订阅**：useEffect 中订阅后未 unsubscribe
+- **闭包引用**：长时间持有外部变量引用
+
+排查工具：
+- Chrome DevTools Memory 面板
+- Heap Snapshot 分析
+- Allocation Timeline
+- Performance Monitor 实时监控
+
+**1.6 首屏加载优化**
+
+首屏性能直接影响用户体验和 SEO 效果。
+
+核心指标：
+- **FCP (First Contentful Paint)**：首次内容绘制
+- **LCP (Largest Contentful Paint)**：最大内容绘制
+- **TTI (Time to Interactive)**：可交互时间
+
+优化策略：
+- **代码分割**：按路由分割，首屏只加载必要代码
+- **预加载/预取**：使用 `<link rel="preload">` 预加载关键资源
+- **图片优化**：使用 WebP/AVIF、响应式图片、懒加载
+- **骨架屏**：loading 状态使用骨架屏替代白屏
+- **CDN 加速**：静态资源使用 CDN 分发
+- **Gzip/Brotli 压缩**：减少传输体积
+
 **经典案例：性能分析与优化**
 
 ```tsx
@@ -141,6 +250,76 @@ function Avatar({ src, size = 48 }: { src?: string; size?: number }) {
 - [ ] 大数据渲染
 - [ ] 微前端（qiankun）
 - [ ] 跨应用集成
+
+**详细概念：**
+
+**2.1 表单高级方案**
+
+复杂表单场景（动态字段、多步表单、实时校验）需要专业的表单解决方案。
+
+React Hook Form 核心优势：
+- **性能极佳**：不基于 uncontrolled inputs，重渲染次数最少
+- **Typed Form**：完整的 TypeScript 支持
+- **小巧轻量**：核心约 3KB
+- **Yup/Zod 集成**：方便的定义复杂校验规则
+- **Field Array**：支持动态增加/删除字段
+
+Formik 特点：
+- 最早的 React 表单库之一，社区成熟
+- 学习曲线平缓，文档丰富
+- 适合简单到中等复杂度表单
+
+校验库选择：
+- **Yup**：最流行的 schema 校验库，链式语法
+- **Zod**：TypeScript 优先，类型推导更强
+- ** Joi**：老牌校验库，功能全面
+
+**2.2 表格虚拟化原理**
+
+表格虚拟化是渲染大数据量列表的核心技术，只渲染可视区域内的行，大幅减少 DOM 节点数量。
+
+核心原理：
+- **可视区域计算**：知道容器高度，计算可见行范围
+- **固定行高**：如果行高一致，计算更简单高效
+- **滚动位置追踪**：滚动时实时计算可见范围
+- **内容定位**：使用 absolute 或 transform 定位可见行
+
+实现要点：
+- 维护 scrollTop 状态
+- 计算 startIndex = Math.floor(scrollTop / rowHeight)
+- 计算 endIndex = startIndex + visibleCount + buffer
+- 只渲染 [startIndex, endIndex] 范围内的数据
+- 用 padding 或占位元素维持总高度
+
+**2.3 无限滚动实现**
+
+无限滚动允许用户持续滚动加载数据，无需分页切换。
+
+实现方式：
+- **滚动事件监听**：`onScroll` 事件判断是否滚动到底部
+- **Intersection Observer**：观察底部加载指示器是否进入视口
+- **阈值控制**：快到到底时提前触发加载，避免白屏
+
+性能考虑：
+- 数据量持续增长可能导致内存问题，需要实现数据淘汰策略
+- 使用防抖处理滚动事件，避免过度触发
+- 加载状态和没有更多数据的提示要明确
+
+**2.4 微前端架构**
+
+微前端是将微服务思想应用于前端的技术方案，实现大型应用的独立开发、部署和技术栈无关。
+
+核心价值：
+- **独立部署**：各子应用独立部署，不影响主应用
+- **技术无关**：可以用 React/Vue/Angular 混搭
+- **团队自治**：各团队负责自己的应用，独立开发
+- **增量升级**：可以逐步迁移旧项目
+
+qiankun 核心 API：
+- `registerMicroApps`：注册子应用
+- `start`：启动 qiankun
+- `loadMicroApp`：手动加载子应用
+- `initGlobalState`：主子应用通信
 
 **经典案例：React Hook Form**
 
@@ -509,6 +688,78 @@ function VirtualTable<T extends Record<string, unknown>>({
 - [ ] SEO 优化
 - [ ] 路由方案
 
+**详细概念：**
+
+**3.1 Next.js 核心优势**
+
+Next.js 是 React 官方推荐的元框架，提供了完整的 SSR/SSG/ISR 解决方案，是企业级 React 应用的首选。
+
+核心渲染模式：
+- **SSG（Static Site Generation）**：构建时生成静态 HTML，适合内容固定不变的页面，性能最优
+- **SSR（Server-Side Rendering）**：请求时动态生成 HTML，适合个性化内容
+- **ISR（Incremental Static Regeneration）**：定期重新生成静态页面，适合内容频繁变化但不需要实时的场景
+
+App Router vs Pages Router：
+- **Pages Router**：更成熟，兼容性更好，约定式路由
+- **App Router**：更现代，React Server Components 支持，嵌套布局更灵活
+
+**3.2 服务端数据获取策略**
+
+服务端数据获取是 SSR/SSG 的核心，不同场景需要不同策略。
+
+Pages Router 数据获取：
+- `getStaticProps`：构建时获取数据，用于 SSG
+- `getStaticPaths`：生成静态路径列表，用于 SSG 动态路由
+- `getServerSideProps`：每个请求时获取数据，用于 SSR
+
+App Router 数据获取：
+- `fetch()` API 直接使用，配置 cache 和 revalidate
+- React 的 `use()` hook 支持在组件中调用异步数据
+- Route Handlers（app/api/*）处理 API 请求
+
+数据获取的最佳实践：
+- 需要 SEO 的页面使用 SSG
+- 个性化内容使用 SSR
+- 频繁更新但不要求实时的内容使用 ISR
+
+**3.3 SEO 优化核心要素**
+
+SEO（Search Engine Optimization）是提升网站在搜索引擎中排名的技术。
+
+Next.js SEO 支持：
+- `generateMetadata`：生成动态 meta 标签
+- 自动生成 sitemap.xml
+- 自动生成 robots.txt
+- Open Graph 和 Twitter Card 支持
+
+核心 SEO 要素：
+- **Title 和 Description**：每个页面有独特、准确的描述
+- **结构化数据**：JSON-LD 格式帮助搜索引擎理解内容
+- **语义化 HTML**：使用正确的标签（header、main、article 等）
+- **图片 Alt 文本**：所有图片有描述性 alt 属性
+- **页面性能**：Core Web Vitals 影响搜索排名
+
+**3.4 路由方案**
+
+Next.js 提供了灵活的文件系统路由。
+
+Pages Router 约定：
+- `pages/index.tsx` → `/`
+- `pages/about.tsx` → `/about`
+- `pages/posts/[id].tsx` → `/posts/1`, `/posts/2` ...
+- `pages/api/users.ts` → `/api/users`
+
+App Router 约定：
+- `app/page.tsx` → `/`
+- `app/about/page.tsx` → `/about`
+- `app/posts/[id]/page.tsx` → `/posts/1` ...
+- `app/api/users/route.ts` → `/api/users`
+
+路由组和布局：
+- `(group)` 语法用于组织代码但不影响 URL
+- `layout.tsx` 定义嵌套布局
+- `template.tsx` 每次路由切换重新创建
+
 **经典案例：Next.js Pages Router**
 
 ```tsx
@@ -708,6 +959,66 @@ export default async function PostPage({ params }: PageProps) {
 - [ ] React 组件单元测试（Jest + React Testing Library）
 - [ ] E2E 测试
 - [ ] 自动化部署
+
+**详细概念：**
+
+**4.1 测试策略分层**
+
+测试是保障代码质量的重要手段，需要分层构建测试策略。
+
+测试金字塔：
+- **单元测试（Unit Tests）**：测试最小单位（函数、组件），数量最多，执行最快
+- **集成测试（Integration Tests）**：测试模块间的协作，如组件与服务
+- **端到端测试（E2E Tests）**：模拟真实用户操作，覆盖核心流程
+
+测试覆盖率：
+- 覆盖率不是越高越好，重点测试核心逻辑和边界情况
+- 业务复杂度高的地方需要更多测试
+- 通用组件库需要高覆盖率的单元测试
+
+**4.2 React Testing Library 设计理念**
+
+React Testing Library（RTL）是 React 官方推荐的测试库，它的设计理念是"以用户的方式测试 UI"。
+
+核心理念：
+- **不测试实现细节**：不直接测试组件的 state、props、生命周期
+- **通过 DOM 交互测试**：模拟用户如何与页面交互
+- **Queries 优先级**：`getByRole` > `getByLabelText` > `getByText` > `getByTestId`
+
+常用 Queries：
+- `getByRole`：最接近用户视角，推荐优先使用
+- `getByLabelText`：测试表单输入
+- `getByText`：查找文本内容
+- `getByTestId`：最后手段，不推荐用于业务逻辑测试
+
+**4.3 Jest 测试框架**
+
+Jest 是 Facebook 开发的测试框架，零配置、内置 Mock、快照测试等功能。
+
+核心概念：
+- **describe**：组织测试用例的块
+- **it/test**：单个测试用例
+- **expect**：断言函数
+- **beforeEach/afterEach**：每个测试前后的钩子
+
+Mock 机制：
+- `jest.fn()`：创建模拟函数
+- `jest.mock()`：模拟整个模块
+- `jest.spyOn()`：监视对象方法
+
+**4.4 自动化部署**
+
+自动化部署是现代开发流程的标配，确保代码经过 CI/CD 流程自动部署到目标环境。
+
+CI/CD 流程：
+- **持续集成（CI）**：代码提交后自动运行测试、构建
+- **持续部署（CD）**：CI 通过后自动部署到环境
+
+主流部署平台：
+- **Vercel**：Next.js 官方托管平台，零配置
+- **Netlify**：静态站点和 SSR 都能托管
+- **Railway/Render**：现代 PaaS 平台
+- **阿里云/腾讯云**：国内企业常用
 
 **经典案例：组件测试**
 
@@ -997,6 +1308,77 @@ describe('useCounter', () => {
 -  [ ] 通用组件/Hooks 抽离
 - [ ] 权限系统
 - [ ] 国际化（i18n）方案
+
+**详细概念：**
+
+**5.1 项目目录结构设计**
+
+良好的目录结构是大型项目可维护性的基础，需要考虑团队规模、技术栈、业务复杂度。
+
+目录组织原则：
+- **按职责分**：组件、hooks、工具、类型等分开
+- **按特性/业务分**：大型项目按功能模块组织
+- **就近原则**：组件的样式、测试文件与组件放一起
+- **扁平优先**：避免过深的嵌套
+
+常见目录模式：
+- **Feature-Based**：按业务功能组织（user/、product/、order/）
+- **Layer-Based**：按技术层级组织（components/、hooks/、services/）
+- **混合模式**：团队项目常用，核心代码按层级，业务代码按特性
+
+**5.2 公共逻辑封装**
+
+公共逻辑封装减少重复代码，提高代码复用性。
+
+封装层次：
+- **工具函数**：纯函数，如日期格式化、金额格式化
+- **自定义 Hooks**：有状态逻辑的封装，如 useDebounce、useLocalStorage
+- **高阶组件（HOC）**：逻辑复用，已逐渐被 Hooks 替代
+- **Render Props**：逻辑分发模式
+
+自定义 Hooks 设计原则：
+- 单一职责：一个 Hook 只做一件事
+- 命名规范：`use` 前缀
+- 返回值明确：类型安全，语义清晰
+- 文档完善：说明参数、返回值、使用场景
+
+**5.3 权限系统设计**
+
+权限系统控制用户能访问哪些功能和数据，是企业应用的核心系统。
+
+权限模型：
+- **RBAC（Role-Based Access Control）**：基于角色的权限控制
+- **ABAC（Attribute-Based Access Control）**：基于属性的权限控制
+
+常见权限设计：
+- **页面级权限**：用户是否能看到某个页面
+- **操作级权限**：用户是否能进行某个操作（新增、编辑、删除）
+- **数据级权限**：用户只能看到自己有权限的数据
+
+实现方案：
+- **权限组件**：`PermissionGate` 根据权限显示/隐藏组件
+- **权限指令**：路由守卫检查权限
+- **API 级权限**：后端也要做权限校验
+
+**5.4 国际化（i18n）方案**
+
+国际化让应用支持多语言，服务全球用户。
+
+i18n 核心概念：
+- **Key-Value 映射**：使用 key 代替硬编码文本
+- **复数处理**：不同语言的复数规则不同
+- **日期/货币格式化**：不同地区格式不同
+- **RTL 支持**：阿拉伯语等从右到左的语言
+
+主流 i18n 库：
+- **react-i18next**：最流行的 React i18n 方案，功能完善
+- **react-intl**：FormatJS 的一部分，早期方案
+- **lingui**：编译时优化，性能好
+
+国际化最佳实践：
+- 所有用户可见文本都要国际化
+- 避免字符串拼接，使用模板语法
+- 保持 key 的语义化，如 `user.login.button`
 
 **经典案例：项目目录结构**
 

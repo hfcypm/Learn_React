@@ -9,6 +9,68 @@
 - [ ] Redux 源码思想
 - [ ] MobX 响应式状态管理
 
+**详细概念：**
+
+**1.1 Redux 源码思想**
+
+深入理解 Redux 的核心思想，即使使用 Redux Toolkit，了解源码也有助于更好地使用。
+
+Redux 核心原则：
+- **单一数据源**：整个应用的 state 存储在唯一的 store 中
+- **State 是只读的**：只能通过触发 action 来改变 state
+- **使用纯函数Reducer**：Reducer 根据 action 计算新 state，必须是纯函数
+
+单向数据流：
+```
+用户交互 → dispatch(action) → Reducer 计算新 state → 通知订阅者 → UI 更新
+```
+
+中间件机制：
+- 中间件扩展了 dispatch 的能力
+- 经典的 applyMiddleware 实现了 middleware chain
+- 常用中间件：redux-thunk（异步）、redux-saga（复杂异步）、redux-logger（日志）
+
+MobX 与 Redux 对比：
+- **Redux**：更规范，适合大型团队；学习曲线陡峭
+- **MobX**：更灵活，适合快速开发；响应式自动追踪依赖
+
+**1.2 MobX 响应式原理**
+
+MobX 基于响应式编程思想，核心是自动追踪依赖并响应变化。
+
+核心概念：
+- **Observable（可观察对象）**：被标记的状态可以自动追踪
+- **Action（动作）**：修改状态的方法
+- **Computed（计算属性）**：基于 observable 计算的派生值
+- **Reaction（反应）**：当依赖变化时自动执行的副作用
+
+makeAutoObservable 原理：
+- 自动将属性变为 observable
+- 自动将方法变为 action
+- 自动将 getter 变为 computed
+
+响应式追踪机制：
+- 当访问 observable 属性时自动收集依赖
+- 当这些依赖变化时自动触发更新
+- 不需要手动声明依赖关系
+
+**1.3 MobX 与 Redux 的选择**
+
+两种状态管理方案各有适用场景，需要根据项目特点选择。
+
+| 场景 | 推荐方案 |
+|------|----------|
+| 大型团队项目 | Redux（更规范可控） |
+| 快速原型开发 | MobX（更少代码） |
+| 需要 DevTools 调试 | 两者皆可 |
+| 复杂异步流 | Redux + redux-saga |
+| 简单状态 | Context + useReducer |
+
+最佳实践：
+- 中小型项目可以使用 Zustand 或 Context
+- 大型复杂应用使用 Redux Toolkit
+- 需要响应式编程体验可选 MobX
+
 **经典案例：MobX 完整使用**
 
 ```typescript
@@ -347,6 +409,53 @@ export const Cart = observer(function Cart() {
 - [ ] React Native（移动端）
 - [ ] Taro（小程序）
 
+**详细概念：**
+
+**2.1 React Native 核心原理**
+
+React Native 允许使用 React 语法开发原生移动应用，一套代码可以运行在 iOS 和 Android 平台。
+
+与 Web React 的区别：
+- **渲染目标不同**：Web React 渲染到 DOM，RN 渲染到原生组件
+- **组件不同**：`<div>` 变成 `<View>`，`<text>` 代替 span/div
+- **样式系统**：RN 使用类 CSS 的 Flexbox 布局，但属性名有差异
+- **无 DOM API**：不能使用 window、document 等浏览器 API
+
+React Native 工作原理：
+- JavaScript 代码运行在 JavaScriptCore 引擎中
+- 通过 Bridge 与原生平台通信
+- 原生模块提供设备能力（如相机、地理位置）
+- 新架构（Fabric/TurboModules）正在改进性能和互操作性
+
+**2.2 React Native vs Flutter**
+
+跨端框架的两大选择：React Native 和 Flutter。
+
+| 维度 | React Native | Flutter |
+|------|--------------|---------|
+| 语言 | JavaScript/TypeScript | Dart |
+| 渲染 | 原生组件 | Skia 自绘引擎 | 
+| 性能 | 接近原生 | 非常接近原生 |
+| 生态 | NPM 生态丰富 | Dart 包管理器 |
+| 学习曲线 | 低（有 React 基础） | 中（Dart 语言） |
+| 热更新 | 支持 JS 热更新 | 支持 Dart 热更新 |
+| 社区 | 更大更成熟 | 增长迅速 |
+
+**2.3 Taro 多端统一开发**
+
+Taro 是京东开源的多端统一开发框架，支持编译到 React Native、微信小程序、H5 等。
+
+核心优势：
+- **一套代码多端运行**：减少开发和维护成本
+- **React 语法支持**：可以使用 Hooks、TypeScript
+- **丰富组件库**：京东团队维护的组件库
+- **插件机制**：支持自定义转换逻辑
+
+小程序开发特点：
+- 体积限制严格，需要代码优化
+- API 有白名单，不能使用所有浏览器 API
+- 分包加载优化首屏性能
+
 **经典案例：React Native 基础组件**
 
 ```tsx
@@ -620,6 +729,66 @@ const styles = StyleSheet.create({
 - [ ] Webpack 深度配置
 - [ ] Vite 深度配置
 
+**详细概念：**
+
+**3.1 Webpack 核心概念**
+
+Webpack 是最成熟的模块打包工具，功能强大但配置复杂。
+
+核心概念：
+- **Entry**：入口文件，Webpack 从这里开始构建依赖图
+- **Output**：输出配置，告诉 Webpack 如何输出 bundle
+- **Loaders**：处理非 JS 文件，将它们转换为有效模块
+- **Plugins**：执行范围更广的任务（打包优化、资源管理、注入环境变量）
+- **Mode**：环境模式（development/production），自动启用优化
+
+常见的 Loader：
+- `ts-loader` / `babel-loader`：处理 TypeScript/JavaScript
+- `css-loader` / `style-loader`：处理 CSS
+- `file-loader` / `asset/resource`：处理静态资源
+- `html-webpack-plugin`：生成 HTML 文件
+
+常见的 Plugin：
+- `mini-css-extract-plugin`：将 CSS 提取为单独文件
+- `terser-webpack-plugin`：压缩 JS
+- `html-webpack-plugin`：生成 HTML 入口
+- `ModuleFederationPlugin`：微前端支持
+
+**3.2 Vite 现代构建工具**
+
+Vite 是下一代前端构建工具，利用浏览器原生 ES Module 实现极快的开发体验。
+
+Vite vs Webpack：
+- **开发体验**：Vite 启动快（无需打包），HMR 几乎即时
+- **生产构建**：都使用 Rollup，产出质量相近
+- **配置复杂度**：Vite 配置更简洁
+- **生态**：Webpack 插件更丰富，Vite 正在追赶
+
+Vite 核心原理：
+- **Dev Server**：不打包，利用浏览器 ES Module 按需加载
+- **HMR**：基于 ESM，只需精确更新变化的模块
+- **预构建**：使用 esbuild 预构建依赖（比 webpack 快 10-100 倍）
+- **Rollup 打包**：生产环境使用 Rollup 打包，优化产出
+
+**3.3 代码分割与 Tree Shaking**
+
+代码分割是将代码拆分成多个 chunk，用户只下载需要的部分。
+
+代码分割策略：
+- **路由分割**：每个路由页面单独打包
+- **组件分割**：按需加载大型组件
+- **Vendor 分割**：第三方库单独打包，利用缓存
+
+Tree Shaking 原理：
+- 基于 ES Module 静态分析
+- 移除未使用的导出
+- 需要开启 minifier 才能完全移除 dead code
+
+动态导入：
+```tsx
+const LazyComponent = lazy(() => import('./LazyComponent'));
+```
+
 **经典案例：Vite 深度配置**
 
 ```typescript
@@ -879,6 +1048,65 @@ module.exports = (env, argv) => {
 - [ ] 并发渲染（Concurrent Rendering）
 - [ ] Suspense 深入理解
 - [ ] Server Components（服务端组件）
+
+**详细概念：**
+
+**4.1 并发渲染（Concurrent Rendering）**
+
+React 18 引入并发模式，这是 React 架构的重大升级，让 React 可以同时准备多个版本的 UI。
+
+并发模式的核心能力：
+- **可中断渲染**：高优先级更新可以打断低优先级更新
+- **Transition**：`useTransition` 标记非紧急更新
+- **Deferred Value**：`useDeferredValue` 延迟值更新
+- **Suspense**：更强大的加载状态处理
+
+useTransition 的使用场景：
+- 搜索输入时，搜索结果更新是非紧急的
+- 标签页切换时，内容渲染可以延迟
+- 大列表排序/筛选时，UI 保持响应
+
+并发渲染的优势：
+- 用户输入始终保持响应（紧急更新优先）
+- 后台可以准备新版本的 UI
+- 更可预测的性能表现
+
+**4.2 Suspense 深入理解**
+
+Suspense 不仅仅是一个 loading 组件，它是 React 异步数据获取的核心基础设施。
+
+Suspense 的工作原理：
+- 当子组件抛出 Promise（或者说进入"pending"状态），Suspense 显示 fallback
+- Promise resolved 后，Suspense 显示实际内容
+- 多个 Suspense 可以并行加载各自的内容
+
+Suspense 与数据获取库集成：
+- React Router v6 原生支持 Suspense
+- Relay/Apollo 客户端支持 Suspense
+- React Query/SWR 通过第三方集成支持
+
+Suspense 边界问题：
+- 一个 Suspense 只处理直接子树的加载状态
+- 深层嵌套的加载需要多个 Suspense
+- Error Boundaries 处理错误，不处理 loading
+
+**4.3 Server Components 服务端组件**
+
+React Server Components（RSC）是 React 18 的革命性特性，允许组件在服务端渲染。
+
+与 SSR 的区别：
+- **SSR**：整个页面在服务端渲染成 HTML，然后 hydrate
+- **Server Components**：部分组件在服务端渲染，不增加客户端 JS 体积
+
+Server Components 优势：
+- **零客户端 JS**：服务端组件不会发送到客户端
+- **直接访问后端**：可以直接调用数据库、文件系统
+- **自动代码分割**：客户端组件自动从 bundle 中排除
+
+限制：
+- 不能使用 hooks（因为 hooks 是客户端概念）
+- 不能使用浏览器 API
+- 不能有事件处理
 
 **经典案例：并发特性**
 
