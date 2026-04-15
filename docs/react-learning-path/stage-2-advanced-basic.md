@@ -12,6 +12,180 @@
 - [ ] `useContext` + `createContext`：跨组件传值（替代多层 Props）
 - [ ] `useReducer`：复杂状态逻辑管理（类似 Redux 精简版）
 
+**详细概念：**
+
+**1.1 useRef 详解**
+
+useRef 是 React 中一个重要的 Hook，它返回一个 ref 对象，该对象的 `.current` 属性可以存储可变的值。
+
+**useRef 的三个核心用途**：
+
+**1. 获取 DOM 引用**：
+```jsx
+const inputRef = useRef(null);
+
+<input ref={inputRef} />
+
+// 调用 DOM 方法
+inputRef.current.focus();
+inputRef.current.select();
+inputRef.current.value;
+```
+
+**2. 存储跨渲染周期存数据**：
+- ref 的值存储在组件外部，不会因组件重新渲染而丢失
+- 更新 ref 不会触发组件重新渲染
+- 适合存储定时器 ID、订阅取消函数等
+
+```jsx
+const timerRef = useRef(null);
+
+useEffect(() => {
+  timerRef.current = setInterval(() => {
+    setCount(c => c + 1);
+  }, 1000);
+  
+  return () => clearInterval(timerRef.current);
+}, []);
+```
+
+**3. 保存上一个渲染周期的值**：
+```jsx
+const prevValueRef = useRef(null);
+
+useEffect(() => {
+  prevValueRef.current = currentValue;
+}, [currentValue]);
+
+// prevValueRef.current 保存的是上一个周期的 currentValue 值
+```
+
+**useRef vs useState 对比**：
+
+| 特性 | useRef | useState |
+|------|--------|----------|
+| 更新触发渲染 | 否 | 是 |
+| 返回值 | `{ current: value }` | `[value, setValue]` |
+| 用途 | DOM 引用、存储副作用相关数据 | UI 相关状态 |
+| 可变性 | current 可变 | 通过 setValue 更新 |
+
+**1.2 useMemo 详解**
+
+useMemo 用于缓存计算结果，避免在每次渲染时重新计算昂贵的值。
+
+**基本语法**：
+```jsx
+const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
+```
+
+**使用场景**：
+- **昂贵计算**：如排序、过滤、大数据处理等
+- **稳定对象引用**：避免每次渲染创建新对象
+- **稳定函数引用**：配合 useCallback 使用
+
+**依赖数组规则**：
+- 省略依赖数组：每次渲染都重新计算
+- 空数组：只计算一次，后续渲染使用缓存值
+- 有依赖项：依赖变化时重新计算
+
+**注意事项**：
+- 不要过度使用 useMemo，它也有性能开销
+- 对于简单计算，直接计算可能更快
+- 确保计算函数是纯函数，没有副作用
+
+**1.3 useCallback 详解**
+
+useCallback 用于缓存函数引用，避免因函数引用变化导致子组件不必要的重新渲染。
+
+**基本语法**：
+```jsx
+const memoizedCallback = useCallback(
+  () => doSomething(a, b),
+  [a, b]
+);
+```
+
+**与 useMemo 的关系**：
+```jsx
+// 这两等价
+const memoizedCallback = useCallback(() => doSomething(a, b), [a, b]);
+const memoizedCallback = useMemo(() => () => doSomething(a, b), [a, b]);
+```
+
+**使用场景**：
+- 传递给子组件的回调函数
+- 作为其他 Hooks 的依赖项
+- 传递给需要稳定引用的第三方库
+
+**常见误区**：
+- 不是所有函数都需要 useCallback，过度使用反而增加开销
+- 只有当函数作为 props 传递给使用 memo 包装的子组件时才有意义
+- 配合 React.memo 使用才能发挥最大效果
+
+**1.4 useContext + createContext 详解**
+
+Context 提供了一种在组件树中传递数据的方式，避免层层传递 props（prop drilling）。
+
+**创建 Context**：
+```jsx
+const MyContext = createContext(defaultValue);
+```
+
+** Provider 供应数据**：
+```jsx
+<MyContext.Provider value={sharedValue}>
+  {children}
+</MyContext.Provider>
+```
+
+**消费 Context**：
+```jsx
+// 方式1：useContext Hook（推荐）
+const value = useContext(MyContext);
+
+// 方式2：Consumer 组件
+<MyContext.Consumer>
+  {value => <Component value={value} />}
+</MyContext.Consumer>
+```
+
+**最佳实践**：
+- 将 Context 按功能拆分为多个小 Context，避免不必要的重新渲染
+- 考虑使用 useMemo 优化 Context value
+- 提供默认值时要注意默认为 undefined 时的处理
+
+**1.5 useReducer 详解**
+
+useReducer 是 useState 的替代方案，适用于复杂的状态逻辑。
+
+**基本语法**：
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+**reducer 函数结构**：
+```jsx
+function reducer(state, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { ...state, count: state.count + 1 };
+    case 'DECREMENT':
+      return { ...state, count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+```
+
+**与 useState 的选择**：
+- useState：简单状态，状态更新逻辑不复杂
+- useReducer：相关的一组状态，状态更新逻辑复杂，状态更新逻辑类似或有规律可循
+
+**useReducer 的优势**：
+- 集中状态逻辑，便于管理和调试
+- 可以传递 dispatch 给子组件，而不需要传递回调
+- 更容易实现撤销/重做等高级功能
+
 **经典案例：useRef 使用**
 
 ```jsx
@@ -419,6 +593,115 @@ export default App;
 - [ ] Render Props - 了解思想
 - [ ] 自定义 Hooks：封装复用逻辑（表单、请求、定时器等）
 
+**详细概念：**
+
+**2.1 组件通信方案全解**
+
+React 组件之间的通信有多种方式，根据组件关系选择合适的方案：
+
+**父子通信（Parent → Child）**：
+- 通过 props 传递数据
+- 父组件传递函数作为 props，子组件调用通知父组件
+
+```jsx
+// 父组件
+<ChildComponent 
+  data={parentData} 
+  onChildEvent={handleChildEvent}
+/>
+```
+
+**子父通信（Child → Parent）**：
+- 父组件传递回调函数给子组件
+- 子组件通过调用回调传递数据
+
+```jsx
+// 子组件
+function Child({ onDataChange }) {
+  return <button onClick={() => onDataChange('新数据')}>通知父组件</button>;
+}
+```
+
+**兄弟通信（Sibling → Sibling）**：
+- 通过共同的父组件中转
+- 组件 A 更新父组件状态，父组件将数据传给组件 B
+
+**跨多层通信**：
+- **层层传递**：不推荐，导致代码耦合
+- **Context**：适合全局数据（主题、用户信息）
+- **状态管理库**：适合复杂应用（Redux、Zustand）
+
+**2.2 高阶组件（HOC）**
+
+高阶组件是一个函数，接收一个组件并返回一个新组件。它是一种代码复用模式，用于共享逻辑。
+
+**HOC 的基本结构**：
+```jsx
+function withHOC(WrappedComponent) {
+  return function EnhancedComponent(props) {
+    // 添加额外 props 或逻辑
+    const extraProp = '额外数据';
+    return <WrappedComponent {...props} extraProp={extraProp} />;
+  }
+}
+```
+
+**常见用途**：
+- 属性代理：添加 props、访问 DOM
+- 状态提升：添加状态管理
+- 条件渲染：基于条件决定渲染
+- 样式增强：添加样式或类名
+
+**注意事项**：
+- 不要在 HOC 内部修改原组件
+- HOC 应该传递不相关的 props
+- 使用 displayName 便于调试
+- 不推荐多层 HOC 嵌套
+
+**2.3 Render Props**
+
+Render Props 是一种在组件之间共享代码的技术，使用一个 prop 值为函数，这个函数返回一个 React 元素。
+
+**基本模式**：
+```jsx
+<DataProvider render={data => <Display data={data} />} />
+
+// 或
+<DataProvider>
+  {data => <Display data={data} />}
+</DataProvider>
+```
+
+**与 HOC 的对比**：
+
+| 特性 | HOC | Render Props |
+|------|-----|-------------|
+| 代码组织 | 包装组件 | 作为 children 或 prop 传递 |
+| 灵活性 | 静态组合 | 动态组合 |
+| 学习成本 | 较高 | 较低 |
+| Props 冲突 | 可能冲突 | 不冲突 |
+
+**经典场景**：
+- 订阅外部数据源
+- 共享行为逻辑
+- 延迟加载
+
+**2.4 自定义 Hooks**
+
+自定义 Hooks 是以 `use` 开头的函数，可以在其中使用其他 Hooks，用于封装和复用有状态的逻辑。
+
+**创建自定义 Hooks 的规则**：
+- 名称必须以 `use` 开头
+- 可以在内部使用其他 Hooks
+- 每个组件使用独立的 Hook 状态
+
+**常见自定义 Hooks**：
+- `useLocalStorage`：持久化状态到本地存储
+- `useDebounce`：防抖处理
+- `useFetch`：数据请求封装
+- `usePrevious`：获取上一个值
+- `useClickOutside`：检测点击外部
+
 **经典案例：组件通信方案**
 
 ```jsx
@@ -654,6 +937,117 @@ function App() {
 - [ ] 路由懒加载
 - [ ] 404 页面、路由参数获取
 
+**详细概念：**
+
+**3.1 路由配置与嵌套路由**
+
+React Router 使用声明式的方式定义路由，通过 `<Routes>` 和 `<Route>` 组件来配置。
+
+**基础路由配置**：
+```jsx
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/about" element={<About />} />
+</Routes>
+```
+
+**嵌套路由**：嵌套路由允许在父路由中渲染子路由，使用 `<Outlet>` 组件作为子路由的渲染位置。
+
+```jsx
+<Route path="/users" element={<UsersLayout />}>
+  <Route index element={<UserList />} />
+  <Route path=":id" element={<UserDetail />} />
+</Route>
+```
+
+**3.2 动态路由**
+
+动态路由允许 URL 包含可变部分，使用冒号 `:` 标记参数。
+
+**路由参数**：
+```jsx
+<Route path="/users/:id" element={<UserProfile />} />
+
+// 获取参数
+const { id } = useParams();
+```
+
+**查询参数**：
+```jsx
+// URL: /search?keyword=react&page=1
+const [searchParams, setSearchParams] = useSearchParams();
+
+const keyword = searchParams.get('keyword');
+const page = searchParams.get('page');
+```
+
+**3.3 编程式导航**
+
+编程式导航允许在代码中控制页面跳转，不依赖用户点击链接。
+
+**useNavigate Hook**：
+```jsx
+const navigate = useNavigate();
+
+// 跳转到指定路径
+navigate('/dashboard');
+
+// 带状态跳转
+navigate('/user', { state: { fromHome: true } });
+
+// 替换当前历史记录
+navigate('/home', { replace: true });
+
+// 前进或后退
+navigate(1);  // 前进
+navigate(-1); // 后退
+```
+
+**3.4 路由守卫**
+
+路由守卫用于保护需要权限的页面，未授权用户重定向到登录页。
+
+```jsx
+function ProtectedRoute({ children, isAuthenticated }) {
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
+// 使用
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute isAuthenticated={isAuth}>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
+```
+
+**3.5 路由懒加载**
+
+路由懒加载使用 React.lazy 和 Suspense 实现代码分割，减少首屏加载时间。
+
+```jsx
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+
+<Suspense fallback={<Loading />}>
+  <Routes>
+    <Route path="/" element={<Dashboard />} />
+  </Routes>
+</Suspense>
+```
+
+**3.6 404 页面与通配路由**
+
+使用 `*` 作为通配符匹配所有未匹配的路由，实现 404 页面。
+
+```jsx
+<Route path="*" element={<NotFound />} />
+```
+
 **经典案例：基础路由配置**
 
 ```jsx
@@ -828,6 +1222,110 @@ function App() {
 - [ ] 避免不必要渲染（React.memo、useMemo、useCallback）
 - [ ] 代码分割、懒加载（React.lazy + Suspense）
 - [ ] 列表渲染优化（虚拟列表初步了解）
+
+**详细概念：**
+
+**4.1 React.memo 与性能优化**
+
+React.memo 是一个高阶组件，用于包装函数组件，缓存其渲染结果。
+
+**基本用法**：
+```jsx
+const MemoizedComponent = memo(function MyComponent(props) {
+  return <div>{props.name}</div>;
+});
+```
+
+**工作原理**：
+- React.memo 会对组件的 props 进行浅比较（shallow compare）
+- 如果 props 没有变化，跳过渲染，直接使用缓存结果
+- 如果 props 发生变化，才会重新渲染
+
+**自定义比较函数**：
+```jsx
+const MemoizedComponent = memo(
+  function MyComponent({ data, onClick }) {
+    return <div onClick={onClick}>{data.name}</div>;
+  },
+  (prevProps, nextProps) => {
+    // 返回 true 表示 props 相等，不重新渲染
+    return prevProps.data.id === nextProps.data.id;
+  }
+);
+```
+
+**适用场景**：
+- 组件频繁渲染，但输出相同的概率高
+- 组件接收大量 props，更新频繁
+- 组件是纯展示组件，不依赖外部状态
+
+**4.2 useMemo 与 useCallback**
+
+这两个 Hook 都用于避免不必要的计算或渲染：
+
+**useMemo 缓存计算结果**：
+```jsx
+const sortedList = useMemo(() => {
+  return items.slice().sort((a, b) => a.name.localeCompare(b.name));
+}, [items]);
+```
+
+**useCallback 缓存函数引用**：
+```jsx
+const handleClick = useCallback(() => {
+  doSomething(id);
+}, [id]);
+```
+
+**何时使用**：
+- 传递给子组件的函数使用 useCallback
+- 派生状态（计算属性）使用 useMemo
+- 不要过度使用，会增加代码复杂度
+
+**4.3 代码分割与懒加载**
+
+代码分割是将应用拆分成多个小块，按需加载，减少首屏加载时间。
+
+**React.lazy + Suspense**：
+```jsx
+const OtherComponent = lazy(() => import('./OtherComponent'));
+
+function MyComponent() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <OtherComponent />
+    </Suspense>
+  );
+}
+```
+
+**路由级别的代码分割**：
+```jsx
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Settings = lazy(() => import('./pages/Settings'));
+
+<Suspense fallback={<Loading />}>
+  <Routes>
+    <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/settings" element={<Settings />} />
+  </Routes>
+</Suspense>
+```
+
+**4.4 虚拟列表**
+
+虚拟列表是一种优化大量数据渲染的技术，只渲染可视区域内的元素。
+
+**核心原理**：
+- 计算可视区域能显示多少个元素
+- 只渲染这些可见元素
+- 使用绝对定位或 transform 调整位置
+- 滚动时动态计算并渲染新的可见元素
+
+**适用场景**：
+- 列表项数量巨大（成千上万）
+- 每个列表项高度固定或可预估
+- 需要保持列表滚动流畅
 
 **经典案例：React.memo 避免重复渲染**
 
