@@ -9,86 +9,18 @@
 - [ ] Redux 源码思想
 - [ ] MobX 响应式状态管理
 
-### 2. 跨端技术
-
-- [ ] React Native（移动端）
-- [ ] Taro（小程序）
-
-### 3. 构建工具深度配置
-
-- [ ] Webpack 深度配置
-- [ ] Vite 深度配置
-
-### 4. React 18 新特性
-
-- [ ] 并发渲染（Concurrent Rendering）
-- [ ] Suspense 深入理解
-- [ ] Server Components（服务端组件）
-
-## 技能说明
-
-### Redux 源码思想
-
-理解 Redux 的核心概念：
-- Store：单一数据源
-- Action：描述操作的 plain object
-- Reducer：纯函数，根据 action 计算新状态
-- Middleware：扩展 Redux 能力（异步、日志等）
-
-### MobX
+**经典案例：MobX 完整使用**
 
 ```typescript
-import { makeAutoObservable } from 'mobx';
-
-class Counter {
-  count = 0;
-
-  constructor() {
-    makeAutoObservable(this);
-  }
-
-  increment() {
-    this.count++;
-  }
-}
-```
-
-### React Native
-
-- 使用 React 语法开发原生 iOS/Android 应用
-- 复用 React 组件化和状态管理思想
-- 学习原生组件和布局系统
-
-### Taro
-
-- 一套代码，多端运行（微信小程序、H5、React Native）
-- 遵循 React 语法规范
-
-### 构建工具
-
-**Webpack 重点**：
-- Loader 和 Plugin 机制
-- 模块联邦（Module Federation）
-- 构建优化
-
-**Vite 重点**：
-- ESM 原理
-- 依赖预构建
-- 插件系统
-
-## 经典学习案例
-
-### 案例 1：MobX 完整使用
-
-```typescript
-// stores/rootStore.ts
-import { createContext, useContext } from 'react';
+// stores/UserStore.ts
 import { makeAutoObservable, runInAction } from 'mobx';
 
 interface User {
   id: string;
   name: string;
   email: string;
+  avatar?: string;
+  role: 'admin' | 'user';
 }
 
 class UserStore {
@@ -98,15 +30,25 @@ class UserStore {
   error: string | null = null;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      error: false,
+    });
   }
 
-  get activeUserCount() {
+  get userCount() {
     return this.users.length;
+  }
+
+  get adminCount() {
+    return this.users.filter(user => user.role === 'admin').length;
   }
 
   get sortedUsers() {
     return [...this.users].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  get selectedUserName() {
+    return this.selectedUser?.name ?? '(未选择)';
   }
 
   setSelectedUser(user: User | null) {
@@ -133,8 +75,32 @@ class UserStore {
     }
   }
 
-  addUser(user: User) {
-    this.users.push(user);
+  async createUser(userData: Omit<User, 'id'>) {
+    this.loading = true;
+    this.error = null;
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      const newUser = await response.json();
+
+      runInAction(() => {
+        this.users.push(newUser);
+        this.loading = false;
+      });
+
+      return newUser;
+    } catch (err) {
+      runInAction(() => {
+        this.error = err instanceof Error ? err.message : '创建用户失败';
+        this.loading = false;
+      });
+      throw err;
+    }
   }
 
   removeUser(id: string) {
@@ -145,18 +111,36 @@ class UserStore {
   }
 }
 
+export const userStore = new UserStore();
+```
+
+```typescript
+// stores/CartStore.ts
+import { makeAutoObservable } from 'mobx';
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 class CartStore {
-  items: { id: string; name: string; price: number; quantity: number }[] = [];
+  items: CartItem[] = [];
   taxRate = 0.1;
+  shippingFee = 10;
 
   constructor() {
     makeAutoObservable(this, {
-      taxRate: false,
+      shippingFee: false,
     });
   }
 
   get subtotal() {
-    return this.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return this.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
   }
 
   get tax() {
@@ -164,14 +148,18 @@ class CartStore {
   }
 
   get total() {
-    return this.subtotal + this.tax;
+    return this.subtotal + this.tax + this.shippingFee;
   }
 
   get itemCount() {
     return this.items.reduce((sum, item) => sum + item.quantity, 0);
   }
 
-  addItem(item: typeof this.items[0]) {
+  get isEmpty() {
+    return this.items.length === 0;
+  }
+
+  addItem(item: Omit<CartItem, 'quantity'>) {
     const existing = this.items.find(i => i.id === item.id);
     if (existing) {
       existing.quantity += 1;
@@ -184,22 +172,52 @@ class CartStore {
     this.items = this.items.filter(i => i.id !== id);
   }
 
+  updateQuantity(id: string, quantity: number) {
+    if (quantity <= 0) {
+      this.removeItem(id);
+      return;
+    }
+
+    const item = this.items.find(i => i.id === id);
+    if (item) {
+      item.quantity = quantity;
+    }
+  }
+
+  clearCart() {
+    this.items = [];
+  }
+
   setTaxRate(rate: number) {
-    this.taxRate = rate;
+    if (rate >= 0 && rate <= 1) {
+      this.taxRate = rate;
+    }
+  }
+
+  applyDiscount(code: string): boolean {
+    if (code === 'SAVE10') {
+      this.shippingFee = 0;
+      return true;
+    }
+    return false;
   }
 }
+
+export const cartStore = new CartStore();
+```
+
+```typescript
+// stores/RootStore.ts
+import { createContext, useContext } from 'react';
+import { userStore } from './UserStore';
+import { cartStore } from './CartStore';
 
 class RootStore {
-  userStore: UserStore;
-  cartStore: CartStore;
-
-  constructor() {
-    this.userStore = new UserStore();
-    this.cartStore = new CartStore();
-  }
+  userStore = userStore;
+  cartStore = cartStore;
 }
 
-const rootStore = new RootStore();
+export const rootStore = new RootStore();
 const StoreContext = createContext<RootStore>(rootStore);
 
 export function useStore() {
@@ -220,17 +238,29 @@ export function useCartStore() {
 ```tsx
 // components/UserList.tsx
 import { observer } from 'mobx-react';
-import { useUserStore } from '../stores/rootStore';
+import { useUserStore } from '../stores/RootStore';
 
 export const UserList = observer(function UserList() {
   const userStore = useUserStore();
 
-  if (userStore.loading) return <div>加载中...</div>;
-  if (userStore.error) return <div>错误：{userStore.error}</div>;
+  if (userStore.loading && userStore.users.length === 0) {
+    return <div>加载中...</div>;
+  }
+
+  if (userStore.error) {
+    return <div>错误：{userStore.error}</div>;
+  }
 
   return (
     <div>
-      <h2>用户列表（共 {userStore.activeUserCount} 人）</h2>
+      <div>
+        <span>总用户数：{userStore.userCount}</span>
+        <span>管理员数：{userStore.adminCount}</span>
+      </div>
+
+      <button onClick={() => userStore.fetchUsers()} disabled={userStore.loading}>
+        刷新
+      </button>
 
       <ul>
         {userStore.sortedUsers.map(user => (
@@ -238,184 +268,86 @@ export const UserList = observer(function UserList() {
             key={user.id}
             onClick={() => userStore.setSelectedUser(user)}
             style={{
-              fontWeight: userStore.selectedUser?.id === user.id ? 'bold' : 'normal'
+              cursor: 'pointer',
+              fontWeight: userStore.selectedUser?.id === user.id ? 'bold' : 'normal',
             }}
           >
-            {user.name} - {user.email}
-            <button onClick={() => userStore.removeUser(user.id)}>删除</button>
+            <img src={user.avatar || '/default-avatar.png'} alt={user.name} />
+            <span>{user.name}</span>
+            <span>{user.email}</span>
+            <span>[{user.role}]</span>
+            <button onClick={(e) => { e.stopPropagation(); userStore.removeUser(user.id); }}>
+              删除
+            </button>
           </li>
         ))}
       </ul>
 
-      <button onClick={() => userStore.fetchUsers()}>刷新</button>
+      <div>
+        <p>选中的用户：{userStore.selectedUserName}</p>
+      </div>
     </div>
   );
 });
 ```
 
-### 案例 2：Vite 插件开发
+```tsx
+// components/Cart.tsx
+import { observer } from 'mobx-react';
+import { useCartStore } from '../stores/RootStore';
 
-```typescript
-// plugins/vite-plugin-auto-mpa-html.ts
-import { Plugin } from 'vite';
-import { glob } from 'glob';
-import { resolve } from 'path';
-import { readFile } from 'fs/promises';
+export const Cart = observer(function Cart() {
+  const cartStore = useCartStore();
 
-export function vitePluginAutoMpaHtml(): Plugin {
-  return {
-    name: 'vite-plugin-auto-mpa-html',
-    enforce: 'pre',
+  if (cartStore.isEmpty) {
+    return <div>购物车为空</div>;
+  }
 
-    async buildStart() {
-      const pages = await glob('src/pages/**/index.html');
+  return (
+    <div>
+      <h2>购物车</h2>
 
-      for (const page of pages) {
-        const relativePath = page.replace('src/pages/', '').replace('/index.html', '');
-        const routePath = '/' + relativePath.replace(/\//g, '/');
+      <ul>
+        {cartStore.items.map(item => (
+          <li key={item.id}>
+            <span>{item.name}</span>
+            <span>¥{item.price} x {item.quantity} = ¥{item.price * item.quantity}</span>
+            <button onClick={() => cartStore.updateQuantity(item.id, item.quantity - 1)}>
+              -
+            </button>
+            <button onClick={() => cartStore.updateQuantity(item.id, item.quantity + 1)}>
+              +
+            </button>
+            <button onClick={() => cartStore.removeItem(item.id)}>
+              删除
+            </button>
+          </li>
+        ))}
+      </ul>
 
-        this.emitFile({
-          type: 'chunk',
-          id: page,
-          name: `page-${relativePath.replace(/\//g, '-')}`,
-        });
-      }
-    },
+      <div>
+        <p>小计：¥{cartStore.subtotal.toFixed(2)}</p>
+        <p>税费（{cartStore.taxRate * 100}%）：¥{cartStore.tax.toFixed(2)}</p>
+        <p>运费：¥{cartStore.shippingFee}</p>
+        <p>总计：¥{cartStore.total.toFixed(2)}</p>
+      </div>
 
-    resolveId(source, importer) {
-      if (source === 'virtual:mpa-routes') {
-        return source;
-      }
-    },
-
-    async load(id) {
-      if (id === 'virtual:mpa-routes') {
-        const pages = await glob('src/pages/**/index.html');
-        const routes = pages.map(page => {
-          const relativePath = page.replace('src/pages/', '').replace('/index.html', '');
-          const routePath = '/' + relativePath.replace(/\//g, '/');
-          return {
-            path: routePath,
-            file: page,
-          };
-        });
-
-        return `export default ${JSON.stringify(routes, null, 2)}`;
-      }
-    },
-  };
-}
-```
-
-```typescript
-// vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { vitePluginAutoMpaHtml } from './plugins/vite-plugin-auto-mpa-html';
-
-export default defineConfig({
-  plugins: [
-    react(),
-    vitePluginAutoMpaHtml(),
-  ],
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-      },
-    },
-  },
-  server: {
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
-    },
-  },
-  css: {
-    modules: {
-      localsConvention: 'camelCase',
-    },
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-  },
+      <button onClick={() => cartStore.clearCart()}>
+        清空购物车
+      </button>
+    </div>
+  );
 });
 ```
 
-### 案例 3：React 18 并发特性
+---
 
-```tsx
-import { useState, useTransition, useDeferredValue, Suspense } from 'react';
+### 2. 跨端技术
 
-function SlowList({ text }: { text: string }) {
-  const items = Array.from({ length: 500 }, (_, i) => (
-    <div key={i}>
-      {text} - 项目 {i}
-    </div>
-  ));
+- [ ] React Native（移动端）
+- [ ] Taro（小程序）
 
-  return <div>{items}</div>;
-}
-
-function SearchResults() {
-  const [query, setQuery] = useState('');
-  const [isPending, startTransition] = useTransition();
-  const deferredQuery = useDeferredValue(query);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    startTransition(() => {
-      setQuery(e.target.value);
-    });
-  };
-
-  return (
-    <div>
-      <input value={query} onChange={handleChange} placeholder="搜索..." />
-
-      {isPending && <div>更新中...</div>}
-
-      <Suspense fallback={<div>加载中...</div>}>
-        <SlowList text={deferredQuery} />
-      </Suspense>
-    </div>
-  );
-}
-```
-
-```tsx
-import { useState, Suspense } from 'react';
-import { fetchUserProfile, fetchUserRecommendations } from './api';
-
-function UserProfile({ userId }: { userId: string }) {
-  return (
-    <Suspense fallback={<div>加载用户信息...</div>}>
-      <ProfileDetails userId={userId} />
-    </Suspense>
-  );
-}
-
-function UserRecommendations({ userId }: { userId: string }) {
-  return (
-    <Suspense fallback={<div>加载推荐...</div>}>
-      <Recommendations userId={userId} />
-    </Suspense>
-  );
-}
-
-function UserPage({ userId }: { userId: string }) {
-  return (
-    <div>
-      <UserProfile userId={userId} />
-      <UserRecommendations userId={userId} />
-    </div>
-  );
-}
-```
-
-### 案例 4：React Native 基础组件
+**经典案例：React Native 基础组件**
 
 ```tsx
 // App.tsx
@@ -429,6 +361,9 @@ import {
   FlatList,
   SafeAreaView,
   StatusBar,
+  Alert,
+  Image,
+  ScrollView,
 } from 'react-native';
 
 interface TodoItem {
@@ -463,7 +398,18 @@ export default function App() {
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    Alert.alert(
+      '确认删除',
+      '确定要删除这个待办事项吗？',
+      [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '删除',
+          style: 'destructive',
+          onPress: () => setTodos(todos.filter(todo => todo.id !== id)),
+        },
+      ]
+    );
   };
 
   const renderItem = ({ item }: { item: TodoItem }) => (
@@ -477,10 +423,12 @@ export default function App() {
         </Text>
       </TouchableOpacity>
 
-      <Text style={[
-        styles.todoText,
-        item.completed && styles.completedText
-      ]}>
+      <Text
+        style={[
+          styles.todoText,
+          item.completed && styles.completedText,
+        ]}
+      >
         {item.title}
       </Text>
 
@@ -499,6 +447,7 @@ export default function App() {
 
       <View style={styles.header}>
         <Text style={styles.title}>待办事项</Text>
+        <Text style={styles.subtitle}>共 {todos.length} 项</Text>
       </View>
 
       <View style={styles.inputContainer}>
@@ -507,7 +456,9 @@ export default function App() {
           value={inputText}
           onChangeText={setInputText}
           placeholder="添加新待办..."
+          placeholderTextColor="#999"
           onSubmitEditing={addTodo}
+          returnKeyType="done"
         />
         <TouchableOpacity style={styles.addButton} onPress={addTodo}>
           <Text style={styles.addButtonText}>添加</Text>
@@ -520,7 +471,18 @@ export default function App() {
         keyExtractor={item => item.id}
         style={styles.list}
         contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>暂无待办事项</Text>
+          </View>
+        }
       />
+
+      <View style={styles.statsContainer}>
+        <Text style={styles.statsText}>
+          已完成：{todos.filter(t => t.completed).length} / {todos.length}
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -539,6 +501,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -553,15 +521,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     marginRight: 12,
+    fontSize: 16,
   },
   addButton: {
     backgroundColor: '#007AFF',
     paddingHorizontal: 20,
     borderRadius: 8,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   addButtonText: {
     color: '#fff',
+    fontSize: 16,
     fontWeight: '600',
   },
   list: {
@@ -577,11 +548,16 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     borderWidth: 2,
     borderColor: '#007AFF',
     justifyContent: 'center',
@@ -589,29 +565,471 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   checkboxText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#007AFF',
+    fontWeight: 'bold',
   },
   todoText: {
     flex: 1,
     fontSize: 16,
+    color: '#333',
   },
   completedText: {
     textDecorationLine: 'line-through',
     color: '#999',
   },
   deleteButton: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
     justifyContent: 'center',
     alignItems: 'center',
   },
   deleteText: {
-    fontSize: 20,
+    fontSize: 24,
     color: '#FF3B30',
+    fontWeight: 'bold',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+  },
+  statsContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  statsText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
 ```
+
+---
+
+### 3. 构建工具深度配置
+
+- [ ] Webpack 深度配置
+- [ ] Vite 深度配置
+
+**经典案例：Vite 深度配置**
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { vitePluginAutoImport } from 'vite-plugin-auto-import';
+import { vitePluginAutoComponent } from 'vite-plugin-auto-component';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    vitePluginAutoImport({
+      imports: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        {
+          'react-redux': ['useDispatch', 'useSelector'],
+          '@tanstack/react-query': ['useQuery', 'useMutation'],
+        },
+      ],
+      dts: 'src/auto-imports.d.ts',
+    }),
+  ],
+
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@hooks': path.resolve(__dirname, 'src/hooks'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
+      '@store': path.resolve(__dirname, 'src/store'),
+    },
+  },
+
+  server: {
+    port: 3000,
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ''),
+      },
+      '/ws': {
+        target: 'ws://localhost:8080',
+        ws: true,
+      },
+    },
+  },
+
+  build: {
+    target: 'es2015',
+    cssTarget: 'chrome80',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['antd', '@ant-design/icons'],
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+
+  css: {
+    modules: {
+      localsConvention: 'camelCase',
+      generateScopedName: '[name]__[local]___[hash:base64:5]',
+    },
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+        modifyVars: {
+          'primary-color': '#1890ff',
+        },
+      },
+    },
+  },
+
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'antd'],
+    exclude: [],
+  },
+
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+  },
+});
+```
+
+**经典案例：Webpack 配置**
+
+```javascript
+// webpack.config.js
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const { ModuleFederationPlugin } = require('webpack').container;
+
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+
+  return {
+    entry: './src/index.tsx',
+
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: isProduction ? '[name].[contenthash].js' : '[name].js',
+      chunkFilename: isProduction ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
+      publicPath: 'auto',
+      clean: true,
+    },
+
+    resolve: {
+      extensions: ['.tsx', '.ts', '.jsx', '.js'],
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+        '@components': path.resolve(__dirname, 'src/components'),
+        '@hooks': path.resolve(__dirname, 'src/hooks'),
+      },
+    },
+
+    module: {
+      rules: [
+        {
+          test: /\.(ts|tsx)$/,
+          use: {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
+          },
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.css$/,
+          use: [
+            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: ['autoprefixer'],
+                },
+              },
+            },
+          ],
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource',
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: 'asset/resource',
+        },
+      ],
+    },
+
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: './public/index.html',
+        inject: 'body',
+        minify: isProduction
+          ? {
+              removeComments: true,
+              collapseWhitespace: true,
+              removeAttributeQuotes: true,
+            }
+          : false,
+      }),
+
+      new MiniCssExtractPlugin({
+        filename: isProduction ? '[name].[contenthash].css' : '[name].css',
+      }),
+
+      new ModuleFederationPlugin({
+        name: 'host',
+        remotes: {
+          remoteApp: 'remote@http://localhost:3001/remoteEntry.js',
+        },
+        shared: {
+          react: { singleton: true, eager: true },
+          'react-dom': { singleton: true, eager: true },
+        },
+      }),
+    ],
+
+    optimization: {
+      minimize: isProduction,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: isProduction,
+              drop_debugger: isProduction,
+            },
+          },
+        }),
+        new CssMinimizerPlugin(),
+      ],
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+            name: 'react-vendor',
+            chunks: 'all',
+            priority: 10,
+          },
+        },
+      },
+    },
+
+    devServer: {
+      port: 3000,
+      hot: true,
+      historyApiFallback: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+        },
+      },
+    },
+
+    devtool: isProduction ? 'source-map' : 'eval-source-map',
+
+    performance: {
+      hints: isProduction ? 'warning' : false,
+      maxEntrypointSize: 512000,
+      maxAssetSize: 512000,
+    },
+  };
+};
+```
+
+---
+
+### 4. React 18 新特性
+
+- [ ] 并发渲染（Concurrent Rendering）
+- [ ] Suspense 深入理解
+- [ ] Server Components（服务端组件）
+
+**经典案例：并发特性**
+
+```tsx
+// ConcurrentFeatures.tsx
+import { useState, useTransition, useDeferredValue, Suspense, use } from 'react';
+
+function SlowList({ text }: { text: string }) {
+  const items = Array.from({ length: 500 }, (_, i) => (
+    <div key={i}>
+      {text} - 项目 {i + 1}
+    </div>
+  ));
+
+  return <div>{items}</div>;
+}
+
+function SearchResults() {
+  const [query, setQuery] = useState('');
+  const [isPending, startTransition] = useTransition();
+  const deferredQuery = useDeferredValue(query);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    startTransition(() => {
+      setQuery(e.target.value);
+    });
+  };
+
+  return (
+    <div>
+      <label>
+        搜索：
+        <input value={query} onChange={handleChange} />
+      </label>
+
+      {isPending && <p>更新中...</p>}
+
+      <SlowList text={deferredQuery} />
+    </div>
+  );
+}
+```
+
+```tsx
+// use.ts hook (React 18.3+)
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
+  const user = use(userPromise);
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>{user.email}</p>
+    </div>
+  );
+}
+
+function UserPage({ userId }: { userId: string }) {
+  const userPromise = fetch(`/api/users/${userId}`).then(res => res.json());
+
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <UserProfile userPromise={userPromise} />
+    </Suspense>
+  );
+}
+```
+
+```tsx
+// Suspense最佳实践
+import { Suspense } from 'react';
+
+function Resource({ promise }: { promise: Promise<any> }) {
+  const data = use(promise);
+  return <div>{JSON.stringify(data)}</div>;
+}
+
+function ParallelSuspense() {
+  const userPromise = fetch('/api/user').then(r => r.json());
+  const postsPromise = fetch('/api/posts').then(r => r.json());
+
+  return (
+    <div>
+      <h1>并行加载</h1>
+
+      <Suspense fallback={<div>加载用户...</div>}>
+        <Resource promise={userPromise} />
+      </Suspense>
+
+      <Suspense fallback={<div>加载帖子...</div>}>
+        <Resource promise={postsPromise} />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+```tsx
+// 错误边界与 Suspense
+import { Component, ReactNode } from 'react';
+
+class ErrorBoundary extends Component<
+  { children: ReactNode; fallback?: ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error('Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback || (
+          <div>
+            <h2>出错了</h2>
+            <p>{this.state.error?.message}</p>
+          </div>
+        )
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function App() {
+  return (
+    <ErrorBoundary fallback={<div>加载失败</div>}>
+      <Suspense fallback={<div>加载中...</div>}>
+        <SlowComponent />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+```
+
+---
 
 ## 学习建议
 
