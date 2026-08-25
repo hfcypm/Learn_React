@@ -6,7 +6,7 @@
 
 ### 1. 状态管理（进阶）
 
-- [ ] Redux Toolkit（现代 Redux，企业首选）
+- [ ] Redux Toolkit（需要可追踪事件和统一治理时使用）
 - [ ] Zustand/Jotai（轻量级状态库，简单易用）
 - [ ] 状态持久化
 - [ ] 异步状态处理
@@ -23,7 +23,7 @@ Redux Toolkit 的核心 API：
 - **createAsyncThunk**：处理异步逻辑，自动生成 pending/fulfilled/rejected action types
 - **createEntityAdapter**：高效管理实体集合，提供标准化的 CRUD reducers
 
-为什么企业首选 Redux Toolkit：
+Redux Toolkit 的适用价值：
 - **极简的配置**：几行代码即可完成复杂的状态管理配置
 - **Immer 集成**：可以直接修改 state 对象，无需手动返回新状态
 - **RTK Query**：内置的数据请求解决方案，支持缓存、自动刷新等高级特性
@@ -39,10 +39,10 @@ Zustand 的核心优势：
 - **中间件支持**：支持 persist、devtools、immer 等中间件扩展
 - **TypeScript 友好**：完整的类型推断，几乎不需要手动标注类型
 
-Zustand vs Redux Toolkit：
-- Zustand 更轻量，适合中小型项目
-- Redux Toolkit 功能更全面，适合大型复杂应用
-- 两者都基于 immer，允许"可变"式更新
+Zustand 与 Redux Toolkit 的选择：
+- Zustand 适合状态边界清晰、团队希望减少样板代码的应用
+- Redux Toolkit 适合需要严格状态流、DevTools、middleware 和团队统一约定的应用
+- Immer 是 Redux Toolkit 的默认能力，Zustand 需要显式配置 immer middleware 才能使用类似写法
 
 **1.3 状态持久化**
 
@@ -65,7 +65,13 @@ Zustand vs Redux Toolkit：
 常见的异步状态管理方案：
 - **createAsyncThunk（Redux Toolkit）**：将异步逻辑封装为可复用的 thunk
 - **RTK Query**：基于 Redux Toolkit 的数据获取和缓存方案
-- **React Query/SWR**：独立于状态管理库的数据获取方案
+- **TanStack Query/SWR**：独立于状态管理库的数据获取方案
+
+状态建模建议：
+- 客户端状态保存交互、偏好和临时 UI 状态。
+- 服务端状态交给 RTK Query、TanStack Query 或 SWR，避免复制一套缓存状态。
+- 异步请求至少区分 `idle`、`pending`、`success`、`error`，需要时增加 `cancelled` 和重试次数。
+- 搜索联想、分页切换等场景使用 `AbortController` 或请求库的取消能力，防止旧响应覆盖新查询。
 
 **经典案例：Redux Toolkit 完整使用**
 
@@ -654,13 +660,13 @@ export default AntDesignExample;
 ### 3. 网络请求
 
 - [ ] Axios 封装：请求拦截、响应拦截、错误统一处理
-- [ ] React Query / SWR：数据请求、缓存、自动刷新（进阶必备）
+- [ ] TanStack Query / SWR：数据请求、缓存、自动刷新
 
 **详细概念：**
 
 **3.1 Axios 封装最佳实践**
 
-Axios 是最流行的 HTTP 请求库，提供 Promise API，支持请求/响应拦截、自动转换 JSON、取消请求等功能。
+Axios 是常用的 HTTP 请求库，提供 Promise API、请求/响应拦截、自动转换 JSON 和取消请求等功能。原生 Fetch 也能覆盖基础请求场景，选型应服从项目的封装和运行环境。
 
 封装的核心价值：
 - **统一配置**：集中管理 baseURL、超时时间、请求头等公共配置
@@ -674,28 +680,28 @@ Axios 是最流行的 HTTP 请求库，提供 Promise API，支持请求/响应�
 - **请求取消**：防止竞态条件（如搜索联想）
 - **日志记录**：方便调试和问题排查
 
-**3.2 React Query 数据获取革命**
+**3.2 TanStack Query 数据获取**
 
-React Query（现为 TanStack Query）是服务端状态管理的革命性方案，它将服务器数据（API 响应）视为独立的状态进行管理。
+TanStack Query 将服务器数据（API 响应）视为独立状态，集中处理缓存、失效、重试和后台刷新。
 
 核心概念：
-- **声明式数据获取**：只需声明数据来源，React Query 自动管理获取、缓存、更新
+- **声明式数据获取**：只需声明数据来源，TanStack Query 自动管理获取、缓存、更新
 - **自动缓存**：数据会被缓存，重复请求直接使用缓存，减少 API 调用
 - **后台刷新**：页面重新聚焦时自动更新数据，保证数据新鲜
 - **乐观更新**：先更新 UI，再发送请求，提供即时反馈
 
 对比 Redux 处理 API：
 - Redux：需要手动管理 loading/error/data 状态，代码量大
-- React Query：自动管理，代码简洁，专注业务逻辑
+- TanStack Query：自动管理，代码简洁，专注业务逻辑
 
 **3.3 SWR 轻量选择**
 
 SWR（Stale-While-Revalidate）是 Vercel 开发的轻量级数据请求库，理念与 React Query 类似，但 API 更简洁。
 
-SWR 的优势：
-- **极小的体积**：比 React Query 小很多
+SWR 的特点：
+- **轻量 API**：适合请求模型简单、希望减少配置的应用
 - **内置轮询**：简单的 `refreshInterval` 配置即可实现轮询
-- **聚焦简单**：没有 React Query 那么多功能，但足够日常使用
+- **聚焦简单**：提供缓存、重新验证和轮询等常用能力
 
 **经典案例：Axios 封装**
 
@@ -823,18 +829,23 @@ export const userService = {
 };
 ```
 
-**经典案例：React Query 数据请求**
+**经典案例：TanStack Query 数据请求**
 
 ```tsx
 // hooks/useUsers.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { userService } from '../services/userService';
 
 export function useUsers(page = 1, pageSize = 10) {
   return useQuery({
     queryKey: ['users', { page, pageSize }],
     queryFn: () => userService.getUsers({ page, pageSize }),
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -859,9 +870,10 @@ export function useCreateUser() {
 
 export function useUpdateUser() {
   const queryClient = useQueryClient();
+  type UserUpdate = Parameters<typeof userService.updateUser>[1];
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: string; data: UserUpdate }) =>
       userService.updateUser(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -889,7 +901,8 @@ import { useUsers, useDeleteUser } from '../hooks/useUsers';
 
 function UserList() {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isFetching, error } = useUsers(page);
+  const pageSize = 10;
+  const { data, isLoading, isFetching, error } = useUsers(page, pageSize);
   const deleteUser = useDeleteUser();
 
   const handleDelete = (id: string) => {
@@ -923,7 +936,7 @@ function UserList() {
         </button>
         <span>第 {page} 页</span>
         <button
-          disabled={data?.list.length === data?.total}
+          disabled={!data || data.list.length < pageSize}
           onClick={() => setPage(p => p + 1)}
         >
           下一页
@@ -1446,7 +1459,7 @@ git commit -m "chore(deps): 更新项目依赖"
 
 - MobX 响应式状态管理
 - Emotion CSS-in-JS 方案
-- React Query 的高级特性
+- TanStack Query 的高级特性
 
 ## 阶段成果
 
@@ -1463,6 +1476,15 @@ git commit -m "chore(deps): 更新项目依赖"
 | Zustand | 中小型应用 | 低 |
 | Jotai | 原子化状态 | 低 |
 | Context + useReducer | 简单跨组件传值 | 低 |
+
+数据请求工具选择：
+
+| 需求 | 建议 |
+|------|------|
+| 全局客户端状态和可追踪事件 | Redux Toolkit |
+| 轻量客户端状态和局部订阅 | Zustand 或 Jotai |
+| 服务端数据缓存、失效和重试 | TanStack Query 或 RTK Query |
+| 简单请求封装和拦截器 | Fetch 或 Axios |
 
 ## 下一阶段预告
 

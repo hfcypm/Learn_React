@@ -2,15 +2,34 @@
 
 **目标**：掌握 TypeScript 类型系统，能够编写类型安全的 React 应用
 
+## 快速导航
+
+- [阶段零：JavaScript 到 TypeScript 的基础准备](./stage-0-foundations.md)
+- [阶段一：TypeScript 基础](#阶段一typescript-基础)
+- [阶段二：TypeScript 进阶](#阶段二typescript-进阶)
+- [阶段三：TypeScript 高级](#阶段三typescript-高级)
+- [阶段四：React + TypeScript 实战](#阶段四react--typescript-实战)
+- [TypeScript 工程质量与类型设计](./engineering-quality.md)
+- [TypeScript 版本治理与迁移指南](./version-governance.md)
+- [TypeScript 综合实战](./project-practice.md)
+- [TypeScript 学习评估与验收标准](./learning-assessment.md)
+
 ## 概述
 
 TypeScript 是 JavaScript 的超集，它添加了可选的静态类型检查和面向对象特性。学习 TypeScript 可以显著提升代码质量和开发效率，尤其在使用 React 开发大型应用时。
 
 **学习路线**：
+- 阶段零：JavaScript/ES6 基础、编译边界、项目配置
 - 阶段一：TypeScript 基础（环境、基础类型、接口、函数）
 - 阶段二：TypeScript 进阶（泛型、条件类型、映射类型）
 - 阶段三：TypeScript 高级（装饰器、声明文件、模块系统）
 - 阶段四：React + TypeScript 实战（最佳实践、工程化配置）
+
+## 学习方式
+
+每个阶段按照“理解概念 → 编写代码 → 类型检查 → 运行时测试 → 项目验收”的顺序学习。完整主路线提供类型系统教程，工程补充文档负责把类型能力连接到 API、React、测试、迁移和生产交付。
+
+建议先完成[阶段零：JavaScript 到 TypeScript 的基础准备](./stage-0-foundations.md)，再阅读本文件中的阶段一至阶段四，最后完成[TypeScript 综合实战](./project-practice.md)和[TypeScript 学习评估与验收标准](./learning-assessment.md)。
 
 ---
 
@@ -52,7 +71,7 @@ TypeScript 编译器的工作流程：
 tsconfig.json 是 TypeScript 项目的配置文件，定义了编译选项和文件包含关系。
 
 核心配置项：
-```json
+```jsonc
 {
   "compilerOptions": {
     "target": "ES2020",           // 编译目标 JavaScript 版本
@@ -128,7 +147,7 @@ npm install -D @types/node
 npx tsc --init
 ```
 
-```json
+```jsonc
 // tsconfig.json - 完整配置
 {
   "compilerOptions": {
@@ -157,7 +176,7 @@ npx tsc --init
 }
 ```
 
-```json
+```jsonc
 // tsconfig.node.json - Node 环境配置
 {
   "compilerOptions": {

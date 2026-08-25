@@ -1250,8 +1250,11 @@ const MemoizedComponent = memo(
     return <div onClick={onClick}>{data.name}</div>;
   },
   (prevProps, nextProps) => {
-    // 返回 true 表示 props 相等，不重新渲染
-    return prevProps.data.id === nextProps.data.id;
+    return (
+      prevProps.data.id === nextProps.data.id &&
+      prevProps.data.name === nextProps.data.name &&
+      prevProps.onClick === nextProps.onClick
+    );
   }
 );
 ```
@@ -1260,6 +1263,8 @@ const MemoizedComponent = memo(
 - 组件频繁渲染，但输出相同的概率高
 - 组件接收大量 props，更新频繁
 - 组件是纯展示组件，不依赖外部状态
+
+自定义比较函数需要覆盖组件实际使用的全部 props。比较不完整会让组件保留过期的展示数据或事件处理器。
 
 **4.2 useMemo 与 useCallback**
 
@@ -1476,17 +1481,6 @@ function App() {
 - 带权限的页面
 - 优化渲染性能的项目
 
-## Hooks 对比速查
-
-| Hook | 用途 | 何时使用 |
-|------|------|----------|
-| useState | 状态管理 | 简单状态、组件内部使用 |
-| useReducer | 状态管理 | 复杂状态逻辑 |
-| useRef | DOM/值引用 | 获取 DOM、存储跨渲染周期的值 |
-| useMemo | 性能优化 | 缓存计算结果 |
-| useCallback | 性能优化 | 缓存函数，避免重复渲染 |
-| useContext | 跨组件传值 | 避免多层 props 传递 |
-
 ## 路由基础对照
 
 | 功能 | 实现方式 |
@@ -1496,14 +1490,9 @@ function App() {
 | 路由传参 | `/path/:id` 或 `?id=1` |
 | 嵌套路由 | 父路由配置 children |
 
-## 自定义 Hooks 模式
+## Hooks 延伸
 
-常见自定义 Hooks：
-- `useForm`：表单状态管理
-- `useFetch`：数据请求
-- `useInterval`：定时器
-- `useDebounce`：防抖
-- `useLocalStorage`：本地存储
+Hooks 的统一定义、调用规则、选择方式和自定义 Hook 设计见 [hooks.md](./hooks.md)。
 
 ## 下一阶段预告
 

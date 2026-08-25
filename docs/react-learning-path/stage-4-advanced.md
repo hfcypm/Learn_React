@@ -683,7 +683,7 @@ function VirtualTable<T extends Record<string, unknown>>({
 
 ### 3. 服务端渲染/静态站点（SSR/SSG）
 
-- [ ] Next.js（React 官方推荐框架）核心用法
+- [ ] Next.js 等 React 元框架核心用法
 - [ ] 服务端数据获取
 - [ ] SEO 优化
 - [ ] 路由方案
@@ -692,7 +692,9 @@ function VirtualTable<T extends Record<string, unknown>>({
 
 **3.1 Next.js 核心优势**
 
-Next.js 是 React 官方推荐的元框架，提供了完整的 SSR/SSG/ISR 解决方案，是企业级 React 应用的首选。
+Next.js 是 React 生态中常用的全栈元框架，提供 SSR、SSG 和 ISR 等能力。框架选型应结合团队部署方式、数据需求和运行环境决定。
+
+React 版本边界、并发渲染和 Server Components 的概念见 [modern-react.md](./modern-react.md)。本节聚焦 Next.js 的路由、数据获取和部署实践。
 
 核心渲染模式：
 - **SSG（Static Site Generation）**：构建时生成静态 HTML，适合内容固定不变的页面，性能最优
@@ -714,7 +716,7 @@ Pages Router 数据获取：
 
 App Router 数据获取：
 - `fetch()` API 直接使用，配置 cache 和 revalidate
-- React 的 `use()` hook 支持在组件中调用异步数据
+- React 的 `use()` API 可以读取由组件外部或框架准备的 Promise
 - Route Handlers（app/api/*）处理 API 请求
 
 数据获取的最佳实践：
@@ -780,6 +782,9 @@ interface Props {
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const response = await fetch('https://api.example.com/posts');
+  if (!response.ok) {
+    throw new Error('获取文章列表失败');
+  }
   const posts = await response.json();
 
   return {
@@ -836,6 +841,9 @@ type Props = {
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
   const response = await fetch('https://api.example.com/posts');
+  if (!response.ok) {
+    throw new Error('获取文章路径失败');
+  }
   const posts = await response.json();
 
   return {
@@ -877,6 +885,7 @@ export default function PostPage({ post }: InferGetStaticPropsType<typeof getSta
         ))}
       </div>
 
+      {/* post.content 必须经过服务端白名单清洗后才能插入 HTML。 */}
       <main dangerouslySetInnerHTML={{ __html: post.content }} />
 
       <nav>
@@ -917,6 +926,7 @@ export default async function HomePage() {
 import { getPostById, getAllPostIds } from '@/lib/api';
 
 interface PageProps {
+  // Next.js 15+ App Router；旧版本按项目类型使用同步 params。
   params: Promise<{ id: string }>;
 }
 
@@ -946,6 +956,7 @@ export default async function PostPage({ params }: PageProps) {
   return (
     <article>
       <h1>{post.title}</h1>
+      {/* post.content 必须经过服务端白名单清洗后才能插入 HTML。 */}
       <div dangerouslySetInnerHTML={{ __html: post.content }} />
     </article>
   );
@@ -978,7 +989,7 @@ export default async function PostPage({ params }: PageProps) {
 
 **4.2 React Testing Library 设计理念**
 
-React Testing Library（RTL）是 React 官方推荐的测试库，它的设计理念是"以用户的方式测试 UI"。
+React Testing Library（RTL）是 React 社区广泛使用的测试库，它的设计理念是"以用户的方式测试 UI"。
 
 核心理念：
 - **不测试实现细节**：不直接测试组件的 state、props、生命周期
@@ -993,7 +1004,7 @@ React Testing Library（RTL）是 React 官方推荐的测试库，它的设计�
 
 **4.3 Jest 测试框架**
 
-Jest 是 Facebook 开发的测试框架，零配置、内置 Mock、快照测试等功能。
+Jest 是 JavaScript 测试框架，提供断言、Mock、快照测试和测试生命周期等能力。
 
 核心概念：
 - **describe**：组织测试用例的块
@@ -1771,7 +1782,7 @@ function Login() {
 ### 渲染优化
 - [ ] 合理使用 React.memo
 - [ ] 合理使用 useMemo/useCallback
-- [ ] 避免匿名函数和对象字面量
+- [ ] 识别会导致引用变化的函数和对象，并在有测量依据时优化
 - 列表使用虚拟滚动
 
 ### 加载优化

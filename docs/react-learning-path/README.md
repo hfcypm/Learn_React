@@ -35,7 +35,6 @@
 - [React 技术版本治理与升级指南](./version-governance.md)
 - [可运行示例项目与 Mock API 规范](./sample-project-blueprint.md)
 - [React 学习评估与项目评分](./learning-assessment.md)
-- [TypeScript 学习路线](./typescript-learning-path.md)
 - [学习建议](./learning-tips.md)
 
 ## 技能树总览

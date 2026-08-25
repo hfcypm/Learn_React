@@ -1043,7 +1043,7 @@ module.exports = (env, argv) => {
 
 ---
 
-### 4. React 18+ 现代特性
+### 4. React 18+ 现代特性速览
 
 - [ ] 并发渲染（Concurrent Rendering）
 - [ ] Suspense 深入理解
@@ -1051,9 +1051,11 @@ module.exports = (env, argv) => {
 
 **详细概念：**
 
+本节用于快速建立术语地图。并发渲染、Suspense 和 Server Components 的完整说明统一维护在 [modern-react.md](./modern-react.md)，框架落地示例见 [stage-4-advanced.md](./stage-4-advanced.md)。
+
 **4.1 并发渲染（Concurrent Rendering）**
 
-React 18 引入并发模式，这是 React 架构的重大升级，让 React 可以同时准备多个版本的 UI。
+React 18 引入并发渲染能力，让 React 可以在更新之间安排渲染工作。
 
 并发模式的核心能力：
 - **可中断渲染**：高优先级更新可以打断低优先级更新
@@ -1073,17 +1075,17 @@ useTransition 的使用场景：
 
 **4.2 Suspense 深入理解**
 
-Suspense 不仅仅是一个 loading 组件，它是 React 异步数据获取的核心基础设施。
+Suspense 是一个异步渲染边界，用于声明子树处于等待状态时展示的 fallback。具体的数据获取能力取决于框架或数据层集成。
 
 Suspense 的工作原理：
 - 当子组件抛出 Promise（或者说进入"pending"状态），Suspense 显示 fallback
 - Promise resolved 后，Suspense 显示实际内容
 - 多个 Suspense 可以并行加载各自的内容
 
-Suspense 与数据获取库集成：
-- React Router v6 原生支持 Suspense
-- Relay/Apollo 客户端支持 Suspense
-- React Query/SWR 通过第三方集成支持
+Suspense 与数据获取库的集成取决于具体版本和运行环境：
+- 路由库可以提供路由级 fallback
+- Relay、Apollo 等数据层提供各自的 Suspense 集成
+- TanStack Query、SWR 是否启用 Suspense 需要按版本配置并验证
 
 Suspense 边界问题：
 - 一个 Suspense 只处理直接子树的加载状态
@@ -1095,24 +1097,24 @@ Suspense 边界问题：
 React Server Components（RSC）是一种服务端组件运行模型，通常结合 Next.js App Router 等框架使用。它与 React 18 的并发渲染属于不同概念，学习时需要分别理解渲染调度和组件执行位置。
 
 与 SSR 的区别：
-- **SSR**：整个页面在服务端渲染成 HTML，然后 hydrate
-- **Server Components**：部分组件在服务端渲染，不增加客户端 JS 体积
+- **SSR**：整个页面在服务端生成 HTML，然后由客户端 hydrate
+- **Server Components**：组件逻辑在服务端执行，减少对应的客户端 JavaScript
 
 Server Components 优势：
-- **零客户端 JS**：服务端组件不会发送到客户端
+- **减少客户端 JS**：服务端组件的实现代码不会作为客户端组件代码发送
 - **靠近数据源**：在受控的服务端运行环境中访问后端数据层
 - **自动代码分割**：客户端组件自动从 bundle 中排除
 
 限制：
-- 不能使用 hooks（因为 hooks 是客户端概念）
+- 不能使用依赖客户端状态或副作用的 Hooks，例如 `useState`、`useEffect`
 - 不能使用浏览器 API
-- 不能有事件处理
+- 不能包含事件处理器
 
 **经典案例：并发特性**
 
 ```tsx
 // ConcurrentFeatures.tsx
-import { useState, useTransition, useDeferredValue, Suspense, use } from 'react';
+import { useState, useTransition, Suspense } from 'react';
 
 function SlowList({ text }: { text: string }) {
   const items = Array.from({ length: 500 }, (_, i) => (
@@ -1126,12 +1128,14 @@ function SlowList({ text }: { text: string }) {
 
 function SearchResults() {
   const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isPending, startTransition] = useTransition();
-  const deferredQuery = useDeferredValue(query);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextQuery = e.target.value;
+    setQuery(nextQuery);
     startTransition(() => {
-      setQuery(e.target.value);
+      setSearchQuery(nextQuery);
     });
   };
 
@@ -1144,14 +1148,16 @@ function SearchResults() {
 
       {isPending && <p>更新中...</p>}
 
-      <SlowList text={deferredQuery} />
+      <SlowList text={searchQuery} />
     </div>
   );
 }
 ```
 
 ```tsx
-// use.ts hook (React 18.3+)
+// use API（React 19+）
+import { Suspense, use } from 'react';
+
 interface User {
   id: string;
   name: string;
@@ -1169,9 +1175,8 @@ function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
   );
 }
 
-function UserPage({ userId }: { userId: string }) {
-  const userPromise = fetch(`/api/users/${userId}`).then(res => res.json());
-
+function UserPage({ userPromise }: { userPromise: Promise<User> }) {
+  // Promise 由路由、数据层或父组件准备，避免在渲染期间重复创建请求。
   return (
     <Suspense fallback={<div>加载中...</div>}>
       <UserProfile userPromise={userPromise} />
@@ -1181,17 +1186,17 @@ function UserPage({ userId }: { userId: string }) {
 ```
 
 ```tsx
-// Suspense最佳实践
-import { Suspense } from 'react';
+// Suspense 最佳实践
+import { Suspense, use } from 'react';
 
-function Resource({ promise }: { promise: Promise<any> }) {
+function Resource({ promise }: { promise: Promise<unknown> }) {
   const data = use(promise);
   return <div>{JSON.stringify(data)}</div>;
 }
 
 function ParallelSuspense() {
-  const userPromise = fetch('/api/user').then(r => r.json());
-  const postsPromise = fetch('/api/posts').then(r => r.json());
+  const userPromise = getUserPromise();
+  const postsPromise = getPostsPromise();
 
   return (
     <div>
@@ -1211,13 +1216,23 @@ function ParallelSuspense() {
 
 ```tsx
 // 错误边界与 Suspense
-import { Component, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
 
 class ErrorBoundary extends Component<
-  { children: ReactNode; fallback?: ReactNode },
-  { hasError: boolean; error?: Error }
+  ErrorBoundaryProps,
+  ErrorBoundaryState
 > {
-  constructor(props: any) {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
@@ -1226,7 +1241,7 @@ class ErrorBoundary extends Component<
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error:', error, errorInfo);
   }
 
