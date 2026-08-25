@@ -32,7 +32,7 @@ Commit 阶段（不可中断）：
 - 执行 ref 的 attach/detach
 - 此阶段必须完整执行
 
-React 17 的并发模式改进：
+React 18 的并发渲染能力：
 - 使用 `startTransition` 标记非紧急更新
 - 使用 `useDeferredValue` 延迟值更新
 - 允许在渲染过程中被打断

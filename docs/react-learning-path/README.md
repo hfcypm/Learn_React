@@ -6,6 +6,7 @@
 
 | 阶段 | 名称 | 目标 |
 |------|------|------|
+| 零 | 前端基础与开发底座 | 掌握 JavaScript、浏览器、HTTP、Git 基础 |
 | 一 | React 基础阶段 | 能独立开发简单页面、理解 React 核心思想 |
 | 二 | React 进阶基础 | 解决复杂场景问题、优化代码、掌握高频 Hooks |
 | 三 | React 生态与工程化 | 适配企业开发流程、掌握主流工具链 |
@@ -21,17 +22,30 @@
 
 ## 快速导航
 
+- [阶段零：前端基础与开发底座](./stage-0-foundations.md)
 - [阶段一：React 基础阶段](./stage-1-basic.md)
 - [阶段二：React 进阶基础](./stage-2-advanced-basic.md)
 - [阶段三：React 生态与工程化](./stage-3-ecosystem.md)
 - [阶段四：React 高级进阶](./stage-4-advanced.md)
 - [阶段五：附加技能](./stage-5-bonus.md)
+- [现代 React 与版本边界](./modern-react.md)
+- [React 工程质量与生产交付](./engineering-quality.md)
+- [综合实战：企业级 React 中后台](./project-practice.md)
+- [React 技术版本治理与升级指南](./version-governance.md)
+- [可运行示例项目与 Mock API 规范](./sample-project-blueprint.md)
+- [React 学习评估与项目评分](./learning-assessment.md)
+- [TypeScript 学习路线](./typescript-learning-path.md)
 - [学习建议](./learning-tips.md)
 
 ## 技能树总览
 
 ```
 React 技能学习路线图
+├── 阶段零：前端基础与开发底座
+│   ├── JavaScript 核心
+│   ├── 浏览器与 DOM
+│   ├── HTTP 与 API
+│   └── Git 与协作
 ├── 基础阶段
 │   ├── 环境与基础工具
 │   ├── 组件基础
@@ -60,4 +74,11 @@ React 技能学习路线图
     ├── Redux 源码思想
     ├── 跨端技术
     └── 构建工具深度配置
+
 ```
+
+## 工程补充模块
+
+- 现代 React 与版本边界
+- React 工程质量与生产交付
+- 综合实战：企业级 React 中后台

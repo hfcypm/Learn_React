@@ -2,6 +2,22 @@
 
 ## 核心学习原则
 
+### 0. 先补齐前端底座
+
+React 的组件和 Hooks 建立在 JavaScript、浏览器和 HTTP 之上。建议先完成[阶段零：前端基础与开发底座](./stage-0-foundations.md)，再进入 React 基础阶段。
+
+学习顺序建议为：
+
+```text
+JavaScript → 浏览器与 DOM → HTTP/API → Git
+    ↓
+JSX → 组件 → state/effect → 表单/列表
+    ↓
+路由 → 服务端状态 → TypeScript → 工程化
+    ↓
+测试 → 性能 → 安全 → 可访问性 → 部署与监控
+```
+
 ### 1. 循序渐进
 
 先吃透基础 Hooks 和组件，再学生态和 TypeScript。
@@ -89,6 +105,25 @@ useEffect(() => {
 - [Redux Toolkit 文档](https://redux-toolkit.js.org/)
 - [TanStack Query 文档](https://tanstack.com/query/)
 - [Tailwind CSS 文档](https://tailwindcss.com/)
+
+## 阶段验收方法
+
+每个阶段都应完成“学习、实现、测试、复盘”四步：
+
+1. 用自己的话解释核心概念。
+2. 完成一个有真实交互的项目。
+3. 为关键逻辑添加测试并处理错误状态。
+4. 记录性能、可访问性和工程改进点。
+
+阶段三开始，每个项目至少需要具备：
+
+- TypeScript 严格模式
+- loading、empty、error 状态
+- 基础权限处理
+- lint、类型检查和构建命令
+- 至少一组组件测试和一条 E2E 流程
+
+推荐使用[综合实战：企业级 React 中后台](./project-practice.md)贯穿阶段三和阶段四。
 
 ## 总结
 

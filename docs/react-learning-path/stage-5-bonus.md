@@ -1043,11 +1043,11 @@ module.exports = (env, argv) => {
 
 ---
 
-### 4. React 18 新特性
+### 4. React 18+ 现代特性
 
 - [ ] 并发渲染（Concurrent Rendering）
 - [ ] Suspense 深入理解
-- [ ] Server Components（服务端组件）
+- [ ] Server Components（服务端组件，结合框架学习）
 
 **详细概念：**
 
@@ -1092,7 +1092,7 @@ Suspense 边界问题：
 
 **4.3 Server Components 服务端组件**
 
-React Server Components（RSC）是 React 18 的革命性特性，允许组件在服务端渲染。
+React Server Components（RSC）是一种服务端组件运行模型，通常结合 Next.js App Router 等框架使用。它与 React 18 的并发渲染属于不同概念，学习时需要分别理解渲染调度和组件执行位置。
 
 与 SSR 的区别：
 - **SSR**：整个页面在服务端渲染成 HTML，然后 hydrate
@@ -1100,7 +1100,7 @@ React Server Components（RSC）是 React 18 的革命性特性，允许组件�
 
 Server Components 优势：
 - **零客户端 JS**：服务端组件不会发送到客户端
-- **直接访问后端**：可以直接调用数据库、文件系统
+- **靠近数据源**：在受控的服务端运行环境中访问后端数据层
 - **自动代码分割**：客户端组件自动从 bundle 中排除
 
 限制：
