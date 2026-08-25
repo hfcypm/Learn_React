@@ -29,6 +29,7 @@
 - [阶段四：React 高级进阶](./stage-4-advanced.md)
 - [阶段五：附加技能](./stage-5-bonus.md)
 - [现代 React 与版本边界](./modern-react.md)
+- [React Hooks 核心概念与使用指南](./hooks.md)
 - [React 工程质量与生产交付](./engineering-quality.md)
 - [综合实战：企业级 React 中后台](./project-practice.md)
 - [React 技术版本治理与升级指南](./version-governance.md)

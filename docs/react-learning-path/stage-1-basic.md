@@ -106,48 +106,132 @@ export default App;
 
 **详细概念：**
 
-**2.1 函数组件**
+**2.1 函数组件：用函数定义 UI**
 
-函数组件是现代 React 开发的主流方式，它以 JavaScript 函数的形式定义组件。从 React 16.8 引入 Hooks 之后，函数组件已经完全支持状态管理和副作用处理，可以完成类组件的所有功能。
+函数组件是一个接收 `props` 并返回 React 元素的 JavaScript 函数。React 调用这个函数完成渲染，函数的返回值描述组件应该显示的 UI。
 
-函数组件的特点：
-- **简洁直观**：使用普通函数语法，易于理解和编写
-- **Hooks 支持**：可以使用所有 React Hooks（useState、useEffect、useContext 等）
-- **易于测试**：纯函数更容易进行单元测试
-- **更好的性能**：React 团队持续优化函数组件的性能
+函数组件的判断标准：
+
+- 它本质上是函数，名称通常以大写字母开头。
+- 它接收一个 `props` 参数，也可以直接解构 props。
+- 它返回 JSX、React 元素、Fragment 或 `null`。
+- 它通过 Hooks 使用状态、Context、Effect 和其他 React 能力。
+- Hooks 必须在组件函数的顶层调用，不能放在条件、循环或普通嵌套函数中。
 
 函数组件的基本结构：
 ```jsx
-function MyComponent(props) {
-  // 使用 props 解构获取传递的值
-  const { title, children } = props;
-  
-  // 可以添加状态管理
+import { useState } from 'react';
+
+function Greeting({ name }) {
+  return <h1>你好，{name}</h1>;
+}
+
+function Counter() {
   const [count, setCount] = useState(0);
-  
-  // 返回 JSX
+
   return (
     <div>
-      <h1>{title}</h1>
-      {children}
+      <p>当前数量：{count}</p>
+      <button onClick={() => setCount(count + 1)}>增加</button>
     </div>
   );
 }
 ```
 
-**2.2 类组件（了解）**
+函数组件的状态更新通过 setter 触发重新渲染，副作用通常通过 `useEffect` 表达：
 
-类组件是 React 早期的组件定义方式，通过继承 `React.Component` 来创建。虽然现在推荐使用函数组件，但类组件仍在一些老项目中存在，了解其语法有助于维护旧代码。
+```jsx
+import { useEffect, useState } from 'react';
 
-类组件的核心概念：
-- **constructor 构造函数**：初始化 state 和绑定事件处理器的 this 上下文
-- **render 方法**：返回组件的 JSX 结构，必须是纯函数
-- **this.setState()**：更新组件状态，触发重新渲染
-- **生命周期方法**：componentDidMount、componentDidUpdate、componentWillUnmount 等
+function UserName({ userId }) {
+  const [user, setUser] = useState(null);
 
-注意：类组件的状态更新可能是异步的，多个 setState 调用可能会被合并处理。
+  useEffect(() => {
+    let active = true;
 
-**2.3 组件拆分、复用、嵌套、组合**
+    fetch(`/api/users/${userId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (active) setUser(data);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [userId]);
+
+  return <span>{user?.name ?? '加载中...'}</span>;
+}
+```
+
+**2.2 类组件：用 class 定义 UI 和生命周期**
+
+类组件是继承 `React.Component` 或 `React.PureComponent` 的 JavaScript 类。React 创建类实例，并调用它的 `render()` 方法得到 UI。类组件能够接收 props、保存 state、响应生命周期事件和处理错误边界。
+
+类组件的判断标准：
+
+- 使用 `class` 关键字，并继承 `React.Component`。
+- 必须实现 `render()` 方法。
+- 通过 `this.props` 读取 props。
+- 通过 `this.state` 读取状态，通过 `this.setState()` 更新状态。
+- 生命周期方法由 React 在特定阶段调用。
+
+类组件的基本结构：
+
+```jsx
+import { Component } from 'react';
+
+class Counter extends Component {
+  state = { count: 0 };
+
+  handleClick = () => {
+    this.setState(({ count }) => ({ count: count + 1 }));
+  };
+
+  render() {
+    return (
+      <div>
+        <p>当前数量：{this.state.count}</p>
+        <button onClick={this.handleClick}>增加</button>
+      </div>
+    );
+  }
+}
+```
+
+常见生命周期：
+
+- `constructor`：初始化 state 或实例成员，现代 class field 语法可以减少使用场景。
+- `componentDidMount`：组件首次挂载后执行，适合启动订阅或请求。
+- `componentDidUpdate`：props 或 state 更新后执行，需要自行判断变化来源。
+- `componentWillUnmount`：组件卸载前执行，适合清理订阅、定时器和事件监听。
+- `componentDidCatch`：捕获后代组件渲染错误，常用于错误边界。
+
+类组件的状态更新可能被批处理。依赖上一次 state 时，应使用函数形式的 `setState`，避免读取过期值。
+
+**2.3 函数组件与类组件对照**
+
+| 对比项 | 函数组件 | 类组件 |
+|---|---|---|
+| 定义方式 | JavaScript 函数 | 继承 `React.Component` 的 class |
+| UI 入口 | 函数返回值 | `render()` 返回值 |
+| Props | 函数参数或解构参数 | `this.props` |
+| 状态 | `useState`、`useReducer` | `this.state`、`this.setState()` |
+| 副作用 | `useEffect` 等 Hooks | 生命周期方法 |
+| 事件处理 | 普通函数、闭包 | 注意 `this` 绑定，常用 class field 箭头函数 |
+| 错误边界 | 需要使用类组件实现边界 | 支持 `componentDidCatch` |
+| 新代码选择 | React 当前主流写法 | 主要用于维护旧项目 |
+
+两者最终都返回 React 元素并参与同一棵组件树。主要差异来自状态和生命周期的表达方式，函数组件使用 Hooks 组合逻辑，类组件使用实例字段和生命周期方法组织逻辑。
+
+**2.4 如何选择**
+
+- 新项目和新增组件：优先使用函数组件与 Hooks。
+- 维护旧项目：先理解类组件的 state、生命周期和 `this`，再进行局部迁移。
+- 错误边界：根据项目 React 版本和框架能力选择现有类组件边界或框架提供的错误边界方案。
+- 组件迁移：先补测试，再逐步迁移 state、生命周期、副作用和事件处理，迁移后验证行为一致。
+
+**2.5 组件拆分、复用、嵌套、组合**
 
 组件化开发的核心思想是将 UI 拆分为独立可复用的部件。
 
@@ -166,7 +250,7 @@ function MyComponent(props) {
 - 形成树形结构，根组件通常是 App 组件
 - 数据和回调函数通过 props 从父组件传递给子组件
 
-**2.4 Props 传值**
+**2.6 Props 传值**
 
 Props（Properties）是 React 组件之间传递数据的主要方式。
 
@@ -195,7 +279,7 @@ Props（Properties）是 React 组件之间传递数据的主要方式。
 </Component>
 ```
 
-**2.5 Props 校验（PropTypes）**
+**2.7 Props 校验（PropTypes）**
 
 PropTypes 是一种运行时类型检查机制，可以在开发阶段捕获组件 props 的类型错误。
 
@@ -351,12 +435,12 @@ const [state, setState] = useState(initialValue);
 
 **重要特性**：
 - **批量更新**：在事件处理函数中多次 setState 会被合并为一次更新，提高性能
-- **异步更新**：状态更新是异步的，获取更新后的值需要使用 useEffect 或 setState 的函数形式
+- **调度更新**：调用 setter 会请求 React 在后续渲染中使用新状态；当前函数执行中的 state 仍然是本次渲染的值，多个更新可能被批量处理
 - **函数式更新**：当新状态依赖前一个状态时，使用函数形式可以确保基于最新的状态值计算
 
 **3.2 useEffect 详解**
 
-useEffect 是用于处理副作用的 Hook，类似于类组件的生命周期方法，但概念上更统一。
+useEffect 是用于让组件与外部系统同步的 Hook。它可以覆盖类组件中部分常见的挂载、更新和卸载场景，但它不是生命周期方法的一一对应替代品，也不适合承载所有业务逻辑。
 
 **副作用的常见类型**：
 - 数据获取（API 调用）

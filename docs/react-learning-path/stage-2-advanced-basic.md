@@ -14,6 +14,8 @@
 
 **详细概念：**
 
+Hooks 的统一定义、调用规则、选择决策和自定义 Hook 设计见[React Hooks 核心概念与使用指南](./hooks.md)。
+
 **1.1 useRef 详解**
 
 useRef 是 React 中一个重要的 Hook，它返回一个 ref 对象，该对象的 `.current` 属性可以存储可变的值。
