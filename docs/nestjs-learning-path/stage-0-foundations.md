@@ -55,3 +55,14 @@ export class HealthController {
 - 能为服务端输入和返回值建立 TypeScript 类型。
 - 能运行 lint、测试和 production build。
 - 能说明 Express 与 Fastify 适配器的选型边界。
+
+## 动手任务
+
+1. 使用 CLI 创建项目并运行 `npm run start:dev`。
+2. 创建 `HealthModule`，让 `GET /health` 返回 `{ status: 'ok' }`。
+3. 在 `main.ts` 中增加全局前缀，例如 `api`，用 curl 验证最终路径。
+4. 修改端口配置，确认环境变量和默认值的行为。
+
+## 进入下一阶段的条件
+
+你能够从 `main.ts` 追踪到根模块、Controller 和路由，并能解释 NestJS 适配器与 Node.js HTTP 服务器的关系。

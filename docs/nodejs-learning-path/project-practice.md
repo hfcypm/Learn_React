@@ -383,3 +383,15 @@ CMD ["node", "src/server.js"]
 5. 加入统一错误、request ID、审计日志和限流边界。
 6. 补齐 HTTP 集成测试、Docker 和优雅退出。
 7. 运行验收清单并记录未实现的生产能力。
+
+## 14. 按阶段学习卡片
+
+| 阶段 | 本次任务 | 主要文件 | 验证方式 |
+| --- | --- | --- | --- |
+| 零 | 启动配置与健康检查 | `src/config.js`、`src/server.js` | `node src/server.js`，访问 `/health` |
+| 一 | 请求体、路由和错误响应 | `src/app/routes.js`、`src/app/error-handler.js` | curl GET/POST，覆盖错误输入 |
+| 二 | 用户 CRUD、校验和 Repository | `src/modules/users/*`、`src/infrastructure/database.js` | 单元测试与数据库集成测试 |
+| 三 | 认证、审计、日志和 HTTP 测试 | `src/auth/*`、`src/infrastructure/logger.js` | `npm test`，检查 request ID |
+| 四 | Docker、迁移、健康检查和退出 | `Dockerfile`、部署配置 | 构建镜像并执行冒烟请求 |
+
+每完成一行就暂停一次：用 curl 或测试确认行为，再进入下一行。遇到错误时先定位当前阶段的边界，保持增量足够小。

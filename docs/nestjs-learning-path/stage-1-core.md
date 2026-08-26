@@ -78,10 +78,21 @@ import { ConfigService } from '@nestjs/config';
 
 Custom Decorator 用于复用参数读取或元数据声明，例如 `@CurrentUser()`。装饰器应保持轻量，权限决策仍由 Guard 或策略服务完成。
 
-## 5. 阶段验收
+## 阶段验收
 
 - 能把一个功能拆成 Module、Controller、Service 和 Repository。
 - 能使用 exports/imports 控制 Provider 可见性。
 - 能使用 fake provider 测试 Service。
 - 能解释单例、请求作用域和生命周期钩子的区别。
 - 能区分 Middleware、Guard、Custom Decorator 和 Custom Provider 的职责。
+
+## 动手任务
+
+1. 创建 `UsersModule`、`UsersController` 和 `UsersService`。
+2. 使用 fake Repository 测试一个查询用例。
+3. 将一个配置值通过 Custom Provider 注入 Service。
+4. 增加 request ID Middleware，并记录一次请求的生命周期。
+
+## 进入下一阶段的条件
+
+你能够解释 `imports`、`providers`、`exports` 的依赖方向，能够替换一个 Provider 完成单元测试，并能说明请求级 Provider 的成本。

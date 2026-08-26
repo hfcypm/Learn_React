@@ -66,3 +66,14 @@ Controller 返回的 DTO 应与 Entity 或 ORM Model 分离。响应 DTO 只暴�
 - 能完成 Controller → Service → Repository 的数据流。
 - 能处理分页、事务、数据库错误和资源权限。
 - 能区分 HTTP、WebSocket、GraphQL 和微服务 Transport 的适用场景。
+
+## 动手任务
+
+1. 为创建用户编写 DTO，并开启 `whitelist`、`forbidNonWhitelisted` 和 `transform`。
+2. 为受保护路由增加认证 Guard，再增加角色 Guard。
+3. 编写统一 Exception Filter，把校验、认证、权限和未知异常映射成稳定响应。
+4. 让 Service 调用 Repository 完成一次事务，并为唯一约束错误编写测试。
+
+## 进入下一阶段的条件
+
+你能够根据问题选择 Pipe、Guard、Interceptor 或 Filter，能够从 Controller 追踪到数据库，并能解释 DTO 与持久化模型为何需要分离。

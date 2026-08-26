@@ -507,3 +507,15 @@ Compose 中的密码只用于本地演示，生产环境改用 Secret 管理。�
 5. 加入 Roles Decorator、RolesGuard、资源归属检查和审计日志。
 6. 接入全局 Pipe、Exception Filter、request ID、Swagger 和日志。
 7. 编写单元测试与 E2E 测试，最后补充 Docker、迁移和部署检查。
+
+## 16. 按阶段学习卡片
+
+| 阶段 | 本次任务 | 主要文件 | 验证方式 |
+| --- | --- | --- | --- |
+| 零 | 创建应用和健康模块 | `src/main.ts`、`src/health/*` | `npm run start:dev`，访问 `/api/health` |
+| 一 | 建立 UsersModule 与依赖注入 | `src/users/*` | Controller 请求和 fake Provider 单测 |
+| 二 | DTO、Pipe、Guard、Filter 和 Prisma | `src/auth/*`、`src/users/*`、`prisma/*` | 覆盖 400、401、403、404、409 |
+| 三 | 配置、OpenAPI、日志和测试 | `src/config/*`、`test/*` | `npm run lint`、`npm test`、查看 `/docs` |
+| 四 | 角色、审计、队列和部署 | `src/audit/*`、部署配置 | Docker Compose、迁移和 readiness 检查 |
+
+每完成一行就暂停一次：确认模块依赖方向、请求响应和测试结果，再进入下一行。业务逻辑保持在 Service，避免为了通过示例把逻辑堆进 Controller。

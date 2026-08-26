@@ -119,3 +119,14 @@ async function readJsonBody(req, maxBytes = 1_000_000) {
 - 能解释 EventEmitter、Stream 和消息队列的边界。
 - 能为外部请求增加超时和取消。
 - 能安全读取有限大小的 JSON 请求体，并区分解析失败与服务错误。
+
+## 动手任务
+
+1. 为 `/health` 增加 `content-type`、状态码和 JSON 响应。
+2. 增加一个只读 `/files/:name` 路由，限制文件根目录和响应大小。
+3. 使用 `readJsonBody` 接收 POST 请求，并处理空请求体、错误 JSON 和超大请求体。
+4. 使用 `AbortController` 为一个外部请求增加 3 秒超时。
+
+## 进入下一阶段的条件
+
+你能够用 curl 完成一次 GET 和 POST 请求，能够解释请求体为何是 Stream，并且能区分路由不存在、请求体无效和服务内部异常。
