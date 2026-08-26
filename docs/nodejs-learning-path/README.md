@@ -19,6 +19,7 @@
 - [阶段二：Web 服务与数据层](./stage-2-web-data.md)
 - [阶段三：工程化与并发](./stage-3-engineering.md)
 - [阶段四：生产交付](./stage-4-production.md)
+- [综合实战：用户管理 API](./project-practice.md)
 
 ## 学习原则
 
@@ -35,6 +36,7 @@
 - 能实现带认证、校验、分页、错误处理和数据库访问的 API。
 - 能为异步流程、Streams、Worker 和关键业务编写测试。
 - 能完成容器化部署、监控、限流、回滚和故障排查。
+- 能独立完成一个带认证、数据库和测试的 Node.js API 项目。
 
 ## 官方资源
 

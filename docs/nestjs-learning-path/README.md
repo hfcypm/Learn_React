@@ -19,6 +19,7 @@
 - [阶段二：请求处理与数据层](./stage-2-request-data.md)
 - [阶段三：工程化与测试](./stage-3-engineering.md)
 - [阶段四：企业级架构与部署](./stage-4-enterprise.md)
+- [综合实战：用户权限后台 API](./project-practice.md)
 
 ## 架构主线
 
