@@ -7,6 +7,7 @@
 - [新手导读](./start-here.md)：前置条件、学习顺序、框架心智模型和排错顺序。
 - [从 Node.js 到 NestJS](./node-to-nest-bridge.md)：理解每个 NestJS 抽象对应的运行时能力。
 - [综合实战：用户权限后台 API](./project-practice.md)：按阶段逐步扩展同一个项目。
+- [学习评估与项目评分](./learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
 
 ## 学习阶段总览
 

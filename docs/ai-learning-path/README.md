@@ -2,6 +2,23 @@
 
 这套学习包面向已经掌握 HTML、CSS、JavaScript、TypeScript、React、Next.js、Tailwind CSS 和组件库的开发者，集中学习 AI 应用前端最常用的状态、数据请求、实时通信和内容渲染能力。
 
+## 先看这里
+
+- [新手导读](./start-here.md)：前置条件、学习顺序、排错顺序和完成标准。
+- [学习评估与项目评分](./learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
+
+## 学习梯度
+
+从入门到进阶再到实战，每完成一个阶段就向综合案例增加一个能力：
+
+| 阶段 | 梯度 | 名称 | 目标 |
+|---|---|---|---|
+| 一 | 入门 | [TanStack Query：服务端数据](./stage-1-tanstack-query.md) | 管理服务端数据、缓存和加载状态 |
+| 二 | 入门 | [Zustand：客户端状态](./stage-2-zustand.md) | 管理会话、草稿和跨组件共享状态 |
+| 三 | 进阶 | [SSE、WebSocket 与流式响应](./stage-3-realtime-streaming.md) | 逐字流式回答、停止、重试和错误恢复 |
+| 四 | 进阶 | [文件、Markdown、代码和图表渲染](./stage-4-content-rendering.md) | 安全上传并渲染富内容 |
+| 案例 | 高手 | [AI 工作台综合案例](./project-practice.md) | 独立完成完整 AI 前端应用 |
+
 ## 学习目标
 
 完成本路线后，你能够：

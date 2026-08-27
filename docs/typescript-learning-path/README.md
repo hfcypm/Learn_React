@@ -4,6 +4,7 @@
 
 ## 快速导航
 
+- [新手导读](./start-here.md)
 - [阶段零：JavaScript 到 TypeScript 的基础准备](./stage-0-foundations.md)
 - [阶段一：TypeScript 基础](#阶段一typescript-基础)
 - [阶段二：TypeScript 进阶](#阶段二typescript-进阶)
