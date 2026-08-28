@@ -52,6 +52,10 @@
 
 学习主线对应 PostgreSQL 17。特性以官方文档为准，PostgreSQL 大版本每年发布一次，具体差异参见 [版本边界与迁移](./version-governance.md)。
 
+## 配套路线
+
+在 TypeScript 项目中用 ORM 访问 PostgreSQL 时，阅读 [Prisma 学习路线](../prisma-learning-path/README.md)；在服务端应用中接入数据库时，参考 [Node.js 学习路线](../nodejs-learning-path/README.md) 与 [NestJS 学习路线](../nestjs-learning-path/README.md) 的数据层部分。
+
 ## 官方资源
 
 - [PostgreSQL 官方文档](https://www.postgresql.org/docs/)

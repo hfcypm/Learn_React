@@ -61,11 +61,20 @@ primary_conninfo = 'host=primary port=5432 user=replica'
 
 ### 3.1 系统视图
 
+`pg_stat_statements` 是慢查询统计扩展，需要先启用：
+
+```sql
+-- 需要超级用户权限，一次即可
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+```
+
+启用后，统计从下一次查询开始累积。核心查询：
+
 ```sql
 -- 连接数
 SELECT count(*) FROM pg_stat_activity;
 
--- 慢查询
+-- 慢查询（统计最近执行时间，需先启用 pg_stat_statements）
 SELECT query, calls, mean_exec_time, max_exec_time
 FROM pg_stat_statements
 ORDER BY mean_exec_time DESC LIMIT 10;
@@ -158,9 +167,14 @@ FOR VALUES FROM ('2026-01-01') TO ('2027-01-01');
 - 生产环境避免手动 DDL 与大表全表更新。
 - 变更前备份，变更可回滚。
 
-## 8. 项目增量
+## 8. 动手任务
 
-为电商数据库编写完整备份脚本，配置流复制与从库只读查询，建立慢查询与死元组监控，编写部署检查清单。
+1. 编写 `pg_dump` 备份脚本，并在一张空库上完成恢复演练。
+2. 配置 WAL 归档，用 `pg_basebackup` 建立一台从库。
+3. 从从库执行只读查询，验证流复制生效。
+4. 用 `pg_stat_statements` 找出最慢的十条查询。
+5. 观察死元组数量并执行 `VACUUM ANALYZE`，对比前后数据。
+6. 编写一份包含备份、恢复演练、监控与告警的部署检查清单。
 
 ## 阶段四验收
 

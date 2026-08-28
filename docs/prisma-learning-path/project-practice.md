@@ -27,7 +27,16 @@
 | Express | HTTP 框架 |
 | Prisma Studio | 数据查看 |
 
-## 4. Schema 定义
+## 4. 初始化
+
+```bash
+npm install @prisma/client @prisma/adapter-pg pg
+npm install -D prisma typescript @types/node @types/pg tsx
+
+npx prisma init --datasource-provider postgresql
+```
+
+## 5. Schema 定义
 
 ```prisma
 generator client {
@@ -102,7 +111,7 @@ model Comment {
 }
 ```
 
-## 5. 迁移与种子
+## 6. 迁移与种子
 
 ```bash
 npx prisma migrate dev --name init
@@ -112,8 +121,11 @@ npx prisma db seed
 ```ts
 // prisma/seed.ts
 import { PrismaClient } from '../src/generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
 
 async function main() {
   const admin = await prisma.user.upsert({
@@ -145,7 +157,7 @@ main()
   .finally(() => prisma.$disconnect());
 ```
 
-## 6. 查询 API
+## 7. 查询 API
 
 ### 6.1 文章列表
 
@@ -241,7 +253,7 @@ router.post('/posts/:id/publish', async (req, res) => {
 });
 ```
 
-## 7. 统计
+## 8. 统计
 
 ```ts
 // 发布文章数与总浏览量
@@ -259,7 +271,7 @@ const byAuthor = await prisma.post.groupBy({
 });
 ```
 
-## 8. 实施顺序
+## 9. 实施顺序
 
 1. 初始化项目与连接。
 2. 定义 Schema 并完成首次迁移。
@@ -269,7 +281,7 @@ const byAuthor = await prisma.post.groupBy({
 6. 添加统计接口。
 7. 配置日志、索引与部署脚本。
 
-## 9. 验收清单
+## 10. 验收清单
 
 - [ ] Schema 模型完整，关系正确。
 - [ ] 迁移可生成、可重置、可部署。
@@ -280,7 +292,7 @@ const byAuthor = await prisma.post.groupBy({
 - [ ] 客户端单例与连接池配置正确。
 - [ ] 生产部署流程可执行。
 
-## 10. 按阶段学习卡片
+## 11. 按阶段学习卡片
 
 | 阶段 | 项目增量 |
 |---|---|

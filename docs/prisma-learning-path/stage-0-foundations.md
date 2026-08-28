@@ -26,8 +26,8 @@ mkdir blog-api && cd blog-api
 npm init -y
 
 # 安装依赖
-npm install @prisma/client
-npm install -D prisma typescript @types/node tsx
+npm install @prisma/client @prisma/adapter-pg pg
+npm install -D prisma typescript @types/node @types/pg tsx
 
 # 初始化 TypeScript
 npx tsc --init
@@ -36,7 +36,20 @@ npx tsc --init
 npx prisma init --datasource-provider postgresql
 ```
 
-初始化后生成 `prisma/schema.prisma` 和 `.env`。
+初始化后生成 `prisma/schema.prisma` 和 `prisma.config.ts`。Prisma 7 通过 `prisma.config.ts` 显式加载环境变量：
+
+```ts
+// prisma.config.ts
+import 'dotenv/config';
+import { defineConfig } from 'prisma/config';
+
+export default defineConfig({
+  schema: 'prisma/schema.prisma',
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
+});
+```
 
 ## 3. Schema 结构
 
@@ -63,14 +76,13 @@ model User {
 
 ## 4. 连接串
 
-`.env` 中的连接串指向本地 PostgreSQL：
+`prisma.config.ts` 中的 `datasource.url` 从环境变量读取，`.env` 存放连接串：
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/blog_api"
 ```
 
 ## 5. 首次迁移与生成
-
 ```bash
 # 生成迁移并创建表
 npx prisma migrate dev --name init
@@ -81,11 +93,23 @@ npx prisma generate
 
 ## 6. 使用 PrismaClient
 
+Prisma 7 通过 driver adapter 连接数据库，PostgreSQL 使用 `@prisma/adapter-pg`：
+
+```bash
+npm install @prisma/adapter-pg pg
+npm install -D @types/pg
+```
+
 ```ts
 // src/client.ts
 import { PrismaClient } from './generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-export const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export const prisma = new PrismaClient({ adapter });
 ```
 
 ```ts
@@ -112,9 +136,13 @@ npx prisma studio
 
 可视化查看和编辑数据，适合调试模型。
 
-## 8. 项目增量
+## 8. 动手任务
 
-初始化博客项目并连接 PostgreSQL，定义 `User` 模型，生成迁移，用 PrismaClient 插入并查询一条数据。
+1. 初始化博客项目，安装 Prisma 与 driver adapter。
+2. 定义 `User` 模型，生成首次迁移并创建表。
+3. 用 PrismaClient 插入并查询一条数据。
+4. 用 Prisma Studio 查看并编辑数据。
+5. 修改 Schema 添加一个字段，重新迁移并观察生成的 SQL。
 
 ## 阶段零验收
 

@@ -68,8 +68,11 @@ npx prisma migrate reset
 ```ts
 // prisma/seed.ts
 import { PrismaClient } from '../src/generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
 
 async function main() {
   await prisma.user.create({
@@ -123,9 +126,13 @@ npx prisma migrate deploy
 - 破坏性变更（删列、删表）先评估影响，分步执行。
 - 不手动修改已应用过的迁移文件。
 
-## 8. 项目增量
+## 8. 动手任务
 
-为博客模型添加 `Profile` 一对一关系和 `Post.status` 枚举字段，生成两次独立迁移，编写 seed 脚本插入示例数据。
+1. 为博客模型添加 `Profile` 一对一关系，生成一次迁移。
+2. 再添加 `Post.status` 枚举字段，生成第二次独立迁移。
+3. 检查两次迁移的 SQL 文件，确认内容独立完整。
+4. 编写 seed 脚本插入示例数据并执行 `prisma db seed`。
+5. 故意在分支上制造一次迁移冲突，练习 reset 重放。
 
 ## 阶段二验收
 

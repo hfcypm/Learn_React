@@ -219,6 +219,9 @@ psql -d shop_restore -f shop.sql
 ```
 
 ```sql
+-- 启用慢查询统计（一次即可）
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+
 -- 慢查询
 SELECT query, calls, mean_exec_time
 FROM pg_stat_statements

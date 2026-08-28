@@ -53,7 +53,7 @@ docker run -d --name pg17 -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:17
 
 ## 阶段项目路线
 
-从 [综合实战：电商订单数据库](./project-practice.md) 开始，每完成一个阶段就增加一个能力：建库建表、查询分析、数据建模、索引优化和生产运维。
+从 [综合实战：电商订单数据库](./project-practice.md) 开始，每完成一个阶段就增加一个能力：建库建表、查询分析、数据建模、索引优化和生产运维。在 TypeScript 项目中使用数据库时，可结合 [Prisma 学习路线](../prisma-learning-path/README.md) 同步练习 ORM 建模。
 
 ## 完成标准
 

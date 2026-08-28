@@ -52,6 +52,10 @@
 
 学习主线对应 Prisma 7 与 PostgreSQL 17，Prisma Client 生成器使用 `prisma-client`。历史版本用 `prisma-client-js`，具体差异参见 [版本边界与迁移](./version-governance.md)。
 
+## 前置知识
+
+Prisma 直接操作 PostgreSQL，建议先完成 [PostgreSQL 学习路线](../postgresql-learning-path/README.md) 的基础部分，理解表、关系、索引和事务后再用 Prisma 建模；这样 Schema 设计能对应到底层数据库行为。与 Web 框架集成章节可在 [Node.js](../nodejs-learning-path/README.md) 或 [NestJS](../nestjs-learning-path/README.md) 学习路线中同步练习。
+
 ## 官方资源
 
 - [Prisma 官方文档](https://www.prisma.io/docs)

@@ -7,7 +7,7 @@
 ## 开始前准备
 
 - 掌握 TypeScript 基本类型和异步编程。
-- 了解关系数据库基础（表、行、主键、外键）。
+- 了解关系数据库基础（表、行、主键、外键），可参考 [PostgreSQL 学习路线](../postgresql-learning-path/README.md) 的数据库基础部分。
 - 了解一种 Web 框架的基本用法（如 Express、NestJS）。
 - 能运行 Node.js 和 npm。
 

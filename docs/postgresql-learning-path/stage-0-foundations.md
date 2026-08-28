@@ -124,9 +124,13 @@ DELETE FROM users WHERE id = 1;
 | `JSONB` | 二进制 JSON | `'{"a": 1}'::jsonb` |
 | `ARRAY` | 数组 | `ARRAY[1,2,3]` |
 
-## 7. 项目增量
+## 7. 动手任务
 
-在你的本地数据库创建 `users`、`products` 两张表，插入几条数据，并用 `\d` 检查表结构。
+1. 安装并连接 PostgreSQL，创建名为 `mydb` 的数据库。
+2. 创建 `users`、`products` 两张表，插入几条数据。
+3. 用 `\d users` 检查表结构，用 `SELECT` 查询数据。
+4. 故意写错一条 SQL，记录报错信息并理解原因。
+5. 删除一张表再重建，验证约束与默认值。
 
 ## 阶段零验收
 
