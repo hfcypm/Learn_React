@@ -15,6 +15,7 @@
 - [Electron 学习路线](./electron-learning-path/README.md)
 - [Tauri 学习路线](./tauri-learning-path/README.md)
 - [Node.js 与 NestJS 服务端学习计划](./server-learning-study-plan.md)
+- [桌面框架选型：Electron vs Tauri](./electron-vs-tauri.md)
 - [综合实战：团队任务看板](./fullstack-kanban/README.md)
 
 React 学习路线中的“TypeScript + React”章节保留 React 场景下的类型实践；完整 TypeScript 类型系统、泛型、条件类型、声明文件和类型安全 API 内容位于独立的 TypeScript 学习包。Next.js 学习路线覆盖全栈 React 应用的 App Router、渲染、数据获取、缓存和鉴权。Tailwind CSS 学习路线覆盖工具类系统、主题定制、响应式和工程化。Node.js 文档覆盖运行时与服务端基础，NestJS 文档覆盖基于 Node.js 的模块化企业应用开发。PostgreSQL 学习路线覆盖关系模型、SQL 查询、数据建模、事务、索引和生产运维。Prisma 学习路线覆盖基于 PostgreSQL 的 ORM Schema 建模、迁移、类型安全查询与工程化。
