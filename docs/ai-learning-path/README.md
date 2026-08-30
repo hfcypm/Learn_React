@@ -58,6 +58,10 @@ React + TypeScript
 - HTTP 方法、状态码、JSON 和 Promise
 - Next.js 路由、环境变量和 API 请求
 
+## 与 LangChain 的关系
+
+本路线负责 AI 应用的**前端交互**（数据请求、状态、流式渲染）；后端如何组织模型、提示、检索与 Agent 属于 [LangChain 学习路线](../langchain-learning-path/README.md)。两条路线互补：前端消费 LLM 的流式接口，LangChain 负责在服务端生成流式响应。建议先完成本路线掌握流式与渲染，再进入 LangChain 路线搭建后端能力，最终在 [综合实战：知识库客服机器人](../langchain-learning-path/project-practice.md) 中串起前后端。
+
 ## 学习方法
 
 - 每章先理解数据流，再运行最小示例。

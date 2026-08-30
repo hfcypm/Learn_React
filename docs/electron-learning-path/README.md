@@ -55,7 +55,7 @@
 
 ## 前置知识
 
-Electron 渲染进程就是 Web 页面，建议先掌握 [React 学习路线](../react-learning-path/README.md) 与 [TypeScript 学习路线](../typescript-learning-path/README.md)，再结合 [Node.js 学习路线](../nodejs-learning-path/README.md) 理解主进程的 Node 能力。桌面界面与 UI 可对照 [Tailwind CSS 学习路线](../tailwindcss-learning-path/README.md)。若关心与 Tauri 的选型差异，可对照 [Tauri 学习路线](../tauri-learning-path/README.md)。
+Electron 渲染进程就是 Web 页面，建议先掌握 [React 学习路线](../react-learning-path/README.md) 与 [TypeScript 学习路线](../typescript-learning-path/README.md)，再结合 [Node.js 学习路线](../nodejs-learning-path/README.md) 理解主进程的 Node 能力。桌面界面与 UI 可对照 [Tailwind CSS 学习路线](../tailwindcss-learning-path/README.md)。若已从 Web 全栈学习过来，可先完成 [综合实战：团队任务看板](../fullstack-kanban/README.md) 再桌面化；若关心与 Tauri 的选型差异，可对照 [Tauri 学习路线](../tauri-learning-path/README.md) 与 [桌面框架选型](../electron-vs-tauri.md)。
 
 ## 官方资源
 

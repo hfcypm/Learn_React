@@ -55,7 +55,7 @@
 
 ## 前置知识
 
-前端部分建议先掌握 [React 学习路线](../react-learning-path/README.md) 与 [TypeScript 学习路线](../typescript-learning-path/README.md)。Rust 部分需要基础语法与所有权概念，从阶段二逐步深入。若关心桌面框架选型，可对照 [Electron 学习路线](../electron-learning-path/README.md)。
+前端部分建议先掌握 [React 学习路线](../react-learning-path/README.md) 与 [TypeScript 学习路线](../typescript-learning-path/README.md)。Rust 部分需要基础语法与所有权概念，从阶段二逐步深入。若已从 Web 全栈学习过来，可先完成 [综合实战：团队任务看板](../fullstack-kanban/README.md) 再桌面化；若关心桌面框架选型，可对照 [Electron 学习路线](../electron-learning-path/README.md) 与 [桌面框架选型](../electron-vs-tauri.md)。
 
 ## 官方资源
 

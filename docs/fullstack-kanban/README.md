@@ -58,3 +58,13 @@ docs/fullstack-kanban/
 ├── 06-advanced.md         # 查询与事务
 └── 07-deployment.md       # 生产交付
 ```
+
+## 6. 跨端延伸：从 Web 到桌面
+
+看板应用是 Web 全栈，完成后可向桌面端延伸，复用 React、TypeScript 与状态管理经验：
+
+- **用 Electron 桌面化**：看板界面 + IPC 换成 [Electron 学习路线](../electron-learning-path/README.md) 的 preload/contextBridge 模式，数据层可在本地（SQLite/文件）或仍走远程 API。
+- **用 Tauri 桌面化**：看板界面 + Rust 命令换成 [Tauri 学习路线](../tauri-learning-path/README.md)，把看板的数据库与业务逻辑迁入 Rust 命令，获得小体积与默认安全。
+- **选型**：桌面化前先读 [桌面框架选型：Electron vs Tauri](../electron-vs-tauri.md)，按体积、性能、团队语言与移动端需求决策。
+
+跨端桥接的共性：界面层（React + Tailwind）几乎零改动，主要迁移点是数据访问——Web 走 HTTP/Prisma，桌面走 IPC/命令。

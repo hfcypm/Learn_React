@@ -1,6 +1,6 @@
 # 前端学习文档
 
-当前文档按技术主题拆分为独立学习包：
+当前文档按技术主题拆分为独立学习包。不确定从哪开始，先看 [技术栈地图：按项目目标选择学习路线](./technology-roadmap.md)。
 
 - [React 学习路线](./react-learning-path/README.md)
 - [TypeScript 学习路线](./typescript-learning-path/README.md)
