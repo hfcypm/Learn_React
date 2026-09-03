@@ -1,6 +1,6 @@
 # 技术栈地图：按项目目标选择学习路线
 
-**目标**：在 15 个学习包之间建立选择路径，根据你想构建的项目类型，确定学习顺序与组合，避免漫无目的地从头读起。
+**目标**：在 16 个学习包之间建立选择路径，根据你想构建的项目类型，确定学习顺序与组合，避免漫无目的地从头读起。
 
 ## 1. 三条主线
 
@@ -14,14 +14,17 @@
 
 ```text
 React（界面） -> TypeScript（类型） -> Next.js（全栈框架）
-   -> Tailwind CSS（样式）-> Node.js/NestJS（后端）
+   -> Tailwind CSS + shadcn/ui（样式与组件）
+   -> Node.js/NestJS（后端）
    -> Prisma + PostgreSQL（数据层）
 ```
 
 - 前端入门：[React 学习路线](./react-learning-path/README.md) -> [TypeScript 学习路线](./typescript-learning-path/README.md) -> [Tailwind CSS 学习路线](./tailwindcss-learning-path/README.md)。
+- 界面组件：[shadcn/ui 学习路线](./shadcn-learning-path/README.md) 基于 Tailwind CSS 的源码分发组件，快速搭出专业中后台界面。
 - 全栈进阶：[Next.js 学习路线](./nextjs-learning-path/README.md) 覆盖 App Router、渲染、缓存与鉴权。
 - 后端选型：小服务用 [Node.js 学习路线](./nodejs-learning-path/README.md)；企业级模块化用 [NestJS 学习路线](./nestjs-learning-path/README.md)。两条路线可对照 [服务端学习计划](./server-learning-study-plan.md) 的 8 周路径串行学习。
 - 数据层：[PostgreSQL 学习路线](./postgresql-learning-path/README.md) 掌握 SQL 与数据库原理，再进入 [Prisma 学习路线](./prisma-learning-path/README.md) 用 ORM 建模与查询。
+- 中后台界面：React + Tailwind CSS 之后进入 [shadcn/ui 学习路线](./shadcn-learning-path/README.md)，其综合实战 [订阅管理后台](./shadcn-learning-path/project-practice.md) 串起主题、表单、表格与图表。
 - 综合验证：[综合实战：团队任务看板](./fullstack-kanban/README.md) 把 Web 主线四条路线串成一个应用。
 
 ## 3. 桌面应用主线
@@ -68,7 +71,7 @@ Next.js（前端与路由）-> AI 应用前端（交互）
 | 领域 | 路线 |
 |---|---|
 | 语言与类型 | [React](./react-learning-path/README.md)、[TypeScript](./typescript-learning-path/README.md) |
-| Web 框架 | [Next.js](./nextjs-learning-path/README.md)、[Tailwind CSS](./tailwindcss-learning-path/README.md) |
+| Web 框架 | [Next.js](./nextjs-learning-path/README.md)、[Tailwind CSS](./tailwindcss-learning-path/README.md)、[shadcn/ui](./shadcn-learning-path/README.md) |
 | 服务端 | [Node.js](./nodejs-learning-path/README.md)、[NestJS](./nestjs-learning-path/README.md) |
 | 数据层 | [PostgreSQL](./postgresql-learning-path/README.md)、[Prisma](./prisma-learning-path/README.md) |
 | 桌面 | [Electron](./electron-learning-path/README.md)、[Tauri](./tauri-learning-path/README.md) |
