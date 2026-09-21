@@ -15,6 +15,7 @@
 - [LangChain 学习路线](./langchain-learning-path/README.md)
 - [Electron 学习路线](./electron-learning-path/README.md)
 - [Tauri 学习路线](./tauri-learning-path/README.md)
+- [Perfetto 学习路线](./perfetto-learning-path/README.md)
 - [Node.js 与 NestJS 服务端学习计划](./server-learning-study-plan.md)
 - [桌面框架选型：Electron vs Tauri](./electron-vs-tauri.md)
 - [综合实战：团队任务看板](./fullstack-kanban/README.md)
@@ -26,5 +27,7 @@ LangChain 学习路线覆盖基于 LangChain.js 的 LLM 应用开发：模型接
 shadcn/ui 学习路线覆盖基于 Tailwind CSS v4 的 React 组件开发：源码分发模式、CSS 变量主题、Radix 交互、表单校验、数据表图表与生产工程化。
 
 Electron 学习路线覆盖基于 Web 技术的跨平台桌面应用开发：双进程模型、preload 与安全 IPC、窗口与系统集成、文件持久化、打包签名与自动更新。Tauri 学习路线覆盖基于 Rust 后端的轻量桌面应用开发：架构、tauri.conf.json 与 capabilities 权限、Rust 命令、官方插件、打包发布与移动端支持，两路线可对照学习桌面框架选型。
+
+Perfetto 学习路线覆盖 Android 系统级 tracing：System Trace 录制、Perfetto UI、FrameTimeline 红帧、Trace Processor SQL、自定义 atrace 埋点，以及与 Studio Profiler / LeakCanary / APA 的分工。适合客户端卡顿与掉帧排查，和仓库 Web 主线并行。
 
 综合实战 `fullstack-kanban` 以「团队任务看板」应用为线索，将 Next.js、Tailwind CSS、Prisma、PostgreSQL 四条路线的知识点穿插进初始化、建模、鉴权、取数、界面、查询事务与生产交付七个阶段，适合在完成各路线后串联验证。
