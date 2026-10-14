@@ -1,6 +1,6 @@
 # HarmonyOS 学习路线图（入门 → 精通实战）
 
-**目标**：掌握鸿蒙原生应用开发的全套能力——ArkTS 语言、ArkUI 声明式 UI 与状态管理、Stage 模型与 Ability、路由导航、网络与数据持久化、模块化工程、并发与分布式协同、性能调优与上架发布。最终能独立交付一款可多设备运行、可上架的鸿蒙应用。
+**目标**：掌握鸿蒙原生应用开发的全套能力——ArkTS 语言、ArkUI 声明式 UI 与状态管理、Stage 模型与 Ability、路由导航、网络与数据持久化、模块化工程、并发与分布式协同、元服务与服务卡片、安全与隐私、性能调优与上架发布。最终能独立交付一款可多设备运行、可上架、可卡片化分发的鸿蒙应用或元服务。
 
 ## 先看这里
 
@@ -17,6 +17,7 @@
 | 二 | Stage 模型、Ability 与路由导航 | 掌握 UIAbility 生命周期、Navigation 导航与页面栈 |
 | 三 | 网络、数据持久化与工程化 | 封装网络层，掌握 Preferences/RDB、HAR/HSP 与测试 |
 | 四 | 并发、分布式、性能与发布 | 掌握 TaskPool/Worker、跨端协同、调优与上架 |
+| 五 | 进阶专题 | 元服务与卡片、ExtensionAbility、启动框架、ArkWeb、资源多语言、通知后台窗口、安全与数据扩展 |
 
 ## 快速导航
 
@@ -25,6 +26,7 @@
 - [阶段二：Stage 模型、Ability 与路由导航](./stage-2-ability-navigation.md)
 - [阶段三：网络、数据持久化与工程化](./stage-3-engineering.md)
 - [阶段四：并发、分布式、性能与发布](./stage-4-distributed-production.md)
+- [阶段五：进阶专题（元服务 / 卡片 / 系统能力）](./stage-5-advanced-topics.md)
 - [综合实战：多设备记账元服务](./project-practice.md)
 
 ## 架构主线
@@ -33,15 +35,16 @@
 应用(APP)
   -> 模块(HAP / HAR / HSP)
       -> UIAbility(入口能力) -> WindowStage -> 页面(@Entry)
-                                                   |
-                          Navigation / NavPathStack -> NavDestination
-                                                   |
-                        @ComponentV2 + 状态管理 -> ArkUI 渲染
-                                                   |
-                    ServiceKit / NetworkKit / ArkData(Preferences / RDB)
+      |                                            |
+      |                    Navigation / NavPathStack -> NavDestination
+      |                                            |
+      |                  @ComponentV2 + 状态管理 -> ArkUI 渲染
+      |                                            |
+      |              ServiceKit / NetworkKit / ArkData(Preferences / RDB)
+      -> ExtensionAbility(扩展能力) -> FormExtensionAbility -> 服务卡片 / 元服务
 ```
 
-UIAbility 负责能力生命周期与窗口，页面负责 UI 组织，状态管理负责数据驱动刷新，Kit 层负责系统能力调用。每一层职责单一，业务逻辑与 UI 解耦。
+UIAbility 负责能力生命周期与窗口，ExtensionAbility 提供卡片、后台、数据共享等扩展能力，页面负责 UI 组织，状态管理负责数据驱动刷新，Kit 层负责系统能力调用。每一层职责单一，业务逻辑与 UI 解耦。
 
 ## 每阶段固定学习模板
 
@@ -64,6 +67,8 @@ UIAbility 负责能力生命周期与窗口，页面负责 UI 组织，状态管
 - 能封装网络层，用 Preferences / RDB 持久化数据，并拆出 HAR/HSP 模块。
 - 能用 TaskPool / Worker 处理并发，在多设备上做协同与自适应布局。
 - 能用 DevEco Profiler 定位卡顿与内存问题，并完成签名打包与上架。
+- 能开发服务卡片与元服务，掌握 ExtensionAbility 与启动模式/启动框架。
+- 能用 ArkWeb、资源限定词与多语言、通知与后台任务等系统能力，并满足安全与隐私要求。
 
 ## 版本边界
 

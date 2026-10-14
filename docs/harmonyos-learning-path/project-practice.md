@@ -2,11 +2,12 @@
 
 ## 1. 项目目标
 
-用 HarmonyOS NEXT + ArkTS + ArkUI 构建一个“多设备记账元服务”，覆盖阶段零到阶段四的全部能力：工程搭建、声明式 UI 与状态管理、Stage 模型与导航、网络与数据持久化、模块化工程、并发、多设备自适应与上架。项目按阶段扩展，最终交付一款可在手机与平板运行、可上架的鸿蒙应用。
+用 HarmonyOS NEXT + ArkTS + ArkUI 构建一个“多设备记账元服务”，覆盖阶段零到阶段五的全部能力：工程搭建、声明式 UI 与状态管理、Stage 模型与导航、网络与数据持久化、模块化工程、并发、多设备自适应、服务卡片与系统能力、安全与上架。项目按阶段扩展，最终交付一款可在手机与平板运行、可卡片化、可上架的鸿蒙应用或元服务。
 
 ```text
 初始化工程 -> 界面与状态管理 -> 多页面导航
-    -> 网络与本地缓存 -> 模块拆分 -> 并发与多设备 -> 打包发布
+    -> 网络与本地缓存 -> 模块拆分 -> 并发与多设备
+    -> 服务卡片 / 通知 / 安全 -> 打包发布
 ```
 
 选择“记账”主题的原因：数据结构清晰（一笔交易 = 金额 + 分类 + 时间），天然需要列表、表单、导航、统计计算与持久化，能自然覆盖本路线全部知识点。
@@ -27,6 +28,9 @@
 - 多设备自适应：手机单栏、平板双栏。
 - 并发统计：大数据量统计放到 TaskPool。
 - 分布式：在手机上查看、在平板上编辑（设计目标）。
+- 服务卡片：桌面卡片展示本月支出，点击跳转应用。
+- 元服务：以卡片为入口，免安装使用（可选形态）。
+- 系统能力：超支时发通知、启动框架预加载字典、敏感数据加密存储。
 
 ## 3. 技术选择
 
@@ -40,7 +44,10 @@
 | `@kit.ArkData` Preferences / RDB | 数据持久化 |
 | HAR / HSP | 模块化 |
 | TaskPool / Worker | 并发 |
-| AppGallery Connect | 签名与上架 |
+| Form Kit（FormExtensionAbility） | 服务卡片 / 元服务 |
+| Notification Kit | 超支提醒 |
+| Crypto Architecture Kit | 敏感数据加密 |
+| AppStartup / AppGallery Connect | 启动优化、签名与上架 |
 
 ## 4. 项目结构
 
@@ -431,7 +438,58 @@ hvigorw assembleApp --mode project -p product=default
 
 验收：并发统计不阻塞主线程，手机/平板布局正确，签名完整，可上传 AppGallery Connect。
 
-## 10. 实施顺序
+## 10. 阶段五：服务卡片与系统能力（进阶增量）
+
+### 10.1 服务卡片
+
+为“本月支出”增加一张 2x2 动态卡片，展示总额并支持点击刷新。
+
+```ts
+// 卡片逻辑：entry/src/main/ets/widget/LedgerFormAbility.ets
+import { formBindingData, FormExtensionAbility } from '@kit.FormKit';
+
+export default class LedgerFormAbility extends FormExtensionAbility {
+  onAddForm(): formBindingData.FormBindingData {
+    return formBindingData.createFormBindingData({ total: '¥0.00' });
+  }
+
+  onUpdateForm(formId: string): void {
+    // 读取 RDB 汇总后推送
+    // formProvider.updateForm(formId, formBindingData.createFormBindingData({ total }));
+  }
+}
+```
+
+```ts
+// 卡片 UI：entry/src/main/ets/widget/pages/LedgerCard.ets
+@Entry
+@Component
+struct LedgerCard {
+  @LocalStorageProp('total') total: string = '¥0.00';
+
+  build() {
+    Column() {
+      Text(`本月支出 ${this.total}`)
+      Button('查看').onClick(() => {
+        postCardAction(this, { action: 'router', params: { url: 'pages/Index' } });
+      });
+    }
+  }
+}
+```
+
+`form_config.json` 声明卡片名称、尺寸、刷新频率与入口，`module.json5` 注册 `FormExtensionAbility`。
+
+### 10.2 系统能力
+
+- **通知**：支出超过预算时用 Notification Kit 发送提醒。
+- **启动框架**：用 AppStartup 把分类字典预加载拆成启动任务。
+- **安全**：用 Crypto Architecture Kit 加密后落盘备注等敏感字段。
+- **数据扩展（可选）**：用分布式数据对象在多设备间实时同步一条记录。
+
+验收：卡片可正常添加与刷新，点击可跳转应用；通知、启动任务、加密存储均生效。
+
+## 11. 实施顺序
 
 1. 初始化工程，定义 `Transaction` 模型。
 2. 用 V2 状态管理实现首页、汇总卡片与列表。
@@ -439,9 +497,10 @@ hvigorw assembleApp --mode project -p product=default
 4. 接入网络层与 RDB，实现缓存优先刷新。
 5. 拆出 `commons` 与 `feature-ledger` 两个 HAR。
 6. 用 TaskPool 做分类统计，用 GridRow 适配多设备。
-7. 配置签名，构建并走通上架流程。
+7. 增加服务卡片、超支通知、启动框架与加密存储。
+8. 配置签名，构建并走通上架流程。
 
-## 11. 验收清单
+## 12. 验收清单
 
 - [ ] 能新增交易并持久化，重启后数据仍在。
 - [ ] 列表按时间倒序，空态与有数据切换正确。
@@ -451,10 +510,12 @@ hvigorw assembleApp --mode project -p product=default
 - [ ] 代码拆分到 HAP / HAR 且依赖声明正确。
 - [ ] 统计计算在 TaskPool 中执行，主线程不卡顿。
 - [ ] 手机单栏、平板双栏布局正确。
+- [ ] 服务卡片可添加、可刷新、可跳转应用。
+- [ ] 通知、启动任务与加密存储生效。
 - [ ] `module.json5` 仅声明必要权限。
 - [ ] release 签名完整，可构建 `.app` 并上传。
 
-## 12. 按阶段学习卡片
+## 13. 按阶段学习卡片
 
 | 阶段 | 项目增量 | 关键能力 |
 |---|---|---|
@@ -463,3 +524,4 @@ hvigorw assembleApp --mode project -p product=default
 | 二 | 详情、编辑、返回 | Stage 模型、Navigation |
 | 三 | 网络层、RDB、HAR | 网络与持久化、模块化 |
 | 四 | 并发、自适应、发布 | 并发、多设备、上架 |
+| 五 | 服务卡片、通知、加密 | 元服务/卡片、系统能力、安全 |

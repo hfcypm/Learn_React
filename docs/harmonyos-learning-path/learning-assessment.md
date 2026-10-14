@@ -46,6 +46,18 @@
 - 用 DevEco Profiler 与 Code Scanner 定位问题。
 - 完成签名配置、构建 .app 包与上架流程。
 
+### 阶段五：进阶专题
+
+- 解释元服务与传统应用的区别，说明卡片为何是其入口。
+- 区分静态 / 动态 / 互动卡片，写出 FormExtensionAbility 生命周期与 postCardAction。
+- 列举 ExtensionAbility 常见类型，说明启动与安全规则。
+- 解释三种 launchType 的行为差异与 onNewWant / onAcceptWant 的作用。
+- 用 AppStartup 拆分启动任务，说明 AbilityStage.onCreate 的定位。
+- 用 ArkWeb 完成页面加载与原生-H5 通信。
+- 用限定词目录实现多语言、深色模式与多设备资源隔离。
+- 使用通知、后台任务与窗口能力，并遵守最小权限与隐私要求。
+- 说明加密、DataShare、分布式数据对象与端云一体化的适用场景。
+
 ## 2. 排错题
 
 - 安装与项目路径含中文/空格导致 SDK 异常或构建失败。
@@ -62,6 +74,13 @@
 - RDB 并发多写或单条超 2M 导致异常。
 - 跨线程对象未 @Sendable 导致并发报错。
 - Worker 未 terminate 导致线程常驻。
+- 卡片不刷新（updateDuration / postCardAction / updateForm）。
+- 静态卡片误用事件（应使用 FormLink）。
+- 卡片导入了不支持在卡片中使用的模块。
+- singleton 复用时未在 onNewWant 更新数据。
+- specified 未复用实例（onAcceptWant 返回 Key 不稳定）。
+- 跨应用启动失败（exported 或权限不满足）。
+- 深色模式不生效（缺少 dark 限定词资源）。
 - 上架因权限与隐私说明不匹配被拒。
 
 ## 3. 项目评分
@@ -70,12 +89,13 @@
 
 | 维度 | 分值 | 评分重点 |
 |---|---:|---|
-| 语言与工程结构 | 15 | ArkTS 类型安全、工程与配置规范 |
-| UI 与状态管理 | 25 | V2 装饰器选型、数据流、刷新粒度、列表性能 |
-| Ability 与导航 | 15 | 生命周期、窗口、Navigation 传参与返回 |
-| 数据链路 | 20 | 网络封装、RDB/Preferences、缓存策略 |
-| 模块化与并发 | 15 | HAR/HSP 拆分、TaskPool/Worker 使用 |
-| 多设备与发布 | 10 | 自适应布局、签名打包、上架清单 |
+| 语言与工程结构 | 12 | ArkTS 类型安全、工程与配置规范 |
+| UI 与状态管理 | 22 | V2 装饰器选型、数据流、刷新粒度、列表性能 |
+| Ability 与导航 | 14 | 生命周期、窗口、Navigation 传参与返回 |
+| 数据链路 | 18 | 网络封装、RDB/Preferences、缓存策略 |
+| 模块化与并发 | 12 | HAR/HSP 拆分、TaskPool/Worker 使用 |
+| 进阶系统能力 | 12 | 服务卡片/元服务、启动框架、通知、ArkWeb、多语言 |
+| 多设备、安全与发布 | 10 | 自适应布局、安全隐私、签名打包、上架清单 |
 
 ## 4. 项目评审问题
 
@@ -90,7 +110,11 @@
 - HAR 与 HSP 的区别与选型依据是什么？
 - TaskPool 与 Worker 如何选择？@Sendable 解决什么问题？
 - “一次开发，多端部署”在布局与代码上如何落地？
-- 上架前必须检查哪些项？
+- 元服务与传统应用的区别是什么，为什么以卡片为入口？
+- 静态卡片与动态卡片如何选型？卡片如何与宿主应用交互？
+- 三种 launchType 分别适合什么场景？specified 如何决定复用实例？
+- 启动框架 AppStartup 相比在 onCreate 中初始化解决了什么问题？
+- 上架前必须检查哪些项（含权限、隐私、卡片）？
 
 ## 5. 学习记录模板
 

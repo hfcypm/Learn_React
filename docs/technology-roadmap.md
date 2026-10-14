@@ -60,9 +60,10 @@ ArkTS（语言基础） -> ArkUI（声明式 UI 与状态管理）
    -> NetworkKit / ArkData（网络与数据）
    -> HAR/HSP + TaskPool/Worker（工程化与并发）
    -> 分布式协同 + 多设备自适应 + 性能发布
+   -> 元服务 + 服务卡片 + ExtensionAbility + 安全隐私（进阶专题）
 ```
 
-- [HarmonyOS 学习路线](./harmonyos-learning-path/README.md) 覆盖纯血鸿蒙原生开发的完整链路，从 ArkTS 与 ArkUI 入门到分布式、多设备与上架精通。
+- [HarmonyOS 学习路线](./harmonyos-learning-path/README.md) 覆盖纯血鸿蒙原生开发的完整链路，从 ArkTS 与 ArkUI 入门到分布式、多设备、元服务与上架精通。
 - 语言底座：ArkTS 是 TypeScript 超集，但收紧动态特性、严格模式禁用 `any`。有 [TypeScript 学习路线](./typescript-learning-path/README.md) 基础迁移很快。
 - 状态管理主线使用 V2（`@ComponentV2` / `@Local` / `@Param` / `@ObservedV2` / `@Trace`），路由优先 `Navigation`，与 Web 主线的 React 组件化心智互通。
 - 综合实战：[多设备记账元服务](./harmonyos-learning-path/project-practice.md) 串起界面、导航、网络、持久化、模块化、并发与发布。

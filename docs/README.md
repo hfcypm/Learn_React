@@ -29,7 +29,7 @@ shadcn/ui 学习路线覆盖基于 Tailwind CSS v4 的 React 组件开发：源�
 
 Electron 学习路线覆盖基于 Web 技术的跨平台桌面应用开发：双进程模型、preload 与安全 IPC、窗口与系统集成、文件持久化、打包签名与自动更新。Tauri 学习路线覆盖基于 Rust 后端的轻量桌面应用开发：架构、tauri.conf.json 与 capabilities 权限、Rust 命令、官方插件、打包发布与移动端支持，两路线可对照学习桌面框架选型。
 
-HarmonyOS 学习路线覆盖纯血鸿蒙（HarmonyOS NEXT）原生应用开发：ArkTS 语言与严格模式、ArkUI 声明式 UI 与状态管理 V2、Stage 模型与 UIAbility、Navigation 路由导航、网络与 Preferences/RDB 持久化、HAR/HSP 模块化、TaskPool/Worker 并发、分布式协同、多设备自适应与性能发布，并提供从入门到精通的五阶段路径与多设备记账元服务综合实战。
+HarmonyOS 学习路线覆盖纯血鸿蒙（HarmonyOS NEXT）原生应用开发：ArkTS 语言与严格模式、ArkUI 声明式 UI 与状态管理 V2、Stage 模型与 UIAbility、Navigation 路由导航、网络与 Preferences/RDB 持久化、HAR/HSP 模块化、TaskPool/Worker 并发、分布式协同、多设备自适应、性能发布，以及元服务与服务卡片、ExtensionAbility 家族、启动模式与 AppStartup、ArkWeb、多语言与深色模式、通知与后台任务、安全隐私等进阶专题，并提供从入门到精通的五阶段路径与多设备记账元服务综合实战。
 
 Perfetto 学习路线覆盖 Android 系统级 tracing：System Trace 录制、Perfetto UI、FrameTimeline 红帧、Trace Processor SQL、自定义 atrace 埋点，以及与 Studio Profiler / LeakCanary / APA 的分工。适合客户端卡顿与掉帧排查，和仓库 Web 主线并行。
 
