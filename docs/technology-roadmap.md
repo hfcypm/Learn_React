@@ -2,13 +2,14 @@
 
 **目标**：在学习包之间建立选择路径，根据你想构建的项目类型，确定学习顺序与组合，避免漫无目的地从头读起。
 
-## 1. 四条主线
+## 1. 五条主线
 
 | 主线 | 目标项目 | 核心路线 |
 |---|---|---|
 | Web 应用 | 网站、SaaS、中后台、API 服务 | React -> Next.js -> Node.js/NestJS -> Prisma -> PostgreSQL |
 | 桌面应用 | 本地工具、效率软件、跨平台客户端 | React -> TypeScript -> Electron 或 Tauri |
 | AI 应用 | Chat、Agent、知识库问答 | Next.js -> AI 应用前端 -> LangChain |
+| HarmonyOS 应用 | 鸿蒙原生 App、元服务、多设备协同 | ArkTS -> ArkUI -> Stage 模型 -> Kit 系统能力 -> 分布式 |
 | Android 性能 | 卡顿、掉帧、主线程阻塞 | Perfetto |
 
 ## 2. Web 应用主线
@@ -51,7 +52,23 @@ Next.js（前端与路由）-> AI 应用前端（交互）
 - 两条路线互补：前端消费流式接口，LangChain 生成流式响应，综合在 [知识库客服机器人](./langchain-learning-path/project-practice.md) 中闭环。
 - 前置建议：先完成 Next.js 与 TypeScript，再进入 AI 主线。
 
-## 5. Android 性能主线
+## 5. HarmonyOS 全场景主线
+
+```text
+ArkTS（语言基础） -> ArkUI（声明式 UI 与状态管理）
+   -> Stage 模型 + UIAbility + Navigation（运行时与导航）
+   -> NetworkKit / ArkData（网络与数据）
+   -> HAR/HSP + TaskPool/Worker（工程化与并发）
+   -> 分布式协同 + 多设备自适应 + 性能发布
+```
+
+- [HarmonyOS 学习路线](./harmonyos-learning-path/README.md) 覆盖纯血鸿蒙原生开发的完整链路，从 ArkTS 与 ArkUI 入门到分布式、多设备与上架精通。
+- 语言底座：ArkTS 是 TypeScript 超集，但收紧动态特性、严格模式禁用 `any`。有 [TypeScript 学习路线](./typescript-learning-path/README.md) 基础迁移很快。
+- 状态管理主线使用 V2（`@ComponentV2` / `@Local` / `@Param` / `@ObservedV2` / `@Trace`），路由优先 `Navigation`，与 Web 主线的 React 组件化心智互通。
+- 综合实战：[多设备记账元服务](./harmonyos-learning-path/project-practice.md) 串起界面、导航、网络、持久化、模块化、并发与发布。
+- 这条路线面向移动端与全场景设备，和 Web / 桌面作者共享「一次开发、多端部署」的产品视角。
+
+## 6. Android 性能主线
 
 ```text
 能独立编译 Android 应用
@@ -65,7 +82,7 @@ Next.js（前端与路由）-> AI 应用前端（交互）
 - 这条路线和 Web / 桌面主线并行，不依赖 React。综合实战是 [个股详情页卡顿排查](./perfetto-learning-path/project-practice.md)。
 - Java 泄漏仍走 LeakCanary 与 Memory Profiler；Perfetto 主攻时间线与帧。
 
-## 6. 交叉组合
+## 7. 交叉组合
 
 | 你要做的产品 | 路线组合 | 综合实战 |
 |---|---|---|
@@ -73,17 +90,19 @@ Next.js（前端与路由）-> AI 应用前端（交互）
 | 桌面工具 | React + TypeScript + Electron/Tauri | [桌面笔记](./electron-learning-path/project-practice.md) 或 [文件管理器](./tauri-learning-path/project-practice.md) |
 | AI 聊天/知识库 | Next.js + AI 前端 + LangChain | [知识库客服机器人](./langchain-learning-path/project-practice.md) |
 | AI + 桌面客户端 | AI 主线 + Electron/Tauri | 可选：在桌面壳中嵌入 AI 前端 |
+| 鸿蒙原生应用 | HarmonyOS 主线全部 | [多设备记账元服务](./harmonyos-learning-path/project-practice.md) |
 | Android 客户端卡顿 | Perfetto | [个股详情页卡顿排查](./perfetto-learning-path/project-practice.md) |
 
-## 7. 通用建议
+## 8. 通用建议
 
-- 三条 Web / 桌面 / AI 主线都以 React 与 TypeScript 为共同底座，先夯实这两项再进入分支。
+- Web / 桌面 / AI 三条主线都以 React 与 TypeScript 为共同底座，HarmonyOS 主线以 ArkTS（TypeScript 超集）为语言底座，先夯实语言与组件化心智再进入分支。
 - 数据库原理（PostgreSQL）建议在任何数据相关路线之前掌握，避免被 ORM 掩盖底层行为。
 - 每个综合实战都是多路线知识的验收场，完成主线后再做对应实战。
 - 不确定选型时，先看 [Electron vs Tauri](./electron-vs-tauri.md) 这类对比文档，再做最小原型验证。
+- HarmonyOS 是纯血鸿蒙，语言、UI、应用模型、构建工具都与 Android 不同，进入前先放下旧 Android 习惯。
 - Android 卡顿先录 System Trace 看帧，再决定 Java 采样或内存工具，顺序见 [Perfetto 学习路线](./perfetto-learning-path/README.md)。
 
-## 8. 路线清单
+## 9. 路线清单
 
 | 领域 | 路线 |
 |---|---|
@@ -93,5 +112,6 @@ Next.js（前端与路由）-> AI 应用前端（交互）
 | 数据层 | [PostgreSQL](./postgresql-learning-path/README.md)、[Prisma](./prisma-learning-path/README.md) |
 | 桌面 | [Electron](./electron-learning-path/README.md)、[Tauri](./tauri-learning-path/README.md) |
 | AI | [AI 应用前端](./ai-learning-path/README.md)、[LangChain](./langchain-learning-path/README.md) |
+| HarmonyOS | [HarmonyOS 学习路线](./harmonyos-learning-path/README.md) |
 | Android 性能 | [Perfetto](./perfetto-learning-path/README.md) |
 | 综合 | [团队任务看板](./fullstack-kanban/README.md)、[服务端学习计划](./server-learning-study-plan.md) |
