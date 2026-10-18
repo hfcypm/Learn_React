@@ -26,6 +26,8 @@
 - 用 NSJSONSerialization 解析并安全地转成模型。
 - 用 GCD 把耗时任务移出主线程，并回主线程更新 UI。
 - 用 Core Data 完成增删改查并驱动列表刷新。
+- 能处理 Core Data 轻量迁移与后台上下文写入。
+- 能申请通知权限并添加、取消本地通知。
 - 区分 NSUserDefaults、文件、Core Data、Keychain 的适用场景。
 - 设计缓存优先的数据链路。
 
@@ -35,7 +37,8 @@
 - 用 CocoaPods 管理依赖并锁定版本。
 - 配置 OC / Swift 混编的 Bridging Header 与 `-Swift.h`。
 - 用 XCTest 写出模型与失败分支测试。
-- 用 LLDB 与 Instruments 定位崩溃、泄漏与卡顿。
+- 用 LLDB、Instruments 与 View Debugger 定位崩溃、泄漏与卡顿。
+- 能用静态分析与命令行构建接入持续集成。
 - 完成签名、Archive 与 TestFlight 上传。
 
 ## 2. 排错题
@@ -51,6 +54,8 @@
 - 网络请求成功但 UI 不更新。
 - JSON 解析偶发崩溃。
 - Core Data 保存后列表不刷新。
+- 升级模型后老用户数据丢失。
+- 通知授权成功但收不到提醒。
 - 页面退出后内存不释放。
 - 真机运行提示签名失败。
 - 上线后崩溃日志无法符号化。
@@ -80,6 +85,8 @@
 - delegate、block、通知三种回调方式如何选型？
 - NSURLSession 回调在哪个线程？为什么必须回主线程更新 UI？
 - Core Data 的上下文有哪些类型，跨线程使用要注意什么？
+- Core Data 模型加字段时如何做轻量迁移，复杂迁移怎么办？
+- 本地通知的授权、触发与取消分别怎么处理？
 - 如何把 Massive ViewController 安全地拆分而不破坏现有功能？
 - CocoaPods 与 SPM 在存量工程中的取舍是什么？
 - OC 与 Swift 混编的成本与迁移顺序如何控制？

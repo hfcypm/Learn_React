@@ -230,7 +230,78 @@ if ([context hasChanges]) {
 
 老工程也可能使用 `MagicalRecord`、`Realm` 或 `FMDB`。先确认现有方案，再决定是否迁移，避免同一工程混用多套数据库。
 
-## 9. Keychain
+### 8.5 轻量迁移与并发
+
+模型加字段、改字段名时优先用轻量迁移：
+
+```objc
+NSPersistentStoreDescription *desc = container.persistentStoreDescriptions.firstObject;
+desc.shouldMigrateStoreAutomatically = YES;
+desc.shouldInferMappingModelAutomatically = YES;
+[container loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription *d, NSError *error) {
+  if (error) { NSLog(@"迁移失败：%@", error); }
+}];
+```
+
+- 轻量迁移支持新增/删除属性、重命名（配合 `renamingIdentifier`）、新增实体。
+- 复杂变更（拆分实体、数据转换）需要 Mapping Model 或自定义迁移。
+- 迁移前备份数据库，并在旧版本数据上验证。
+
+并发访问 Core Data：
+
+```objc
+NSManagedObjectContext *background = [container newBackgroundContext];
+[background performBlock:^{
+  // 在 background 队列查询/写入
+  NSError *error = nil;
+  if (![background save:&error]) {
+    NSLog(@"后台保存失败：%@", error);
+  }
+}];
+```
+
+`NSManagedObject` 不是线程安全的。跨上下文传递用 `NSManagedObjectID`，在目标上下文重新 fetch，不要直接传对象。
+
+## 9. 本地通知与权限
+
+习惯提醒、超时提醒等场景用 `UNUserNotificationCenter`：
+
+```objc
+#import <UserNotifications/UserNotifications.h>
+
+UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+content.title = @"该打卡了";
+content.body = @"完成今天的习惯";
+content.sound = [UNNotificationSound defaultSound];
+
+NSDateComponents *components = [[NSDateComponents alloc] init];
+components.hour = 20;
+components.minute = 0;
+UNCalendarNotificationTrigger *trigger =
+    [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:YES];
+
+UNNotificationRequest *request =
+    [UNNotificationRequest requestWithIdentifier:@"habit.reminder"
+                                          content:content
+                                          trigger:trigger];
+
+UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+[center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound)
+                      completionHandler:^(BOOL granted, NSError *error) {
+  if (granted) {
+    [center addNotificationRequest:request error:nil];
+  }
+}];
+```
+
+要点：
+
+- 先申请授权，用户拒绝后不要反复弹窗，引导到系统设置。
+- 前台展示通知需实现 `UNUserNotificationCenterDelegate` 的 `willPresentNotification:`。
+- 通知标识符保持稳定，重复添加会覆盖；取消用 `removePendingNotificationRequestsWithIdentifiers:`。
+- 权限用途在 `Info.plist` 与隐私材料中保持一致。
+
+## 10. Keychain
 
 ```objc
 #import <Security/Security.h>
@@ -260,7 +331,7 @@ if ([context hasChanges]) {
 }
 ```
 
-## 10. 缓存策略
+## 11. 缓存策略
 
 ```text
 1. 读本地缓存（Core Data / NSCache）-> 立即渲染
@@ -274,16 +345,18 @@ if ([context hasChanges]) {
 - 图片用 `SDWebImage` 或自定义磁盘缓存。
 - 为缓存加 TTL，避免展示过期数据。
 
-## 11. 验收
+## 12. 验收
 
 - 能用 NSURLSession 发起请求并解析 JSON。
 - 能检查错误与 HTTP 状态码，并在主线程更新 UI。
 - 能用 GCD 或 NSOperationQueue 处理并发任务链。
 - 能用 Core Data 完成增删改查并驱动列表刷新。
+- 能处理 Core Data 轻量迁移与后台上下文写入。
+- 能申请通知权限并添加本地通知。
 - 能用 NSUserDefaults 存偏好、用 Keychain 存敏感信息。
 - 能设计缓存优先的数据链路。
 
-## 12. 排错
+## 13. 排错
 
 | 现象 | 排查 |
 |---|---|
@@ -291,7 +364,9 @@ if ([context hasChanges]) {
 | JSON 解析崩溃 | 是否用 `isKindOfClass:` 校验类型，字段是否为 `null` |
 | 主线程卡顿 | 网络/解析/数据库/解码是否在后台队列 |
 | `Core Data` 崩溃 | 上下文是否同一队列使用，模型版本是否匹配 |
+| 升级后数据丢失 | 是否启用轻量迁移，模型版本与 Mapping Model 是否正确 |
 | 保存后列表不刷新 | 是否重新查询或使用 `NSFetchedResultsController` |
+| 通知不触发 | 是否申请授权、触发条件是否满足、是否被前台代理拦截 |
 | Keychain 读写失败 | `SecItem` 返回码是否检查，签名与访问组是否匹配 |
 | 缓存不更新 | TTL、ETag、是否覆盖旧数据 |
 | 循环引用 | block 是否强引用 self，是否用 `__weak` |

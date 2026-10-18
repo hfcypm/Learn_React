@@ -87,7 +87,23 @@ iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共�
 
 存量工程继续用 CocoaPods 更稳；新引入的库优先评估 SPM，避免同一工程两套依赖体系混用导致冲突。
 
-## 7. 升级前检查
+## 7. Core Data 模型版本与迁移
+
+- `.xcdatamodeld` 每次结构变更新建版本，并设置 Current Version，不要直接改旧版本。
+- 轻量迁移覆盖：新增/删除属性、重命名属性（设置 renaming identifier）、新增实体。
+- 开启自动迁移：
+
+```objc
+NSPersistentStoreDescription *desc = container.persistentStoreDescriptions.firstObject;
+desc.shouldMigrateStoreAutomatically = YES;
+desc.shouldInferMappingModelAutomatically = YES;
+```
+
+- 复杂迁移（拆分实体、字段类型转换）需要 Mapping Model 或自定义 `NSEntityMigrationPolicy`。
+- 迁移前备份 store，测试必须覆盖“旧版本数据 -> 新版本”的升级路径。
+- 大表迁移放后台上下文执行，并给用户展示进度，避免启动卡死。
+
+## 8. 升级前检查
 
 1. 备份或打 tag，确认可回滚。
 2. 阅读 Xcode 与 iOS 版本说明，确认最低系统版本与弃用 API。
@@ -95,9 +111,10 @@ iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共�
 4. 检查启动流程（AppDelegate / SceneDelegate）。
 5. 检查权限、ATS、隐私清单。
 6. 检查 MRC 文件与 ARC 混编情况。
-7. 在分支完整跑通 dev、测试与 Archive。
+7. 检查 Core Data 模型版本与迁移方案。
+8. 在分支完整跑通 dev、测试与 Archive。
 
-## 8. 升级后检查
+## 9. 升级后检查
 
 - 冷启动、页面跳转、返回正常。
 - 列表复用与刷新正常。
@@ -107,12 +124,14 @@ iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共�
 - 崩溃与内存警告清零。
 - 构建产物可签名、可安装、可上架。
 
-## 9. 迁移常见坑
+## 10. 迁移常见坑
 
 - 只升级 Xcode 未调整 Deployment Target，导致 API 不存在。
+- 用较新 Xcode 打开很老的工程，项目格式或 Swift 版本不兼容，直接无法编译。
 - 用了 iOS 13+ 的 SceneDelegate 但工程仍按旧启动流程配置，出现黑屏。
 - 新增隐私相关 API 未补 `PrivacyInfo.xcprivacy`，审核被拒。
 - 把 MRC 文件的 `release` 直接删除，导致过度释放崩溃。
 - OC/Swift 混编时 Bridging Header 路径错误或 `@objc` 缺失。
 - CocoaPods 与 SPM 同时引入同一库，产生重复符号。
+- 直接修改 Core Data 旧模型版本而非新建版本，导致老用户升级失败。
 - 升级三方库后 API 行为变化，未做回归测试。

@@ -72,8 +72,10 @@ UIApplication
 - 能用 OC 写出属性正确、内存安全、block 无循环引用的代码。
 - 能用 UIKit、Auto Layout、UITableView 与导航控制器改造界面。
 - 能用 NSURLSession 请求网络，用 Core Data / NSUserDefaults / Keychain 持久化。
+- 能处理 Core Data 轻量迁移与后台上下文写入，并接入本地通知。
 - 能用 GCD / NSOperationQueue 处理并发，避免主线程卡顿。
 - 能拆分 Massive ViewController，接入 CocoaPods 与 OC/Swift 混编。
+- 能用 LLDB、Instruments、View Debugger、静态分析与命令行构建排查问题。
 - 能定位崩溃与内存问题，配置签名并完成 TestFlight 与 App Store 提交。
 
 ## 版本边界

@@ -34,6 +34,8 @@
 **进阶**
 
 - 网络同步：从服务端拉取习惯，弱网时用本地缓存。
+- 本地通知：每天固定时间提醒打卡（需要通知权限）。
+- 数据迁移：为模型新增字段，验证老数据升级不丢失。
 - 分层改造：拆出 ViewModel 与 Service，控制器只做绑定。
 - 混编：新增一个 Swift 设置页，通过 Bridging Header 调用 OC 模型。
 - 可观测性：接入日志与崩溃上报（可选）。
@@ -48,6 +50,7 @@
 | Auto Layout | 布局与适配 |
 | NSURLSession + NSJSONSerialization | 网络与解析 |
 | Core Data | 本地持久化 |
+| UserNotifications | 打卡提醒 |
 | NSUserDefaults / Keychain | 偏好与敏感信息 |
 | GCD / NSOperationQueue | 并发与线程切换 |
 | CocoaPods | 三方依赖 |
@@ -392,6 +395,14 @@ request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"createdAt"
 NSArray<Habit *> *habits = [context executeFetchRequest:request error:&error];
 ```
 
+模型变更时开启轻量迁移，避免老用户升级后数据丢失：
+
+```objc
+NSPersistentStoreDescription *desc = container.persistentStoreDescriptions.firstObject;
+desc.shouldMigrateStoreAutomatically = YES;
+desc.shouldInferMappingModelAutomatically = YES;
+```
+
 ### 8.3 缓存优先
 
 ```text
@@ -402,6 +413,38 @@ NSArray<Habit *> *habits = [context executeFetchRequest:request error:&error];
 ```
 
 验收：断网时仍能查看与打卡，联网后能同步。
+
+### 8.4 本地通知提醒
+
+```objc
+#import <UserNotifications/UserNotifications.h>
+
+- (void)enableDailyReminderAtHour:(NSInteger)hour {
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound)
+                        completionHandler:^(BOOL granted, NSError *error) {
+    if (!granted) { return; }
+
+    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+    content.title = @"该打卡了";
+    content.body = @"完成今天的习惯";
+    content.sound = [UNNotificationSound defaultSound];
+
+    NSDateComponents *components = [NSDateComponents new];
+    components.hour = hour;
+    UNCalendarNotificationTrigger *trigger =
+        [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:components repeats:YES];
+
+    UNNotificationRequest *request =
+        [UNNotificationRequest requestWithIdentifier:@"habit.daily"
+                                             content:content
+                                             trigger:trigger];
+    [center addNotificationRequest:request error:nil];
+  }];
+}
+```
+
+验收：授权后每天固定时间收到提醒；关闭开关后取消待发通知。
 
 ## 9. 阶段三：分层、测试与发布
 
@@ -456,10 +499,11 @@ NSArray<Habit *> *habits = [context executeFetchRequest:request error:&error];
 3. 抽出 `HabitCell`，修复复用串数据。
 4. 用 block 完成新增习惯的反向传值。
 5. 接入 `HabitService`，补错误与状态码处理。
-6. 接入 Core Data，实现缓存优先刷新。
+6. 接入 Core Data，实现缓存优先刷新，并开启轻量迁移。
 7. 拆出 `HabitListViewModel`，控制器只做绑定。
-8. 补 XCTest 单元测试与关键路径 UI 测试。
-9. 配置签名，Archive 并上传 TestFlight。
+8. 接入本地通知，处理授权与取消。
+9. 补 XCTest 单元测试与关键路径 UI 测试。
+10. 配置签名，Archive 并上传 TestFlight。
 
 ## 11. 验收清单
 
@@ -469,6 +513,8 @@ NSArray<Habit *> *habits = [context executeFetchRequest:request error:&error];
 - [ ] cell 复用不串数据。
 - [ ] 网络失败时回退本地缓存并给出重试提示。
 - [ ] 网络回调不阻塞主线程。
+- [ ] Core Data 轻量迁移后老数据仍可读。
+- [ ] 通知授权后能按时提醒，关闭后能取消。
 - [ ] 控制器代码明显变薄，业务逻辑在 Service / ViewModel。
 - [ ] 单元测试覆盖模型计算与失败分支。
 - [ ] 签名完整，可 Archive 并上传 TestFlight。
@@ -480,5 +526,5 @@ NSArray<Habit *> *habits = [context executeFetchRequest:request error:&error];
 |---|---|---|
 | 零 | 跑通工程、读懂模型 | OC 语法、属性、ARC、生命周期 |
 | 一 | 列表、Cell、新增、跳转 | UIKit、Auto Layout、UITableView、回调 |
-| 二 | 网络、Core Data、缓存 | NSURLSession、GCD、持久化 |
+| 二 | 网络、Core Data、缓存、通知 | NSURLSession、GCD、持久化、迁移 |
 | 三 | 分层、测试、混编、发布 | 架构改造、XCTest、签名上架 |

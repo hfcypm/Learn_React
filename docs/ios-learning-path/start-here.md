@@ -116,6 +116,7 @@ LegacyHabit/
 - 能写出属性修饰符正确、无循环引用的 OC 代码。
 - 能用 UIKit、Auto Layout、UITableView 与导航控制器改造界面。
 - 能用 NSURLSession 请求网络，用 Core Data / NSUserDefaults / Keychain 持久化。
+- 能处理 Core Data 轻量迁移与本地通知授权。
 - 能用 GCD / NSOperationQueue 处理并发并回主线程更新 UI。
 - 能拆分 Massive ViewController，接入 CocoaPods 与 OC/Swift 混编。
 - 能定位崩溃与内存问题，配置签名并完成 TestFlight 提交。

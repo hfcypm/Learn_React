@@ -198,6 +198,46 @@ ARC 自动插入 `retain` / `release`，你只需管好引用关系：
 
 识别老代码中的 MRC 文件：出现 `retain` / `release` / `autorelease` / `dealloc` 中调用 `[super dealloc]`，通常该文件在 Build Phases 中设置了 `-fno-objc-arc`。改造前先确认编译标志，不要直接删 `release`。
 
+### 8.1 常见循环引用
+
+| 场景 | 问题 | 处理 |
+|---|---|---|
+| block 捕获 `self` | 对象互相强引用 | `__weak` + `__strong` 兜底 |
+| delegate 用 `strong` | 控制器与代理互相持有 | 改为 `weak` |
+| `NSTimer` 持有 target | 控制器无法释放 | 用 block 版本并 `invalidate` |
+| 通知/KVO 观察者 | 未移除或重复添加 | `dealloc` 中移除 |
+
+```objc
+__weak typeof(self) weakSelf = self;
+self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                             repeats:YES
+                                               block:^(NSTimer *timer) {
+  __strong typeof(weakSelf) self = weakSelf;
+  if (!self) {
+    [timer invalidate];
+    return;
+  }
+  [self tick];
+}];
+
+- (void)dealloc {
+  [_timer invalidate];
+}
+```
+
+### 8.2 autoreleasepool
+
+循环中产生大量临时对象时，用 `@autoreleasepool` 控制峰值内存：
+
+```objc
+for (NSDictionary *dict in largeArray) {
+  @autoreleasepool {
+    Habit *habit = [[Habit alloc] initWithTitle:dict[@"title"]];
+    // 处理
+  }
+}
+```
+
 ## 9. Xcode 工程结构
 
 ```text

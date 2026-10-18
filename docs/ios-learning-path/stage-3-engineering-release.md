@@ -270,6 +270,12 @@ breakpoint set -n "-[HabitListViewController viewDidLoad]"
 | 约束冲突 | Auto Layout 约束不完整 |
 | `NSInternalInconsistencyException` | Storyboard 连接失效、cell 复用标识符未注册 |
 
+### 6.5 View Debugger 与静态分析
+
+- **View Debugger**：运行后点 Xcode 的 “Debug View Hierarchy”，检查视图层级、遮挡、约束与 `hidden` 状态，定位“看不到/点不到”的问题。
+- **静态分析**：`Product -> Analyze`（或 `xcodebuild analyze`）能发现内存泄漏、未使用变量、空指针路径等问题，提交前跑一遍。
+- **警告清零**：把编译器警告当错误处理，尤其是 ARC 相关、弃用 API 与格式字符串警告。
+
 ## 7. 性能
 
 - 启动：减少 `didFinishLaunchingWithOptions` 中的同步 IO 与大批量初始化，懒加载非首屏模块。
@@ -323,13 +329,36 @@ breakpoint set -n "-[HabitListViewController viewDidLoad]"
 - 真机关键路径跑通（登录、网络异常、深色模式、离线）。
 - 崩溃与警告清零。
 
+### 8.4 命令行构建与持续集成
+
+```bash
+# 构建并归档
+xcodebuild -workspace LegacyHabit.xcworkspace \
+  -scheme LegacyHabit \
+  -configuration Release \
+  -destination 'generic/platform=iOS' \
+  -archivePath build/LegacyHabit.xcarchive \
+  archive
+
+# 导出 ipa（需要 ExportOptions.plist）
+xcodebuild -exportArchive \
+  -archivePath build/LegacyHabit.xcarchive \
+  -exportPath build/ipa \
+  -exportOptionsPlist ExportOptions.plist
+```
+
+- CI 中用 `xcodebuild` 或 `fastlane`（`gym` + `pilot`）自动化构建与上传。
+- 签名凭据放 CI 的密钥管理，不提交到仓库。
+- 每次合并前至少跑单元测试与静态分析。
+
 ## 9. 验收
 
 - 能把 Massive ViewController 拆成 Controller / ViewModel / Service / Model。
 - 能用 CocoaPods 管理依赖并用 `.xcworkspace` 构建。
 - 能完成 OC 与 Swift 的双向调用配置。
 - 能写出 XCTest 单元测试与关键路径 UI 测试。
-- 能用 LLDB 与 Instruments 定位崩溃、泄漏与卡顿。
+- 能用 LLDB、Instruments 与 View Debugger 定位崩溃、泄漏与卡顿。
+- 能用静态分析与命令行构建接入持续集成。
 - 能配置签名，Archive 后上传 TestFlight。
 
 ## 10. 排错

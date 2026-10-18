@@ -117,6 +117,23 @@ UINavigationController *nav =
 }
 ```
 
+### 4.2 Unwind Segue 返回
+
+Storyboard 中从编辑页返回列表并带回数据，可以用 Unwind Segue：
+
+```objc
+// 在返回后停留的控制器（列表页）中声明
+- (IBAction)unwindToHabitList:(UIStoryboardSegue *)segue {
+  HabitEditorViewController *editor = segue.sourceViewController;
+  if (editor.savedHabit) {
+    [self.habits addObject:editor.savedHabit];
+    [self.tableView reloadData];
+  }
+}
+```
+
+在 Storyboard 中把编辑页的按钮拖到顶部 Exit 图标，选择 `unwindToHabitList:` 即可。返回逻辑集中在目标控制器，避免跨页面反注册回调。
+
 ## 5. UITableView
 
 ```objc
@@ -198,6 +215,38 @@ UINavigationController *nav =
 @end
 ```
 
+### 5.2 分组、自适应高度与滑动操作
+
+```objc
+// 分组的行数
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+  return [self.habitsBySection[section] count];
+}
+
+// 自适应高度
+self.tableView.rowHeight = UITableViewAutomaticDimension;
+self.tableView.estimatedRowHeight = 60;
+
+// iOS 11+ 滑动删除
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+    trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+  UIContextualAction *delete =
+  [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
+                                          title:@"删除"
+                                        handler:^(UIContextualAction *action,
+                                                  UIView *sourceView,
+                                                  void (^completionHandler)(BOOL)) {
+    [self.habits removeObjectAtIndex:indexPath.row];
+    [tableView deleteRowsAtIndexPaths:@[indexPath]
+                     withRowAnimation:UITableViewRowAnimationAutomatic];
+    completionHandler(YES);
+  }];
+  return [UISwipeActionsConfiguration configurationWithActions:@[delete]];
+}
+```
+
+要点：删除时先改数据源再更新 UI，数量必须与 `numberOfRows` 一致；复杂列表可用 `UITableViewDiffableDataSource` 降低一致性风险。
+
 ## 6. UICollectionView 速览
 
 网格布局用 `UICollectionView`：
@@ -265,6 +314,19 @@ editor.onSaved = ^(Habit *habit) {
 - 文本用动态字体 `UIFont.preferredFontForTextStyle:`，支持系统字号。
 - 多语言用 `Localizable.strings` 与 `NSLocalizedString`。
 - 屏幕适配用 Auto Layout + `safeAreaLayoutGuide`，避免写死尺寸。
+
+```objc
+// 动态字体
+self.titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+self.titleLabel.adjustsFontForContentSizeCategory = YES;
+
+// 无障碍描述，VoiceOver 会朗读
+self.checkInButton.accessibilityLabel = @"打卡";
+self.checkInButton.accessibilityHint = @"将连续天数加一";
+self.checkInButton.accessibilityTraits = UIAccessibilityTraitButton;
+```
+
+无障碍检查：按钮点击区域不小于 44x44pt，文本对比度足够，图标按钮都有 `accessibilityLabel`，用 VoiceOver 走一遍主流程。
 
 ## 9. 验收
 
