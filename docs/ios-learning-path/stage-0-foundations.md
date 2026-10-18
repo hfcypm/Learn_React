@@ -2,7 +2,92 @@
 
 **目标**：掌握 Objective-C 的类、属性、内存管理与生命周期，能创建并读懂一个既有 Xcode 工程。
 
-**前置知识**：C 语言基础（指针、结构体、函数）与面向对象概念。
+**前置知识**：C 语言基础（变量、函数、指针、结构体）与面向对象概念。不熟悉时先读第 0 节，再进入正式内容。
+
+## 0. 预备知识
+
+### 0.1 先看一个能跑的最小程序
+
+```objc
+// main.m
+#import <Foundation/Foundation.h>
+
+int main(int argc, const char * argv[]) {
+  @autoreleasepool {
+    NSString *name = @"Ada";
+    NSLog(@"Hello, %@", name);
+  }
+  return 0;
+}
+```
+
+- `main` 是程序入口，返回 0 表示正常结束。
+- `#import <Foundation/Foundation.h>` 引入 Foundation 框架的声明，`NSString`、`NSLog`、`NSArray` 都来自这里。
+- `@"..."` 是 OC 字符串字面量，类型为 `NSString *`；普通 `"..."` 是 C 字符串。
+- `@autoreleasepool` 管理临时对象的释放，命令行程序需要显式写，App 里由主线程 run loop 维护。
+
+`NSLog` 常用占位符：`%@` 对象、`%d` / `%ld` 整数、`%f` 浮点、`%p` 指针。
+
+### 0.2 头文件、实现文件与编译流程
+
+| 文件 | 作用 |
+|---|---|
+| `.h` | 声明：类、属性、方法签名，供其他文件引用 |
+| `.m` | 实现：方法体与私有属性 |
+| `.mm` | Objective-C++，需要混用 C++ 时使用 |
+| `.pch` | 预编译头，老工程常见，用于全局导入 |
+
+```text
+.m / .h --预处理--> 展开 #import 与宏
+        --编译--> 生成 .o 目标文件
+        --链接--> 合并 Foundation 等库，生成可执行文件或 App
+```
+
+- `#import` 相当于“只包含一次的 `#include`”，避免重复声明。
+- 编译由 `clang` 完成，Xcode 负责调度编译器与链接器。
+- 报错分编译期（语法、类型、找不到声明）与链接期（找不到符号、重复符号），排查方向不同。
+
+App 工程的 `main.m` 通常只有 `UIApplicationMain(...)`，把控制权交给 UIKit，所以业务代码从 `AppDelegate` 开始。
+
+### 0.3 从 C 到 Objective-C
+
+OC 是 C 的超集：变量、循环、函数、指针、结构体都能直接用。新增的核心是“对象”和“消息”：
+
+```objc
+// C 的函数调用：编译期确定调用谁
+print_habit(habit);
+
+// OC 的消息发送：运行时查找方法
+[habit printTitle];
+```
+
+- 对象通常分配在堆上，`alloc` 负责分配并清零，`init` 负责初始化。
+- 每个对象内部有 `isa` 指针指向它的类，方法查找、`isKindOfClass:`、KVO 都依赖它。
+- 消息在运行时解析，因此 OC 支持动态替换方法、`respondsToSelector:`、KVC 等能力。
+- 栈上的 C 结构体与堆上的 OC 对象生命周期不同，这是理解 ARC 的前提。
+
+### 0.4 类、对象、实例、方法与属性
+
+| 术语 | 含义 | 习惯打卡里的例子 |
+|---|---|---|
+| 类 | 模板、图纸 | `Habit` |
+| 对象 / 实例 | 按模板创建出的具体个体 | “阅读”这条习惯 |
+| 属性 | 对象保存的数据 | `title`、`streak` |
+| 方法 | 对象能执行的动作 | `markCheckedIn` |
+| 协议 | 一份方法清单，约定“能做什么” | `HabitCellDelegate` |
+
+一个类可以创建多个实例，实例之间数据独立。`[[Habit alloc] init]` 就是“分配内存 + 初始化”两步。
+
+### 0.5 先记住这几个词
+
+- **框架（Framework）**：系统提供的一组类与函数，Foundation 管基础类型，UIKit 管界面。
+- **SDK**：开发某平台所需的头文件、库与工具集合，iOS SDK 随 Xcode 安装。
+- **Selector**：方法名在运行时的表示，如 `@selector(markCheckedIn)`。
+- **Deployment Target**：App 支持的最低系统版本，决定能用哪些 API。
+- **Bundle Identifier**：App 的唯一标识，签名与上架都依赖它。
+- **ARC**：自动引用计数，编译器在合适位置插入引用计数操作。
+
+如果 C 基础薄弱，先补：变量与类型、分支与循环、函数与参数、指针与取地址、结构体。这些在读老代码时每天都会遇到。
 
 ## 1. 类与对象
 
