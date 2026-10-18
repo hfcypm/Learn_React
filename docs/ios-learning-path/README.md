@@ -7,6 +7,7 @@
 ## 先看这里
 
 - [新手导读](./start-here.md)：前置条件、学习顺序、工程心智模型和统一排错顺序。
+- [附录：C 语言基础](./c-foundations.md)：为阶段零补齐变量、指针、结构体、内存与预处理。
 - [综合实战：维护老版习惯打卡 App](./project-practice.md)：按阶段改造同一个 Objective-C 工程，从跑通到上架。
 - [学习评估与项目评分](./learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
 - [版本边界与迁移](./version-governance.md)：iOS / Xcode / ARC / SceneDelegate 的代际差异。
@@ -34,6 +35,7 @@
 ## 快速导航
 
 - [阶段零：Objective-C 语言与 Xcode 工程](./stage-0-foundations.md)
+- [附录：C 语言基础](./c-foundations.md)
 - [阶段一：UIKit 与 Storyboard/XIB](./stage-1-uikit.md)
 - [阶段二：数据、网络、持久化与并发](./stage-2-data-network.md)
 - [阶段三：老工程维护、测试与发布](./stage-3-engineering-release.md)
@@ -89,5 +91,7 @@ UIApplication
 - C 语言基础：指针、结构体、函数、编译与链接的基本概念。
 - 面向对象基础：类、继承、封装、多态、协议/接口。
 - 命令行、Git 与依赖管理的基本概念。
+
+C 基础薄弱时，先读 [附录：C 语言基础](./c-foundations.md)，按练习清单动手写一遍，再进入阶段零。
 
 有 [TypeScript 学习路线](../typescript-learning-path/README.md) 或 [React 学习路线](../react-learning-path/README.md) 基础时，理解 MVC、组件化与状态驱动会更快；有 [HarmonyOS 学习路线](../harmonyos-learning-path/README.md) 基础的读者，可以对照 UIKit 与 ArkUI 的页面生命周期与状态管理。

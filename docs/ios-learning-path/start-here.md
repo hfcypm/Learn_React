@@ -13,6 +13,8 @@
 - 一个 Apple ID。免费账号可模拟器与真机调试；上架需加入 Apple Developer Program。
 - 能运行工程：拿到源码、`Podfile` 与依赖说明，能执行 `pod install`。
 
+如果 C 基础薄弱，先完成 [附录：C 语言基础](./c-foundations.md) 的练习，再进入阶段零。指针、结构体与内存布局会直接影响后续读 ARC 和崩溃日志的效率。
+
 ```bash
 # 确认开发环境
 xcode-select -p
