@@ -1,6 +1,6 @@
 # 附录：C 语言基础（面向 Objective-C 老代码阅读）
 
-**目标**：用 2-3 天补齐读 Objective-C / iOS 老代码所需的 C 基础，覆盖变量与类型、分支与循环、函数与参数、指针、结构体、内存与预处理。
+**目标**：用 2-3 天补齐读 Objective-C / iOS 老代码所需的 C 基础，覆盖变量与类型、分支与循环、函数与参数、指针、结构体、内存与未定义行为、存储类与多文件工程、标准库、C 与 OC 的边界。
 
 **用法**：这是 [阶段零](./stage-0-foundations.md) 的预备读物，不追求完整覆盖 C 语言。建议边读边在 Xcode 里建一个 macOS Command Line Tool（语言选 C）跑示例，不要只看不写。
 
@@ -186,6 +186,32 @@ if (pointer != NULL) {
 - `free` 之后指针不会自动变 `NULL`，要手动置空，避免重复释放。
 - `const int *` 表示不能通过该指针改数据；`int * const` 表示指针本身不能改。
 
+`void *` 是通用指针，可以指向任意类型，解引用前必须转回具体类型：
+
+```c
+int value = 42;
+void *raw = &value;
+int *typed = (int *)raw;
+printf("%d\n", *typed);
+```
+
+老代码里的回调 `context`、`dispatch_set_context`、`memcpy` 的目标参数都是 `void *`。
+
+指针数组与数组指针容易混淆：
+
+```c
+int a = 1, b = 2;
+int *arrayOfPointers[2] = { &a, &b };  // 数组，元素是 int *
+
+int row[2] = { 3, 4 };
+int (*pointerToArray)[2] = &row;       // 指针，指向 int[2]
+
+printf("%d\n", *arrayOfPointers[0]);
+printf("%d\n", (*pointerToArray)[1]);
+```
+
+读声明时从变量名往外看：`*arrayOfPointers[2]` 先结合 `[]`，所以是数组；`(*pointerToArray)[2]` 先结合 `*`，所以是指针。
+
 指针与数组：
 
 ```c
@@ -264,6 +290,26 @@ int main(void) {
 - 结构体成员之间可能有填充字节，`sizeof` 不一定等于成员大小之和。
 - `typedef` 让类型名更短，OC 的 `CGRect` / `CGPoint` / `CGSize` / `NSRange` 都是结构体。
 
+结构体指针用 `->` 访问成员：
+
+```c
+void move(Point *point, int dx, int dy) {
+  point->x += dx;   // 等价于 (*point).x
+  point->y += dy;
+}
+
+int main(void) {
+  Point p = { .x = 0, .y = 0 };
+  move(&p, 10, 20);
+  printf("%d %d\n", p.x, p.y);
+  return 0;
+}
+```
+
+- 拿到结构体值用 `.`，拿到结构体指针用 `->`。
+- 函数要修改结构体时必须传指针，按值传参改的是副本。
+- 位域在老协议结构里常见：`unsigned int enabled : 1;` 表示只占 1 位，读到能算清含义即可。
+
 枚举：
 
 ```c
@@ -341,6 +387,19 @@ values = grown;
 - 在函数里返回局部数组的地址：函数返回后栈内存失效。
 - 在栈上开超大数组：栈溢出，尤其在递归或主线程里。
 
+### 未定义行为
+
+下面这些写法编译器不报错，但结果不可预测，排查崩溃时要优先怀疑：
+
+- 有符号整数溢出（`INT_MAX + 1`），无符号是回绕、有符号是未定义。
+- 读取未初始化的局部变量。
+- 数组越界读或写。
+- 使用已 `free` 的内存、重复 `free`、`free` 非堆指针。
+- 用不兼容的类型指针读写同一块内存（strict aliasing）。
+- 在同一表达式里多次修改同一变量，如 `i = i++`。
+
+Xcode 的 Scheme -> Diagnostics 里开启 Address Sanitizer 与 Undefined Behavior Sanitizer，可以更快复现这类问题。
+
 与 OC 的关系：OC 对象也在堆上，`alloc` 分配、`init` 初始化、引用计数归零后释放。ARC 只是把引用计数操作交给编译器，理解 C 的栈/堆划分后，`strong` / `weak` / 循环引用会更容易想明白。
 
 ## 8. 预处理与宏
@@ -372,7 +431,151 @@ OC 工程的头文件里常见这种写法：
 
 老代码场景：`DEBUG` 日志、颜色与尺寸常量、多环境接口地址、`#pragma mark` 分节。
 
-## 9. 常见崩溃对照表
+## 9. 存储类、链接与多文件工程
+
+`static` 在不同位置含义不同：
+
+- 修饰局部变量：只初始化一次，函数返回后值仍保留。
+- 修饰全局变量或函数：只在当前 `.c` / `.m` 文件可见。
+- 头文件里只放 `extern` 声明，不要放全局变量定义。
+
+```c
+// Habit.h
+#ifndef Habit_h
+#define Habit_h
+
+extern const int kMaxHabitCount;
+
+int habit_add(int a, int b);
+
+#endif /* Habit_h */
+```
+
+```c
+// Habit.c
+#include "Habit.h"
+
+const int kMaxHabitCount = 20;
+
+static int callCount = 0;
+
+static void log_call(void) {
+  callCount++;
+}
+
+int habit_add(int a, int b) {
+  log_call();
+  return a + b;
+}
+```
+
+- `extern` 是声明，告诉编译器“定义在别处”；定义全工程只能有一处。
+- `static` 函数与全局变量是文件私有，适合放内部辅助逻辑。
+- `inline` 只是建议内联；头文件里的内联函数写成 `static inline`。
+- 多文件工程靠头文件声明加链接器解析符号：缺定义报 `Undefined symbol`，重复定义报 `Duplicate symbol`。
+- `.m`（OC）与 `.c`（C）可以混合编译。公共 C 头文件要被 `.mm`（OC++）引用时，必须用 `extern "C"` 防止 C++ 名称修饰：
+
+```c
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int habit_count(void);
+
+#ifdef __cplusplus
+}
+#endif
+```
+
+## 10. 常用标准库速查
+
+| 头文件 | 常用函数 | 用途 |
+|---|---|---|
+| `<string.h>` | `memcpy` `memmove` `memset` `memcmp` | 内存块拷贝、填充、比较 |
+| `<string.h>` | `strlen` `strcmp` `strncmp` `strstr` `strchr` | 字符串长度、比较、查找 |
+| `<stdlib.h>` | `malloc` `calloc` `realloc` `free` | 堆内存管理 |
+| `<stdlib.h>` | `atoi` `strtol` `strtod` | 字符串转数字 |
+| `<stdlib.h>` | `qsort` `bsearch` `abs` `labs` | 排序、查找、绝对值 |
+| `<stdio.h>` | `printf` `snprintf` `fopen` `fread` `fwrite` `fclose` | 格式化输出与文件读写 |
+| `<stdint.h>` | `int8_t` `int32_t` `uint64_t` `intptr_t` | 固定宽度整数 |
+| `<stdbool.h>` | `bool` `true` `false` | 布尔类型 |
+| `<math.h>` | `floor` `ceil` `round` `fabs` `sqrt` `pow` | 数学计算 |
+
+几个容易踩坑的细节：
+
+- `memcpy` 不处理内存重叠，源和目标重叠时用 `memmove`。
+- `snprintf` 返回“本应写入的长度”，据此判断是否被截断。
+
+```c
+char buffer[16];
+int written = snprintf(buffer, sizeof(buffer), "%s-%d", "habit", 42);
+if (written < 0 || (size_t)written >= sizeof(buffer)) {
+  // 发生截断或编码错误
+}
+```
+
+- `strtol` 用 `endptr` 判断是否完整解析，`atoi` 无法区分错误与 0。
+
+```c
+char *end = NULL;
+long value = strtol("42abc", &end, 10);
+if (end == NULL || *end != '\0') {
+  // 没有完整解析，end 指向第一个非法字符
+}
+```
+
+- `qsort` 的比较器返回负数、0、正数，分别表示小于、等于、大于。
+
+## 11. C 与 Objective-C 的边界
+
+接手老工程时，C 代码与 OC 代码经常贴在一起，下面几组概念要能分清：
+
+**字符串转换**
+
+```objc
+NSString *text = @"阅读";
+const char *utf8 = [text UTF8String];   // 指针生命周期跟随 text，不要长期保存
+NSString *back = [NSString stringWithUTF8String:"阅读"];
+```
+
+`UTF8String` 返回的内部缓冲区由 `NSString` 管理，原字符串释放后指针失效。需要保留时用 `strdup` 复制，用完 `free`。
+
+**空值**
+
+| 写法 | 含义 |
+|---|---|
+| `NULL` | C 空指针 |
+| `nil` | OC 对象空指针 |
+| `Nil` | OC 类空指针 |
+| `NSNull` | 集合里占位的“空对象” |
+
+`nil` 可以安全地接收消息，`NSNull` 是一个真实对象，向它发未实现的消息会崩溃。集合里取出的 `NSNull` 要先判断再转换。
+
+**`id` 与 `void *`**
+
+```objc
+id object = [[NSObject alloc] init];
+void *raw = (__bridge void *)object;   // 不转移所有权
+id back = (__bridge id)raw;
+```
+
+`__bridge` 只做类型转换；Core Foundation 对象转 OC 并移交所有权用 `__bridge_transfer`，反向用 `__bridge_retained`。ARC 下混用 C 指针与 OC 对象时，桥接关键字写错会造成过度释放或泄漏。
+
+**`BOOL` 与 `bool`**
+
+`BOOL` 是 OC 的布尔类型，取值 `YES` / `NO`；`bool` 来自 `<stdbool.h>`。判断时统一写 `if (flag)`，不要写 `if (flag == YES)`，因为老代码里 `BOOL` 可能是 `signed char`，非 0 即真。
+
+**结构体进集合**
+
+`CGRect`、`NSRange` 不是对象，不能直接放进 `NSArray` / `NSDictionary`，需要装箱：
+
+```objc
+NSValue *value = [NSValue valueWithBytes:&rect objCType:@encode(CGRect)];
+CGRect decoded;
+[value getValue:&decoded];
+```
+
+## 12. 常见崩溃对照表
 
 | 现象 | C 视角的常见原因 |
 |---|---|
@@ -385,7 +588,7 @@ OC 工程的头文件里常见这种写法：
 
 排查时先用 Xcode 的 Address Sanitizer（Scheme -> Diagnostics）复现，再回到指针与下标的计算上找越界。
 
-## 10. 练习清单
+## 13. 练习清单
 
 在命令行工程里完成，每题都要求能编译、能解释结果：
 
@@ -396,13 +599,19 @@ OC 工程的头文件里常见这种写法：
 5. 用位掩码实现三个开关的组合、判断与清除。
 6. 写一个返回 `bool`、通过指针输出结果的函数，模拟 `NSError **` 模式。
 7. 故意制造一次数组越界与一次悬空指针，用 Address Sanitizer 观察报错。
+8. 用 `strtol` 解析字符串并判断是否完整，用 `snprintf` 安全拼接。
+9. 把结构体指针传入函数，用 `->` 修改成员。
+10. 写一个 `.h` + `.c` 的小模块，用 `static` 隐藏内部函数，并在 `.mm` 里通过 `extern "C"` 调用。
 
-## 11. 验收
+## 14. 验收
 
 - 能解释 `&`、`*`、`NULL` 与指针类型的关系。
+- 能用 `->` 操作结构体指针，区分指针数组与数组指针。
 - 能读写 `char *` 字符串，知道 `'\0'` 的作用。
 - 能看懂 `CGRect`、`NSRange` 这类结构体的定义与传值方式。
 - 能识别野指针、数组越界、未终止字符串与无符号回绕。
+- 能说明 `static` / `extern` 的作用，并让 C 头文件在 `.mm` 里正确链接。
+- 能区分 `NULL` / `nil` / `NSNull`，安全完成 `NSString` 与 `const char *` 转换。
 - 能用函数指针写回调，并理解它与 block 的对应关系。
 - 能说清栈与堆的区别，以及 OC 对象为什么需要引用计数。
 

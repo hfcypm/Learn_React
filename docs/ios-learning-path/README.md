@@ -7,7 +7,7 @@
 ## 先看这里
 
 - [新手导读](./start-here.md)：前置条件、学习顺序、工程心智模型和统一排错顺序。
-- [附录：C 语言基础](./c-foundations.md)：为阶段零补齐变量、指针、结构体、内存与预处理。
+- [附录：C 语言基础](./c-foundations.md)：为阶段零补齐变量、指针、结构体、内存、标准库与 C/OC 边界。
 - [综合实战：维护老版习惯打卡 App](./project-practice.md)：按阶段改造同一个 Objective-C 工程，从跑通到上架。
 - [学习评估与项目评分](./learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
 - [版本边界与迁移](./version-governance.md)：iOS / Xcode / ARC / SceneDelegate 的代际差异。
