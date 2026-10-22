@@ -134,6 +134,27 @@ Storyboard 中从编辑页返回列表并带回数据，可以用 Unwind Segue�
 
 在 Storyboard 中把编辑页的按钮拖到顶部 Exit 图标，选择 `unwindToHabitList:` 即可。返回逻辑集中在目标控制器，避免跨页面反注册回调。
 
+### 4.3 弹窗：UIAlertController
+
+```objc
+UIAlertController *alert =
+    [UIAlertController alertControllerWithTitle:@"确认删除"
+                                        message:@"删除后不可恢复"
+                                 preferredStyle:UIAlertControllerStyleAlert];
+[alert addAction:[UIAlertAction actionWithTitle:@"取消"
+                                          style:UIAlertActionStyleCancel
+                                        handler:nil]];
+[alert addAction:[UIAlertAction actionWithTitle:@"删除"
+                                          style:UIAlertActionStyleDestructive
+                                        handler:^(UIAlertAction *action) {
+  [self deleteHabit:habit];
+}]];
+[self presentViewController:alert animated:YES completion:nil];
+```
+
+- iOS 8 起统一用 `UIAlertController`；老代码里的 `UIAlertView` / `UIActionSheet` 已废弃，维护时优先替换。
+- 弹窗也是模态：上一个 present 未完成就再 present 会报 "Attempt to present ... while a presentation is in progress"，先检查 `presentedViewController` 或等 completion。
+
 ## 5. UITableView
 
 ```objc
@@ -145,7 +166,8 @@ Storyboard 中从编辑页返回列表并带回数据，可以用 Unwind Segue�
 @implementation HabitListViewController
 
 - (void)setupTableView {
-  self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleInsetGrouped];
+  self.tableView = [[UITableView alloc] initWithFrame:CGRectZero
+                                                style:UITableViewStyleInsetGrouped]; // iOS 13+，低版本用 UITableViewStyleGrouped
   self.tableView.dataSource = self;
   self.tableView.delegate = self;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -215,6 +237,13 @@ Storyboard 中从编辑页返回列表并带回数据，可以用 Unwind Segue�
 @end
 ```
 
+`HabitCell` 用 XIB 实现时改用 nib 注册，与 `registerClass:` 二选一：
+
+```objc
+[self.tableView registerNib:[UINib nibWithNibName:@"HabitCell" bundle:nil]
+     forCellReuseIdentifier:@"HabitCell"];
+```
+
 ### 5.2 分组、自适应高度与滑动操作
 
 ```objc
@@ -261,9 +290,42 @@ UICollectionView *collectionView =
    forCellWithReuseIdentifier:@"Cell"];
 ```
 
-数据源遵循 `UICollectionViewDataSource`，布局细节用 `UICollectionViewDelegateFlowLayout`。
+数据源遵循 `UICollectionViewDataSource`，布局细节用 `UICollectionViewDelegateFlowLayout`。cell 注册方式与 UITableView 相同，支持 `registerClass:` 与 `registerNib:`；老代码常见的自定义流水布局，重点看 `prepareLayout` 与 `layoutAttributesForElementsInRect:`。
 
-## 7. 回调与页面传值
+## 7. 控件事件与键盘
+
+### 7.1 target-action 与 IBAction
+
+```objc
+[self.checkInButton addTarget:self
+                       action:@selector(checkInTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+```
+
+- `IBAction` 是 target-action 在 Storyboard 里的连线形式，两者等价。
+- 常用事件：`UIControlEventTouchUpInside`（按钮）、`UIControlEventValueChanged`（开关、滑块、日期选择器）、`UIControlEventEditingDidEnd`（输入框结束编辑）。
+- 按钮无反应的排查顺序：是否 `addTarget`、事件类型是否匹配、`enabled` 与 `userInteractionEnabled` 是否为 YES、控件是否被别的视图盖住。
+
+### 7.2 键盘处理
+
+```objc
+// 收起键盘：页面任意位置
+[self.view endEditing:YES];
+
+// 滚动列表时自动收起
+self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+
+// 点击空白处收起
+UITapGestureRecognizer *tap =
+    [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
+[self.view addGestureRecognizer:tap];
+```
+
+- 输入框被键盘遮挡时：监听 `UIKeyboardWillChangeFrameNotification`，调整底部约束或改 scrollView 的 `contentInset`。
+- 老工程普遍集成 IQKeyboardManager 自动避让，维护时先确认是否已启用，避免自己再监听一遍造成双重调整。
+- `UITextFieldDelegate` 的 `textFieldShouldReturn:` 处理回车；输入框之间跳转用 `becomeFirstResponder` 与 `resignFirstResponder`。
+
+## 8. 回调与页面传值
 
 | 方向 | 方式 |
 |---|---|
@@ -272,7 +334,7 @@ UICollectionView *collectionView =
 | 跨层解耦 | NSNotificationCenter |
 | 一对多状态 | KVO |
 
-### 7.1 Delegate
+### 8.1 Delegate
 
 ```objc
 @protocol HabitEditorDelegate <NSObject>
@@ -292,7 +354,7 @@ UICollectionView *collectionView =
 }
 ```
 
-### 7.2 Block
+### 8.2 Block
 
 ```objc
 typedef void (^HabitSavedBlock)(Habit *habit);
@@ -308,12 +370,13 @@ editor.onSaved = ^(Habit *habit) {
 };
 ```
 
-## 8. 外观与适配
+## 9. 外观与适配
 
 - 颜色用语义色或 `Assets.xcassets` 的 Any / Dark 配置，适配深色模式。
 - 文本用动态字体 `UIFont.preferredFontForTextStyle:`，支持系统字号。
 - 多语言用 `Localizable.strings` 与 `NSLocalizedString`。
 - 屏幕适配用 Auto Layout + `safeAreaLayoutGuide`，避免写死尺寸。
+- 网络图片用工程现有的图片库加载并给占位图，如 `[imageView sd_setImageWithURL:url placeholderImage:placeholder]`（SDWebImage），避免自行管理下载与缓存。
 
 ```objc
 // 动态字体
@@ -328,22 +391,26 @@ self.checkInButton.accessibilityTraits = UIAccessibilityTraitButton;
 
 无障碍检查：按钮点击区域不小于 44x44pt，文本对比度足够，图标按钮都有 `accessibilityLabel`，用 VoiceOver 走一遍主流程。
 
-## 9. 验收
+## 10. 验收
 
 - 能新建控制器并在 Storyboard / XIB 中连线 IBOutlet 与 IBAction。
 - 能用 Auto Layout 约束完成贴边、居中与自适应高度。
 - 能用 `UINavigationController` 完成 push / pop 与模态展示。
+- 能用 `UIAlertController` 完成确认弹窗，并理解弹窗的模态本质。
+- 能处理键盘收起与遮挡避让。
 - 能用 UITableView 展示数据并处理点击与复用。
 - 能用 delegate 或 block 完成反向传值，且无循环引用。
 - 界面在深色模式与不同屏幕尺寸下可用。
 
-## 10. 排错
+## 11. 排错
 
 | 现象 | 排查 |
 |---|---|
 | 界面空白 | Main Interface 是否设置，Initial View Controller 是否存在 |
 | `IBOutlet` 为 nil | 连接是否断开，`viewDidLoad` 时视图是否已加载 |
 | `IBAction` 不触发 | 连接是否成对，控件 `userInteractionEnabled` 是否为 YES |
+| 弹窗报 "presentation is in progress" | 是否连续 present，检查 `presentedViewController`，等上一个 completion |
+| 输入框被键盘遮挡 | 是否监听键盘通知调整约束或 inset，是否与 IQKeyboardManager 重复处理 |
 | 列表崩溃在 `cellForRow` | 数据源数组是否越界，`numberOfRows` 与数据是否一致 |
 | cell 内容串行 | 是否在 `prepareForReuse` 重置，复用标识符是否正确 |
 | 约束冲突 | 是否少/多约束，是否设置 `translatesAutoresizingMaskIntoConstraints = NO` |

@@ -28,6 +28,8 @@
 - 用 Auto Layout 完成贴边、居中与自适应。
 - 用 UITableView 展示数据，正确处理复用与 `prepareForReuse`。
 - 用 `UINavigationController` 完成 push / pop 与模态。
+- 用 `UIAlertController` 弹确认框，说清连续 present 的崩溃场景。
+- 处理键盘收起与遮挡，说出 IQKeyboardManager 的作用。
 - 用 delegate 或 block 完成反向传值。
 
 ### 阶段二：数据、网络与并发
