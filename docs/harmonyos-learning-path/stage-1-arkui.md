@@ -483,6 +483,7 @@ Column() {
 ### 9.1 `@Builder` / `@LocalBuilder` / `@BuilderParam`
 
 ```ts
+// 全局 @Builder：跨组件复用，数据只能靠参数传入（按值传递）
 @Builder
 function cardHeader(title: string) {
   Row() {
@@ -491,8 +492,18 @@ function cardHeader(title: string) {
 }
 
 @ComponentV2
+struct Demo {
+  build() {
+    Column() {
+      cardHeader('账户总览')   // 全局 @Builder 按名直接调用
+    }
+  }
+}
+
+// @BuilderParam：插槽，内容由父组件注入
+@ComponentV2
 struct Card {
-  @BuilderParam header: () => void = this.defaultHeader;  // 插槽
+  @BuilderParam header: () => void = this.defaultHeader;  // 插槽，带默认内容
 
   @Builder
   defaultHeader() {
@@ -506,11 +517,27 @@ struct Card {
     }
   }
 }
+
+@ComponentV2
+struct DemoPage {
+  @Builder
+  customHeader() {
+    Text('自定义标题').fontSize(18)
+  }
+
+  build() {
+    Column() {
+      Card({ header: this.customHeader })   // 注入自定义插槽内容
+    }
+  }
+}
 ```
 
 - `@Builder`：定义可复用 UI 片段，可在全局或组件内声明。
 - `@BuilderParam`：在组件内引用一个 `@Builder`，实现类似“插槽”的能力。
 - `@LocalBuilder`：在组件内声明并使用，**保留 `this` 指向当前组件**，适合需要访问组件状态的构建函数；`@Builder` 内的 `this` 需要额外处理。
+- 传参方式决定刷新行为：按值传递（普通参数）时，状态变化不会刷新 Builder 内 UI；需要联动刷新时改用对象字面量按引用传递，如 `function cardHeader($$: { title: string })`，调用 `cardHeader({ title: this.title })`。
+- 需要把全局 `@Builder` 跨文件当参数传递（存变量、进数组）时，用 `wrapBuilder()` 封装。
 
 ```ts
 @ComponentV2
