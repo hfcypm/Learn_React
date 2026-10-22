@@ -17,6 +17,8 @@ clang -Wall -Wextra main.c -o main
 
 Xcode 方式：`File -> New -> Project -> macOS -> Command Line Tool`，Language 选 C，然后把示例贴进 `main.c`。Xcode 的断点、变量查看、LLDB 在 C 工程里同样可用，练指针时比 `printf` 更直观。
 
+入口函数也可以写成 `int main(int argc, char *argv[])`：`argc` 是参数个数，`argv` 是字符串数组，`argv[0]` 是程序名。老代码解析启动参数都长这样。
+
 ## 2. 变量与类型
 
 ```c
@@ -44,7 +46,7 @@ int main(void) {
 要点：
 
 - `sizeof` 返回 `size_t`，用 `%zu` 打印。
-- 有符号与无符号混算时，有符号会被转成无符号，`-1 < 1u` 可能为假。
+- 有符号与无符号混算时，有符号会被转成无符号：`-1 < 1u` 恒为假，因为 `-1` 被转成巨大的无符号数。
 - `long` 的宽度随架构变化，跨平台数据用 `<stdint.h>` 的 `int32_t` / `uint64_t`。
 - OC 里的 `NSInteger` / `NSUInteger` / `CGFloat` 就是按平台切换宽度的类型别名。
 
@@ -56,7 +58,7 @@ int main(void) {
 | `unsigned int` | `NSUInteger` | 做减法可能回绕成巨大值 |
 | `float` / `double` | `CGFloat` | 32 位设备是 `float`，64 位是 `double` |
 | `char *` | `const char *` | OC 字符串转 C 字符串要管理编码与生命周期 |
-| `bool` | `BOOL` | `BOOL` 在老 SDK 里是 `signed char`，只有 0/1 语义 |
+| `bool` | `BOOL` | `BOOL` 是 `signed char`，非 0 即真，判断别写 `== YES` |
 
 ## 3. 运算符、分支与循环
 
@@ -143,6 +145,20 @@ int main(void) {
 - 函数要先声明后使用；跨文件调用靠头文件声明 + 链接。
 - `static` 修饰函数表示只在当前文件可见；`extern` 表示定义在别处。
 
+数组退化的具体样子，`sizeof` 在函数内外不一样：
+
+```c
+void print_array(int values[], size_t count) {
+  // values 在函数里已经是指针，sizeof(values) 是指针大小（64 位上是 8），
+  // 拿不到数组长度，所以必须额外传 count
+  printf("in function: %zu\n", sizeof(values));
+  for (size_t i = 0; i < count; i++) {
+    printf("%d ", values[i]);
+  }
+  printf("\n");
+}
+```
+
 函数指针是 block 出现之前的老回调方式：
 
 ```c
@@ -165,6 +181,26 @@ int main(void) {
 
 老代码场景：C 函数回调、`qsort` 比较器、`target-action` 之前的观察者、`dispatch_apply` 的 C 函数版本。
 
+函数指针数组常用来做“分发表”，按编号调用不同函数：
+
+```c
+typedef void (*CommandHandler)(void);
+
+void cmd_start(void) { printf("start\n"); }
+void cmd_stop(void)  { printf("stop\n"); }
+
+int main(void) {
+  CommandHandler handlers[] = { cmd_start, cmd_stop };
+  int command = 0;
+  if (command >= 0 && (size_t)command < sizeof(handlers) / sizeof(handlers[0])) {
+    handlers[command]();
+  }
+  return 0;
+}
+```
+
+老代码里的菜单跳转、指令解析、状态机跳转表，多是这个结构。
+
 ## 5. 指针与取地址（重点）
 
 ```c
@@ -182,6 +218,7 @@ if (pointer != NULL) {
 要点：
 
 - 指针保存地址，类型决定解引用时读多少字节、如何解释。
+- 64 位系统上指针固定 8 字节，与所指类型无关；把指针存进 `int` 会截断，需要存地址时用 `intptr_t`。
 - 未初始化或指向已释放内存的指针是野指针，解引用通常得到 `EXC_BAD_ACCESS`。
 - `free` 之后指针不会自动变 `NULL`，要手动置空，避免重复释放。
 - `const int *` 表示不能通过该指针改数据；`int * const` 表示指针本身不能改。
@@ -195,7 +232,7 @@ int *typed = (int *)raw;
 printf("%d\n", *typed);
 ```
 
-老代码里的回调 `context`、`dispatch_set_context`、`memcpy` 的目标参数都是 `void *`。
+老代码里回调函数的 `context` 参数、`dispatch_set_context`、`memcpy` 的目标参数都是 `void *`。
 
 指针数组与数组指针容易混淆：
 
@@ -239,6 +276,7 @@ for (size_t i = 0; name[i] != '\0'; i++) {
 - C 字符串以 `'\0'` 结尾，缺了终止符，`strlen` 与 `printf("%s")` 会一路读到越界。
 - `strcpy` / `strcat` 不检查目标缓冲区大小，老代码里的缓冲区溢出多来自这里。
 - 更安全的替代：`snprintf`、`strncpy`（注意手动补 `'\0'`）、`strlcpy`。
+- C 字符串按字节存储，没有编码概念：`strlen("阅读")` 是 6，UTF-8 里每个汉字占 3 字节。按字节截断会切碎汉字，文本处理优先在 OC 侧用 `NSString` 做。
 
 指向指针的指针：
 
@@ -310,6 +348,36 @@ int main(void) {
 - 函数要修改结构体时必须传指针，按值传参改的是副本。
 - 位域在老协议结构里常见：`unsigned int enabled : 1;` 表示只占 1 位，读到能算清含义即可。
 
+老代码常见“不透明指针”：头文件只声明类型名，结构体定义藏在实现文件里，外部只能通过函数操作：
+
+```c
+// HabitStore.h
+typedef struct HabitStore HabitStore;
+
+HabitStore *store_create(void);
+void store_destroy(HabitStore *store);
+```
+
+```c
+// HabitStore.c
+#include "HabitStore.h"
+#include <stdlib.h>
+
+struct HabitStore {
+  int count;
+};
+
+HabitStore *store_create(void) {
+  return calloc(1, sizeof(struct HabitStore));
+}
+
+void store_destroy(HabitStore *store) {
+  free(store);
+}
+```
+
+`sqlite3 *`、`CFTypeRef`、Core Audio 的各种 `Ref` 都是这个模式。只在 include 头文件的文件里直接访问成员，会报 “incomplete type” 编译错误，因为结构体定义只在实现文件里可见。
+
 枚举：
 
 ```c
@@ -371,6 +439,7 @@ int main(void) {
 动态扩容：
 
 ```c
+size_t newCapacity = capacity * 2;   // 扩到两倍
 int *grown = realloc(values, newCapacity * sizeof(int));
 if (grown == NULL) {
   free(values);   // realloc 失败时原内存仍然有效
@@ -386,6 +455,40 @@ values = grown;
 - 重复 `free`：堆破坏。
 - 在函数里返回局部数组的地址：函数返回后栈内存失效。
 - 在栈上开超大数组：栈溢出，尤其在递归或主线程里。
+
+处理错误时常见的 `goto` 统一清理模式，读 C SDK 源码必备：
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+bool read_config(const char *path, char **outText) {
+  bool ok = false;
+  char *buffer = NULL;
+  FILE *file = fopen(path, "r");
+  if (file == NULL) {
+    return false;
+  }
+
+  buffer = malloc(4096);
+  if (buffer == NULL) {
+    goto cleanup;
+  }
+
+  size_t read = fread(buffer, 1, 4095, file);
+  buffer[read] = '\0';
+  *outText = buffer;   // 所有权移交给调用方
+  buffer = NULL;
+  ok = true;
+
+cleanup:
+  fclose(file);
+  free(buffer);        // free(NULL) 是安全的
+  return ok;
+}
+```
+
+任何一步失败都跳到统一出口，已分配的资源在出口处统一释放，避免每层判断都写一遍 `fclose` / `free`。OC 里这类清理主要靠 ARC 与 `@autoreleasepool`。
 
 ### 未定义行为
 
@@ -424,7 +527,7 @@ OC 工程的头文件里常见这种写法：
 
 要点：
 
-- 头文件用 `#ifndef` / `#define` / `#endif` 防止重复包含；OC 用 `#import` 自动处理。
+- 头文件用 `#ifndef` / `#define` / `#endif` 防止重复包含（新工程常用等效的 `#pragma once`）；OC 用 `#import` 自动处理。
 - 宏是文本替换，参数必须加括号：`#define SQUARE(x) x * x` 在 `SQUARE(a + 1)` 时会算错。
 - 宏没有类型检查，能用 `static const` 或函数替代时优先替代。
 - `#ifdef DEBUG` 常用于日志、断言与测试开关。
@@ -500,6 +603,7 @@ int habit_count(void);
 | `<stdint.h>` | `int8_t` `int32_t` `uint64_t` `intptr_t` | 固定宽度整数 |
 | `<stdbool.h>` | `bool` `true` `false` | 布尔类型 |
 | `<math.h>` | `floor` `ceil` `round` `fabs` `sqrt` `pow` | 数学计算 |
+| `<assert.h>` | `assert` | 开发期断言，Release 默认关闭 |
 
 几个容易踩坑的细节：
 
@@ -525,6 +629,7 @@ if (end == NULL || *end != '\0') {
 ```
 
 - `qsort` 的比较器返回负数、0、正数，分别表示小于、等于、大于。
+- C 用 `assert(expr)` 做开发期自检，OC 用 `NSAssert`。Release 构建默认关闭 C 断言，关键路径的错误仍要自己写处理逻辑。
 
 ## 11. C 与 Objective-C 的边界
 
@@ -602,6 +707,8 @@ CGRect decoded;
 8. 用 `strtol` 解析字符串并判断是否完整，用 `snprintf` 安全拼接。
 9. 把结构体指针传入函数，用 `->` 修改成员。
 10. 写一个 `.h` + `.c` 的小模块，用 `static` 隐藏内部函数，并在 `.mm` 里通过 `extern "C"` 调用。
+11. 写一个 `fopen` + `malloc` + `goto` 统一清理的读文件函数。
+12. 用函数指针数组实现一个三命令分发表。
 
 ## 14. 验收
 
@@ -612,6 +719,8 @@ CGRect decoded;
 - 能识别野指针、数组越界、未终止字符串与无符号回绕。
 - 能说明 `static` / `extern` 的作用，并让 C 头文件在 `.mm` 里正确链接。
 - 能区分 `NULL` / `nil` / `NSNull`，安全完成 `NSString` 与 `const char *` 转换。
+- 能解释数组参数退化与 `sizeof` 在函数内外的差异。
+- 能读懂 `goto` 统一清理模式与不透明指针，知道 “incomplete type” 报错的来源。
 - 能用函数指针写回调，并理解它与 block 的对应关系。
 - 能说清栈与堆的区别，以及 OC 对象为什么需要引用计数。
 
