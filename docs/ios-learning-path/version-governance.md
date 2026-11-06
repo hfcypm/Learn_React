@@ -1,6 +1,8 @@
 # iOS 版本边界与迁移
 
-**目标**：让学习内容与存量工程拥有清晰的版本边界，降低 IDE 升级、系统升级与技术栈迁移的风险。
+**目标**：让学习内容与工程拥有清晰的版本边界，降低 IDE 升级、系统升级与技术栈迁移的风险。
+
+Swift 主线基线：**Swift 5.9+ / iOS 17+ / Xcode 15+**，使用 Observation 与 SwiftData。OC 维护支线兼容 iOS 12+，使用 SceneDelegate 的工程以 iOS 13 为基线。
 
 ## 1. 版本配套关系
 
@@ -55,11 +57,13 @@ iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共�
 |---|---|---|
 | 范式 | 命令式，控制器 + 视图 | 声明式，视图组合 |
 | 布局 | Auto Layout / frame | 声明式修饰符 |
-| 导航 | UINavigationController | NavigationStack |
-| 状态 | 属性 + 手动刷新 | `@State` / `@Observable` |
-| 成熟度 | 生态成熟、老工程主流 | 新项目推荐，持续演进 |
+| 导航 | UINavigationController | NavigationStack（替代 `NavigationView`） |
+| 状态 | 属性 + 手动刷新 | `@State` / `@Observable`（替代 `ObservableObject`） |
+| 成熟度 | 生态成熟、老工程主流 | 新项目主线 |
 
-存量工程的策略：
+新项目策略：SwiftUI 到底，Deployment Target 17，避免一上来混用两套导航与两套观察体系。
+
+存量工程策略：
 
 - 以 UIKit 为主，新页面可评估 SwiftUI。
 - 混用通过 `UIHostingController` 承载 SwiftUI 视图。
@@ -87,7 +91,21 @@ iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共�
 
 存量工程继续用 CocoaPods 更稳；新引入的库优先评估 SPM，避免同一工程两套依赖体系混用导致冲突。
 
-## 7. Core Data 模型版本与迁移
+## 7. 持久化代际：Core Data 与 SwiftData
+
+| 维度 | Core Data | SwiftData |
+|---|---|---|
+| 声明 | `.xcdatamodeld` | `@Model` |
+| 查询 | `NSFetchRequest` / `NSFetchedResultsController` | `@Query` |
+| 上下文 | `NSManagedObjectContext` | `ModelContext` |
+| 最低系统 | 长期存在 | iOS 17+ |
+| 存量工程 | 继续用 | 新模块可评估 |
+
+SwiftData 轻量变更（加可选字段）可推断；复杂迁移写 `VersionedSchema` + `SchemaMigrationPlan`。不要把已上线属性从非可选改成不兼容类型。
+
+Core Data 存量规则见下一节。
+
+## 8. Core Data 模型版本与迁移
 
 - `.xcdatamodeld` 每次结构变更新建版本，并设置 Current Version，不要直接改旧版本。
 - 轻量迁移覆盖：新增/删除属性、重命名属性（设置 renaming identifier）、新增实体。
@@ -103,7 +121,7 @@ desc.shouldInferMappingModelAutomatically = YES;
 - 迁移前备份 store，测试必须覆盖“旧版本数据 -> 新版本”的升级路径。
 - 大表迁移放后台上下文执行，并给用户展示进度，避免启动卡死。
 
-## 8. 升级前检查
+## 9. 升级前检查
 
 1. 备份或打 tag，确认可回滚。
 2. 阅读 Xcode 与 iOS 版本说明，确认最低系统版本与弃用 API。
@@ -114,7 +132,7 @@ desc.shouldInferMappingModelAutomatically = YES;
 7. 检查 Core Data 模型版本与迁移方案。
 8. 在分支完整跑通 dev、测试与 Archive。
 
-## 9. 升级后检查
+## 10. 升级后检查
 
 - 冷启动、页面跳转、返回正常。
 - 列表复用与刷新正常。
@@ -124,7 +142,7 @@ desc.shouldInferMappingModelAutomatically = YES;
 - 崩溃与内存警告清零。
 - 构建产物可签名、可安装、可上架。
 
-## 10. 迁移常见坑
+## 11. 迁移常见坑
 
 - 只升级 Xcode 未调整 Deployment Target，导致 API 不存在。
 - 用较新 Xcode 打开很老的工程，项目格式或 Swift 版本不兼容，直接无法编译。
@@ -135,3 +153,7 @@ desc.shouldInferMappingModelAutomatically = YES;
 - CocoaPods 与 SPM 同时引入同一库，产生重复符号。
 - 直接修改 Core Data 旧模型版本而非新建版本，导致老用户升级失败。
 - 升级三方库后 API 行为变化，未做回归测试。
+- 新项目 Deployment Target 低于 17，却使用 `@Observable` / SwiftData。
+- 同时使用 `NavigationView` 与 `NavigationStack`，路径状态分裂。
+- SwiftData 直接改已上线模型版本，老用户打开即崩溃。
+- Widget 与主应用未配置 App Group，timeline 读不到数据。

@@ -1,97 +1,133 @@
-# iOS 应用开发学习路线（Objective-C 老项目维护 → 实战）
+# iOS 应用开发学习路线（入门 → 进阶 → 实战）
 
-**目标**：以 Objective-C + UIKit 为主线，掌握接手、维护、改造既有 iOS 老工程所需的完整链路——Objective-C 语法与内存管理、UIKit 与 Storyboard/XIB、网络与持久化、GCD 并发、CocoaPods、OC/Swift 混编、测试、崩溃排查与上架发布。
-
-本路线面向**快速入门 + 老项目维护**：先读懂并跑通一个既有工程，再逐步改造，不要求你先学 SwiftUI 或重写项目。
+**目标**：掌握 iOS 原生应用开发的完整链路。新项目主线是 Swift + SwiftUI：语言与工程、声明式 UI、导航与数据流、网络与持久化、架构测试与上架、系统能力进阶。学完后能独立交付一款可上架的 iOS 应用。存量 Objective-C + UIKit 工程走维护支线。
 
 ## 先看这里
 
 - [新手导读](./start-here.md)：前置条件、学习顺序、工程心智模型和统一排错顺序。
-- [附录：C 语言基础](./c-foundations.md)：为阶段零补齐变量、指针、结构体、内存、标准库与 C/OC 边界。
-- [综合实战：维护老版习惯打卡 App](./project-practice.md)：按阶段改造同一个 Objective-C 工程，从跑通到上架。
+- [综合实战：习惯打卡 App](./swift-project-practice.md)：按阶段从零扩展同一个 SwiftUI 项目，从 Hello World 到上架。
 - [学习评估与项目评分](./learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
-- [版本边界与迁移](./version-governance.md)：iOS / Xcode / ARC / SceneDelegate 的代际差异。
+- [版本边界与迁移](./version-governance.md)：iOS / Xcode / SwiftUI / SwiftData 的代际差异。
 
-## 快速入门路径（3 周）
-
-| 时间 | 内容 | 阶段产出 |
-|---|---|---|
-| 第 1-2 天 | 阶段零：Objective-C 与 Xcode | 跑通工程，读懂 AppDelegate 与目录结构 |
-| 第 3-7 天 | 阶段一：UIKit 与 Storyboard | 能改界面、加页面、连通列表与跳转 |
-| 第 2 周 | 阶段二：数据、网络与并发 | 网络请求 + 本地持久化 + 主线程更新 |
-| 第 3 周 | 阶段三 + 综合实战 | 能定位崩溃、补测试、签名上 TestFlight |
-
-时间紧张时按此顺序推进；有余力再回头补阶段三的架构改造与性能排查。
+老工程接手请改走 [Objective-C 维护支线](#老工程维护支线objective-c--uikit)。
 
 ## 学习阶段总览
 
 | 阶段 | 名称 | 目标 |
 |---|---|---|
-| 零 | Objective-C 语言与 Xcode 工程 | 掌握 OC 语法、属性与 ARC，读懂老工程 |
-| 一 | UIKit 与 Storyboard/XIB | 用控制器、约束、列表与导航改造界面 |
-| 二 | 数据、网络、持久化与并发 | 用 NSURLSession 取数，用 Core Data 落地 |
-| 三 | 老工程维护、测试与发布 | 分层改造、CocoaPods、混编、排查与上架 |
+| 入门零 | Swift 语言与 Xcode 工程 | 掌握 Swift 语法、App 生命周期，跑通第一个工程 |
+| 入门一 | SwiftUI 声明式 UI 与状态 | 用视图、修饰符和状态驱动构建可交互界面 |
+| 入门二 | 导航、生命周期与数据流 | 掌握 NavigationStack、Sheet、Tab 与单向数据流 |
+| 进阶三 | 网络、持久化与并发 | 用 URLSession、SwiftData、Swift Concurrency 落地数据 |
+| 进阶四 | 架构、测试、性能与发布 | 分层、SPM、测试、隐私清单与 TestFlight |
+| 进阶五 | 系统能力专题 | Widget、App Intents、Live Activity、后台、本地化与 UIKit 互操作 |
+| 实战 | 习惯打卡 App | 把入门到进阶串成一个可上架项目 |
+
+## 快速入门路径（4 周）
+
+| 时间 | 内容 | 阶段产出 |
+|---|---|---|
+| 第 1-3 天 | 阶段零：Swift 与 Xcode | 跑通工程，读懂 `App` / `WindowGroup` |
+| 第 4-7 天 | 阶段一：SwiftUI | 一个多状态可交互的列表页 |
+| 第 2 周 | 阶段二：导航与数据流 | 列表 -> 详情 -> 编辑，能返回刷新 |
+| 第 3 周 | 阶段三：网络与持久化 | 本地 SwiftData + 网络同步骨架 |
+| 第 4 周 | 阶段四 + 综合实战 MVP | 能测试、签名、上 TestFlight |
+
+时间充裕时继续阶段五与实战进阶项。
 
 ## 快速导航
 
-- [阶段零：Objective-C 语言与 Xcode 工程](./stage-0-foundations.md)
-- [附录：C 语言基础](./c-foundations.md)
-- [阶段一：UIKit 与 Storyboard/XIB](./stage-1-uikit.md)
-- [阶段二：数据、网络、持久化与并发](./stage-2-data-network.md)
-- [阶段三：老工程维护、测试与发布](./stage-3-engineering-release.md)
-- [综合实战：维护老版习惯打卡 App](./project-practice.md)
+**入门**
+
+- [阶段零：Swift 语言与 Xcode 工程](./swift-stage-0-foundations.md)
+- [阶段一：SwiftUI 声明式 UI 与状态](./swift-stage-1-swiftui.md)
+- [阶段二：导航、生命周期与数据流](./swift-stage-2-navigation.md)
+
+**进阶**
+
+- [阶段三：网络、持久化与并发](./swift-stage-3-data-network.md)
+- [阶段四：架构、测试、性能与发布](./swift-stage-4-engineering.md)
+- [阶段五：系统能力专题](./swift-stage-5-advanced.md)
+
+**实战**
+
+- [综合实战：习惯打卡 App](./swift-project-practice.md)
 - [学习评估与项目评分](./learning-assessment.md)
 - [版本边界与迁移](./version-governance.md)
 
 ## 架构主线
 
 ```text
-UIApplication
-  -> AppDelegate / SceneDelegate（生命周期）
-      -> UIWindow
-          -> UINavigationController / UITabBarController
-              -> UIViewController（Storyboard / XIB / 纯代码）
-                  -> View（Auto Layout）
-                  -> Model（NSObject 子类）
-                      -> Service（NSURLSession / Core Data / Keychain）
+App (@main)
+  -> WindowGroup / Scene
+      -> NavigationStack / TabView
+          -> View（SwiftUI 声明式界面）
+              -> @Observable / @State / @Binding / @Environment
+                  -> Model（struct / @Model）
+                      -> Service（URLSession / SwiftData / Keychain）
 ```
 
-控制器负责页面生命周期与交互，View 负责布局与展示，Model 负责数据，Service 封装网络与持久化。老工程常见问题是控制器过重，改造时把网络、缓存、格式化逐步下沉到 Service 与 Model。
+`App` 负责入口与场景，`View` 描述界面，状态装饰器决定数据从哪来、谁能改、刷新谁。Model 保存领域数据，Service 封装网络、持久化与系统能力。视图只做绑定与展示。
+
+## 每阶段固定学习模板
+
+每个阶段按照“目标 -> 前置知识 -> 核心问题 -> 最小示例 -> 项目增量 -> 验收 -> 排错”执行。先在模拟器跑通最小示例，再把能力加进综合实战，一次只增加一个能力。
 
 ## 学习原则
 
-- 界面主线用 UIKit + Storyboard/XIB，与老工程保持一致；新页面可以逐步改为 XIB 或纯代码。
-- 内存管理默认 ARC，遇到 `-fno-objc-arc` 的老文件先识别再改造。
-- 属性优先 `nonatomic`，对象用 `strong`，字符串/集合/block 用 `copy`，代理用 `weak`。
-- 网络与数据库回调统一回主线程再更新 UI。
-- 依赖优先 CocoaPods；新引入的库再评估 SPM。
-- 改动老代码先补测试或可复现步骤，再动手重构。
+- 新项目用 Swift + SwiftUI，Deployment Target 以 iOS 17 为基线，状态管理优先 `@Observable`。
+- 导航优先 `NavigationStack` + `navigationDestination`，列表优先 `List` / `ForEach` 稳定 `id`。
+- 网络与数据库回调统一回到主线程；异步用 `async/await`，共享可变状态用 `actor` 或 `@MainActor`。
 - 每引入一个系统能力，在 `Info.plist` 与 `PrivacyInfo.xcprivacy` 补齐权限与用途说明。
+- 改动先补测试或可复现步骤，再扩展功能。
 
 ## 阶段成果
 
-- 能解释 Objective-C、UIKit、Xcode、CocoaPods、Core Data 各自的定位。
-- 能用 OC 写出属性正确、内存安全、block 无循环引用的代码。
-- 能用 UIKit、Auto Layout、UITableView 与导航控制器改造界面。
-- 能用 NSURLSession 请求网络，用 Core Data / NSUserDefaults / Keychain 持久化。
-- 能处理 Core Data 轻量迁移与后台上下文写入，并接入本地通知。
-- 能用 GCD / NSOperationQueue 处理并发，避免主线程卡顿。
-- 能拆分 Massive ViewController，接入 CocoaPods 与 OC/Swift 混编。
-- 能用 LLDB、Instruments、View Debugger、静态分析与命令行构建排查问题。
-- 能定位崩溃与内存问题，配置签名并完成 TestFlight 与 App Store 提交。
+- 能解释 Swift、SwiftUI、Xcode、SwiftData、SPM 各自的定位。
+- 能用 Swift 写出类型安全、可选值处理正确、无数据竞争的代码。
+- 能用 SwiftUI 组件、布局和状态驱动构建可交互界面。
+- 能组织 `NavigationStack`、Sheet、Tab 与页面间传值。
+- 能封装网络层，用 SwiftData / AppStorage / Keychain 持久化数据。
+- 能用 Swift Concurrency 处理并发，避免主线程卡顿。
+- 能拆分视图与数据层，接入 SPM 与单元测试。
+- 能用 Instruments 定位卡顿与内存问题，完成签名打包与 TestFlight。
+- 能开发 Widget、App Intent，处理本地化、深色模式与 UIKit 互操作。
 
 ## 版本边界
 
-学习主线面向仍在维护的 **Objective-C + UIKit** 工程，兼容 iOS 12 及以上；使用 `SceneDelegate` 的工程以 iOS 13 及以上为基线。新项目若从零开始，官方推荐 Swift + SwiftUI，本路线聚焦存量工程维护与渐进式改造，迁移策略参见 [版本边界与迁移](./version-governance.md)。
+学习主线面向 **Swift 5.9+ / iOS 17+ / Xcode 15+** 的新项目开发，使用 Observation（`@Observable`）与 SwiftData。iOS 16 及更早的 `ObservableObject` / Core Data / `NavigationView` 作为对照，迁移策略参见 [版本边界与迁移](./version-governance.md)。
+
+存量 Objective-C + UIKit 工程走下方维护支线，兼容 iOS 12 及以上。
 
 ## 前置知识
 
-这是一条移动端原生开发路线，与仓库里的 Web / 桌面 / 鸿蒙主线并行。建议具备：
+这是移动端原生开发路线，与仓库里的 Web / 桌面 / 鸿蒙主线并行。建议具备：
 
-- C 语言基础：指针、结构体、函数、编译与链接的基本概念。
-- 面向对象基础：类、继承、封装、多态、协议/接口。
+- 一门静态类型语言基础：变量、函数、结构体/类、可选值、异步。
+- 面向对象与值类型的基本概念。
 - 命令行、Git 与依赖管理的基本概念。
 
-C 基础薄弱时，先读 [附录：C 语言基础](./c-foundations.md)，按练习清单动手写一遍，再进入阶段零。
+有 [TypeScript 学习路线](../typescript-learning-path/README.md) 或 [React 学习路线](../react-learning-path/README.md) 基础时，理解组件化与状态驱动会更快；有 [HarmonyOS 学习路线](../harmonyos-learning-path/README.md) 基础的读者，可以把 SwiftUI 对照 ArkUI，把 `App` 生命周期对照 UIAbility。
 
-有 [TypeScript 学习路线](../typescript-learning-path/README.md) 或 [React 学习路线](../react-learning-path/README.md) 基础时，理解 MVC、组件化与状态驱动会更快；有 [HarmonyOS 学习路线](../harmonyos-learning-path/README.md) 基础的读者，可以对照 UIKit 与 ArkUI 的页面生命周期与状态管理。
+## 老工程维护支线（Objective-C + UIKit）
+
+接手既有 OC 工程时使用这条支线：先跑通，再按界面 -> 数据 -> 架构改造。
+
+| 阶段 | 名称 | 文档 |
+|---|---|---|
+| 预备 | C 语言基础 | [附录：C 语言基础](./c-foundations.md) |
+| 零 | Objective-C 与 Xcode | [阶段零](./stage-0-foundations.md) |
+| 一 | UIKit 与 Storyboard/XIB | [阶段一](./stage-1-uikit.md) |
+| 二 | 数据、网络、持久化与并发 | [阶段二](./stage-2-data-network.md) |
+| 三 | 维护、测试与发布 | [阶段三](./stage-3-engineering-release.md) |
+| 实战 | 维护老版习惯打卡 App | [综合实战](./project-practice.md) |
+
+OC 支线的 3 周快速路径、属性规则与排错顺序写在 [新手导读](./start-here.md) 的「老工程维护」一节。
+
+## 官方资源
+
+- [Apple Developer](https://developer.apple.com/)
+- [Swift 语言指南](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/)
+- [SwiftUI 文档](https://developer.apple.com/documentation/swiftui/)
+- [SwiftData 文档](https://developer.apple.com/documentation/swiftdata)
+- [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)

@@ -10,7 +10,7 @@
 | 桌面应用 | 本地工具、效率软件、跨平台客户端 | React -> TypeScript -> Electron 或 Tauri |
 | AI 应用 | Chat、Agent、知识库问答 | Next.js -> AI 应用前端 -> LangChain |
 | HarmonyOS 应用 | 鸿蒙原生 App、元服务、多设备协同 | ArkTS -> ArkUI -> Stage 模型 -> Kit 系统能力 -> 分布式 |
-| iOS 应用 | iOS 原生 App、存量工程维护 | Objective-C -> UIKit -> Storyboard -> Core Data -> 上架 |
+| iOS 应用 | iOS 原生 App、存量工程维护 | Swift -> SwiftUI -> SwiftData -> 上架（OC/UIKit 为维护支线） |
 | Android 性能 | 卡顿、掉帧、主线程阻塞 | Perfetto |
 
 ## 2. Web 应用主线
@@ -73,20 +73,19 @@ ArkTS（语言基础） -> ArkUI（声明式 UI 与状态管理）
 ## 6. iOS 原生主线
 
 ```text
-C 与面向对象基础 -> Objective-C（语法与 ARC）
-   -> UIKit + Storyboard/XIB（界面与导航）
-   -> NSURLSession + JSON（网络）
-   -> Core Data / Keychain（持久化）
-   -> GCD / NSOperationQueue（并发）
-   -> 分层改造 + CocoaPods + OC/Swift 混编
-   -> XCTest + 崩溃排查 + 签名上架
+Swift（语言） -> SwiftUI（声明式 UI 与状态）
+   -> NavigationStack（导航与数据流）
+   -> URLSession + SwiftData（网络与持久化）
+   -> 架构 / 测试 / TestFlight
+   -> Widget / App Intents / 本地化
 ```
 
-- [iOS 应用开发学习路线](./ios-learning-path/README.md) 以 Objective-C + UIKit 为主线，面向存量工程的接手、维护与渐进式改造。
-- 语言底座是 C 与面向对象：指针、消息发送、属性修饰符与 ARC 是必须先过的关。
-- 界面主线是 UIKit + Storyboard/XIB，与老工程保持一致；新页面可逐步改为 XIB 或纯代码，SwiftUI 作为后续演进方向。
-- 综合实战：[维护老版习惯打卡 App](./ios-learning-path/project-practice.md) 串起列表、导航、网络、Core Data、分层改造与上架。
-- 这条路线与 HarmonyOS 主线可以对照学习：UIKit 的控制器生命周期对应 UIAbility + 页面，Storyboard 对应 ArkUI 声明式布局，Delegate/Block 对应事件回调。
+- [iOS 应用开发学习路线](./ios-learning-path/README.md) 以 Swift + SwiftUI 为主线，按入门、进阶、实战推进新项目开发。
+- 语言底座是 Swift：可选值、值类型、协议与 `async/await`。有 TypeScript 基础时迁移很快。
+- 界面主线是 SwiftUI + Observation（`@Observable`），持久化用 SwiftData，基线 iOS 17。
+- 综合实战：[习惯打卡 App](./ios-learning-path/swift-project-practice.md) 串起列表、导航、网络、SwiftData、分层与上架。
+- 存量 Objective-C 工程走维护支线：[OC 阶段文档](./ios-learning-path/stage-0-foundations.md) 与 [维护老版习惯打卡 App](./ios-learning-path/project-practice.md)。
+- 这条路线与 HarmonyOS 主线可以对照：SwiftUI 对应 ArkUI，`App` 生命周期对应 UIAbility，`@Observable` 对应 `@ObservedV2`。
 
 ## 7. Android 性能主线
 
@@ -111,7 +110,8 @@ C 与面向对象基础 -> Objective-C（语法与 ARC）
 | AI 聊天/知识库 | Next.js + AI 前端 + LangChain | [知识库客服机器人](./langchain-learning-path/project-practice.md) |
 | AI + 桌面客户端 | AI 主线 + Electron/Tauri | 可选：在桌面壳中嵌入 AI 前端 |
 | 鸿蒙原生应用 | HarmonyOS 主线全部 | [多设备记账元服务](./harmonyos-learning-path/project-practice.md) |
-| iOS 原生应用/老工程维护 | iOS 主线全部 | [维护老版习惯打卡 App](./ios-learning-path/project-practice.md) |
+| iOS 原生应用 | iOS 主线全部 | [习惯打卡 App](./ios-learning-path/swift-project-practice.md) |
+| iOS 老工程维护 | OC 维护支线 | [维护老版习惯打卡 App](./ios-learning-path/project-practice.md) |
 | Android 客户端卡顿 | Perfetto | [个股详情页卡顿排查](./perfetto-learning-path/project-practice.md) |
 
 ## 9. 通用建议
@@ -121,7 +121,7 @@ C 与面向对象基础 -> Objective-C（语法与 ARC）
 - 每个综合实战都是多路线知识的验收场，完成主线后再做对应实战。
 - 不确定选型时，先看 [Electron vs Tauri](./electron-vs-tauri.md) 这类对比文档，再做最小原型验证。
 - HarmonyOS 是纯血鸿蒙，语言、UI、应用模型、构建工具都与 Android 不同，进入前先放下旧 Android 习惯。
-- iOS 老工程维护以 Objective-C + UIKit 为主，先读懂现有生命周期与依赖，再做渐进式改造，避免直接重写。
+- 新 iOS 项目用 Swift + SwiftUI；老工程维护以 Objective-C + UIKit 为主，先读懂现有生命周期与依赖，再做渐进式改造。
 - Android 卡顿先录 System Trace 看帧，再决定 Java 采样或内存工具，顺序见 [Perfetto 学习路线](./perfetto-learning-path/README.md)。
 
 ## 10. 路线清单
@@ -135,6 +135,6 @@ C 与面向对象基础 -> Objective-C（语法与 ARC）
 | 桌面 | [Electron](./electron-learning-path/README.md)、[Tauri](./tauri-learning-path/README.md) |
 | AI | [AI 应用前端](./ai-learning-path/README.md)、[LangChain](./langchain-learning-path/README.md) |
 | HarmonyOS | [HarmonyOS 学习路线](./harmonyos-learning-path/README.md) |
-| iOS | [iOS 应用开发学习路线（Objective-C）](./ios-learning-path/README.md) |
+| iOS | [iOS 应用开发学习路线](./ios-learning-path/README.md) |
 | Android 性能 | [Perfetto](./perfetto-learning-path/README.md) |
 | 综合 | [团队任务看板](./fullstack-kanban/README.md)、[服务端学习计划](./server-learning-study-plan.md) |

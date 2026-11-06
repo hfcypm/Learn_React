@@ -1,8 +1,12 @@
 # 综合实战：维护老版习惯打卡 App
 
+> 本页属于 **OC 维护支线**。从零开发请走 [Swift 综合实战：习惯打卡 App](./swift-project-practice.md)。
+
 ## 1. 项目目标
 
 接手一个既有的 Objective-C 工程 `LegacyHabit`：它用 UIKit + Storyboard 构建，依赖 CocoaPods，数据存 Core Data。目标是在不推倒重写的前提下，按阶段完成“跑通 -> 修界面 -> 接数据 -> 分层改造 -> 上架”的维护闭环。
+
+从零开发请改走 Swift 主线实战：[习惯打卡 App](./swift-project-practice.md)。两份实战是同一产品主题、两套技术栈。
 
 ```text
 跑通工程 -> 修复列表与导航 -> 接入网络与持久化

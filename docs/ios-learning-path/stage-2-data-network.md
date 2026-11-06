@@ -1,5 +1,7 @@
 # 阶段二：数据、网络、持久化与并发
 
+> 本页属于 **OC 维护支线**。新项目请走 [Swift 阶段三](./swift-stage-3-data-network.md)。
+
 **目标**：用 NSURLSession 完成网络请求与 JSON 解析，用 Core Data / NSUserDefaults / Keychain 持久化，用 GCD 控制线程并保证 UI 回主线程。
 
 **前置知识**：阶段一的 UIKit 与页面交互。

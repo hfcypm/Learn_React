@@ -16,7 +16,7 @@
 - [Electron 学习路线](./electron-learning-path/README.md)
 - [Tauri 学习路线](./tauri-learning-path/README.md)
 - [HarmonyOS 学习路线](./harmonyos-learning-path/README.md)
-- [iOS 应用开发学习路线（Objective-C）](./ios-learning-path/README.md)
+- [iOS 应用开发学习路线（Swift 入门 → 进阶 → 实战）](./ios-learning-path/README.md)
 - [Perfetto 学习路线](./perfetto-learning-path/README.md)
 - [Node.js 与 NestJS 服务端学习计划](./server-learning-study-plan.md)
 - [桌面框架选型：Electron vs Tauri](./electron-vs-tauri.md)
@@ -34,6 +34,6 @@ HarmonyOS 学习路线覆盖纯血鸿蒙（HarmonyOS NEXT）原生应用开发�
 
 Perfetto 学习路线覆盖 Android 系统级 tracing：System Trace 录制、Perfetto UI、FrameTimeline 红帧、Trace Processor SQL、自定义 atrace 埋点，以及与 Studio Profiler / LeakCanary / APA 的分工。适合客户端卡顿与掉帧排查，和仓库 Web 主线并行。
 
-iOS 应用开发学习路线以 Objective-C + UIKit 为主线，面向既有老工程的接手与维护：OC 语法与 ARC、属性修饰符、block 与循环引用、UIViewController 与 SceneDelegate 生命周期、Storyboard/XIB 与 Auto Layout、UITableView 复用、NSURLSession 与 JSON、GCD/NSOperationQueue、Core Data 与 Keychain、CocoaPods、OC/Swift 混编、XCTest、崩溃排查与签名上架，并提供三周快速入门路径与老版习惯打卡 App 综合实战。
+iOS 应用开发学习路线以 Swift + SwiftUI 为主线，按入门、进阶、实战推进：Swift 语言与 Xcode、SwiftUI 状态驱动、NavigationStack 与数据流、URLSession 与 SwiftData、Swift Concurrency、架构测试与 TestFlight，以及 Widget、App Intents、本地化等系统能力，综合实战为习惯打卡 App。存量 Objective-C + UIKit 工程走维护支线，覆盖 Storyboard、Core Data、CocoaPods 与老版习惯打卡 App 改造。
 
 综合实战 `fullstack-kanban` 以「团队任务看板」应用为线索，将 Next.js、Tailwind CSS、Prisma、PostgreSQL 四条路线的知识点穿插进初始化、建模、鉴权、取数、界面、查询事务与生产交付七个阶段，适合在完成各路线后串联验证。

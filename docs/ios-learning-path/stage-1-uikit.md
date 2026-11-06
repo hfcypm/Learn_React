@@ -1,5 +1,7 @@
 # 阶段一：UIKit 与 Storyboard/XIB
 
+> 本页属于 **OC 维护支线**。新项目请走 [Swift 阶段一](./swift-stage-1-swiftui.md)。
+
 **目标**：用 UIKit 的控制器、Auto Layout、UITableView 与导航控制器改造老工程界面，掌握页面传值与回调。
 
 **前置知识**：阶段零的 Objective-C 语法、属性与生命周期。
