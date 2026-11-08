@@ -7,6 +7,7 @@
 - [Next.js 学习路线](./nextjs-learning-path/README.md)
 - [Tailwind CSS 学习路线](./tailwindcss-learning-path/README.md)
 - [shadcn/ui 学习路线](./shadcn-learning-path/README.md)
+- [Astryx 学习路线](./astryx-learning-path/README.md)
 - [Node.js 学习路线](./nodejs-learning-path/README.md)
 - [NestJS 学习路线](./nestjs-learning-path/README.md)
 - [PostgreSQL 学习路线](./postgresql-learning-path/README.md)
@@ -27,6 +28,8 @@ React 学习路线中的“TypeScript + React”章节保留 React 场景下的�
 LangChain 学习路线覆盖基于 LangChain.js 的 LLM 应用开发：模型接入、提示与结构化输出、LCEL 链式组合、RAG 检索增强、Agent 与工具，以及记忆、流式与生产可观测性。
 
 shadcn/ui 学习路线覆盖基于 Tailwind CSS v4 的 React 组件开发：源码分发模式、CSS 变量主题、Radix 交互、表单校验、数据表图表与生产工程化。
+
+Astryx 学习路线覆盖 Meta 开源的 React 19 设计系统：`@astryxdesign/core` 包依赖、主题 Token 与 `<Theme>`、按子路径导入的 150+ 组件、表单与浮层、Table 与官方模板，以及人和 AI 共用的 CLI / MCP、`defineTheme` 品牌覆盖与同发版升级，综合实战为内部订阅管理后台。可与 shadcn/ui 对照「npm 包 vs 源码分发」。
 
 Electron 学习路线覆盖基于 Web 技术的跨平台桌面应用开发：双进程模型、preload 与安全 IPC、窗口与系统集成、文件持久化、打包签名与自动更新。Tauri 学习路线覆盖基于 Rust 后端的轻量桌面应用开发：架构、tauri.conf.json 与 capabilities 权限、Rust 命令、官方插件、打包发布与移动端支持，两路线可对照学习桌面框架选型。
 

@@ -17,17 +17,17 @@
 
 ```text
 React（界面） -> TypeScript（类型） -> Next.js（全栈框架）
-   -> Tailwind CSS + shadcn/ui（样式与组件）
+    -> Tailwind CSS + shadcn/ui 或 Astryx（样式与组件）
    -> Node.js/NestJS（后端）
    -> Prisma + PostgreSQL（数据层）
 ```
 
 - 前端入门：[React 学习路线](./react-learning-path/README.md) -> [TypeScript 学习路线](./typescript-learning-path/README.md) -> [Tailwind CSS 学习路线](./tailwindcss-learning-path/README.md)。
-- 界面组件：[shadcn/ui 学习路线](./shadcn-learning-path/README.md) 基于 Tailwind CSS 的源码分发组件，快速搭出专业中后台界面。
+- 界面组件：[shadcn/ui 学习路线](./shadcn-learning-path/README.md) 基于 Tailwind CSS 的源码分发组件；需要完整设计系统、主题包和 AI 契约时走 [Astryx 学习路线](./astryx-learning-path/README.md)（React 19 + `@astryxdesign/core`）。
 - 全栈进阶：[Next.js 学习路线](./nextjs-learning-path/README.md) 覆盖 App Router、渲染、缓存与鉴权。
 - 后端选型：小服务用 [Node.js 学习路线](./nodejs-learning-path/README.md)；企业级模块化用 [NestJS 学习路线](./nestjs-learning-path/README.md)。两条路线可对照 [服务端学习计划](./server-learning-study-plan.md) 的 8 周路径串行学习。
 - 数据层：[PostgreSQL 学习路线](./postgresql-learning-path/README.md) 掌握 SQL 与数据库原理，再进入 [Prisma 学习路线](./prisma-learning-path/README.md) 用 ORM 建模与查询。
-- 中后台界面：React + Tailwind CSS 之后进入 [shadcn/ui 学习路线](./shadcn-learning-path/README.md)，其综合实战 [订阅管理后台](./shadcn-learning-path/project-practice.md) 串起主题、表单、表格与图表。
+- 中后台界面：React + Tailwind CSS 之后可进入 [shadcn/ui 学习路线](./shadcn-learning-path/README.md)，综合实战 [订阅管理后台](./shadcn-learning-path/project-practice.md)；或进入 [Astryx 学习路线](./astryx-learning-path/README.md)，综合实战 [内部订阅管理后台](./astryx-learning-path/project-practice.md)。
 - 综合验证：[综合实战：团队任务看板](./fullstack-kanban/README.md) 把 Web 主线四条路线串成一个应用。
 
 ## 3. 桌面应用主线
@@ -106,6 +106,7 @@ Swift（语言） -> SwiftUI（声明式 UI 与状态）
 | 你要做的产品 | 路线组合 | 综合实战 |
 |---|---|---|
 | 传统 Web 应用 | Web 主线全部 | [团队任务看板](./fullstack-kanban/README.md) |
+| 中后台 / 内部工具 | React + Tailwind + shadcn/ui，或 React 19 + Astryx | [订阅管理后台](./shadcn-learning-path/project-practice.md) 或 [内部订阅管理后台](./astryx-learning-path/project-practice.md) |
 | 桌面工具 | React + TypeScript + Electron/Tauri | [桌面笔记](./electron-learning-path/project-practice.md) 或 [文件管理器](./tauri-learning-path/project-practice.md) |
 | AI 聊天/知识库 | Next.js + AI 前端 + LangChain | [知识库客服机器人](./langchain-learning-path/project-practice.md) |
 | AI + 桌面客户端 | AI 主线 + Electron/Tauri | 可选：在桌面壳中嵌入 AI 前端 |
@@ -129,7 +130,7 @@ Swift（语言） -> SwiftUI（声明式 UI 与状态）
 | 领域 | 路线 |
 |---|---|
 | 语言与类型 | [React](./react-learning-path/README.md)、[TypeScript](./typescript-learning-path/README.md) |
-| Web 框架 | [Next.js](./nextjs-learning-path/README.md)、[Tailwind CSS](./tailwindcss-learning-path/README.md)、[shadcn/ui](./shadcn-learning-path/README.md) |
+| Web 框架 | [Next.js](./nextjs-learning-path/README.md)、[Tailwind CSS](./tailwindcss-learning-path/README.md)、[shadcn/ui](./shadcn-learning-path/README.md)、[Astryx](./astryx-learning-path/README.md) |
 | 服务端 | [Node.js](./nodejs-learning-path/README.md)、[NestJS](./nestjs-learning-path/README.md) |
 | 数据层 | [PostgreSQL](./postgresql-learning-path/README.md)、[Prisma](./prisma-learning-path/README.md) |
 | 桌面 | [Electron](./electron-learning-path/README.md)、[Tauri](./tauri-learning-path/README.md) |

@@ -53,6 +53,10 @@
 
 学习主线使用 shadcn/ui 当前稳定版（面向 Tailwind CSS v4 与 React），依赖 `components.json` 与 CLI。历史版本配置差异参见 [版本边界与迁移](./version-governance.md)。
 
+## 与 Astryx 的对照
+
+需要完整设计系统、主题包、以及人和 AI 共用 CLI 契约时，走 [Astryx 学习路线](../astryx-learning-path/README.md)。shadcn/ui 是源码分发；Astryx 是 `@astryxdesign/core` npm 包。两条路线可对照同一类「订阅后台」实战，不必绑在同一个项目里。
+
 ## 前置知识
 
 shadcn/ui 构建在 React 与 Tailwind CSS 之上，建议先完成 [React 学习路线](../react-learning-path/README.md) 与 [TypeScript 学习路线](../typescript-learning-path/README.md)，再掌握 [Tailwind CSS 学习路线](../tailwindcss-learning-path/README.md) 的工具类与主题机制。在 Next.js 中使用可对照 [Next.js 学习路线](../nextjs-learning-path/README.md)，在 AI 应用中使用可对照 [AI 应用前端学习路线](../ai-learning-path/README.md)。
