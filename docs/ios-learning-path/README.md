@@ -1,6 +1,6 @@
 # iOS 应用开发学习路线（入门 → 进阶 → 实战）
 
-**目标**：掌握 iOS 原生应用开发的完整链路。新项目主线是 Swift + SwiftUI：语言与工程、声明式 UI、导航与数据流、网络与持久化、架构测试与上架、系统能力进阶。学完后能独立交付一款可上架的 iOS 应用。存量 Objective-C + UIKit 工程走维护支线。
+**目标**：掌握 iOS 原生应用开发的完整链路，两条完整路线按需选择：**新项目线 Swift + SwiftUI**（语言与工程、声明式 UI、导航与数据流、网络与持久化、架构测试与上架、系统能力进阶）；**经典线 Objective-C + UIKit**（C / OC 语言、UIKit 界面、数据网络、工程化与发布）。经典线既适合从零学习经典技术栈的新手，也适合接手存量工程的维护者。任一线路学完都能独立交付一款可上架的 iOS 应用。
 
 ## 先看这里
 
@@ -9,9 +9,9 @@
 - [学习评估与项目评分](./learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
 - [版本边界与迁移](./version-governance.md)：iOS / Xcode / SwiftUI / SwiftData 的代际差异。
 
-老工程接手请改走 [Objective-C 维护支线](#老工程维护支线objective-c--uikit)。
+学习经典技术栈 Objective-C + UIKit（或接手老工程）请走 [Objective-C + UIKit 经典线](#objective-c--uikit-经典线)。
 
-## 学习阶段总览
+## 学习阶段总览（Swift 新项目线）
 
 | 阶段 | 名称 | 目标 |
 |---|---|---|
@@ -23,7 +23,7 @@
 | 进阶五 | 系统能力专题 | Widget、App Intents、Live Activity、后台、本地化与 UIKit 互操作 |
 | 实战 | 习惯打卡 App | 把入门到进阶串成一个可上架项目 |
 
-## 快速入门路径（4 周）
+## 快速入门路径（4 周，Swift 线）
 
 | 时间 | 内容 | 阶段产出 |
 |---|---|---|
@@ -97,7 +97,7 @@ App (@main)
 
 学习主线面向 **Swift 5.9+ / iOS 17+ / Xcode 15+** 的新项目开发，使用 Observation（`@Observable`）与 SwiftData。iOS 16 及更早的 `ObservableObject` / Core Data / `NavigationView` 作为对照，迁移策略参见 [版本边界与迁移](./version-governance.md)。
 
-存量 Objective-C + UIKit 工程走下方维护支线，兼容 iOS 12 及以上。
+经典线 Objective-C + UIKit 兼容 iOS 12 及以上，阶段与快速路径见下方专节。
 
 ## 前置知识
 
@@ -109,20 +109,30 @@ App (@main)
 
 有 [TypeScript 学习路线](../typescript-learning-path/README.md) 或 [React 学习路线](../react-learning-path/README.md) 基础时，理解组件化与状态驱动会更快；有 [HarmonyOS 学习路线](../harmonyos-learning-path/README.md) 基础的读者，可以把 SwiftUI 对照 ArkUI，把 `App` 生命周期对照 UIAbility。
 
-## 老工程维护支线（Objective-C + UIKit）
+## Objective-C + UIKit 经典线
 
-接手既有 OC 工程时使用这条支线：先跑通，再按界面 -> 数据 -> 架构改造。
+这条线同样从入门教到上架，适合两类读者：**从零学习 OC + UIKit 的新手**（公司技术栈要求、维护需求或个人偏好），以及**接手存量 OC 工程的维护者**。新手按阶段顺序从零推进；维护者先跑通存量工程，再按界面 -> 数据 -> 架构改造的顺序补齐能力。
 
 | 阶段 | 名称 | 文档 |
 |---|---|---|
-| 预备 | C 语言基础 | [附录：C 语言基础](./c-foundations.md) |
+| 预备 | C 语言基础（按需） | [附录：C 语言基础](./c-foundations.md) |
 | 零 | Objective-C 与 Xcode | [阶段零](./stage-0-foundations.md) |
 | 一 | UIKit 与 Storyboard/XIB | [阶段一](./stage-1-uikit.md) |
 | 二 | 数据、网络、持久化与并发 | [阶段二](./stage-2-data-network.md) |
-| 三 | 维护、测试与发布 | [阶段三](./stage-3-engineering-release.md) |
-| 实战 | 维护老版习惯打卡 App | [综合实战](./project-practice.md) |
+| 三 | 工程化、测试与发布 | [阶段三](./stage-3-engineering-release.md) |
+| 实战 | 老版习惯打卡 App | [综合实战](./project-practice.md) |
 
-OC 支线的 3 周快速路径、属性规则与排错顺序写在 [新手导读](./start-here.md) 的「老工程维护」一节。
+快速入门路径（5 周）：
+
+| 时间 | 内容 | 阶段产出 |
+|---|---|---|
+| 第 1 周 | C 基础（按需）+ 阶段零：OC 与 Xcode | 跑通 Hello World，读懂类 / 属性 / 内存管理 |
+| 第 2 周 | 阶段一：UIKit 界面 | 列表页 + 详情页，Auto Layout 可用 |
+| 第 3 周 | 阶段一后半：导航与多页面传值 | 列表 -> 详情 -> 编辑，能返回刷新 |
+| 第 4 周 | 阶段二：数据、网络与并发 | Core Data 落地 + 网络同步骨架 |
+| 第 5 周 | 阶段三 + 实战 MVP | 可测试、签名、上 TestFlight |
+
+时间充裕时继续实战进阶项与存量改造专题。OC 线的属性规则与排错顺序写在 [新手导读](./start-here.md) 的「OC + UIKit 经典线」一节。
 
 ## 官方资源
 

@@ -1,12 +1,12 @@
-# iOS 新手导读（Swift 入门 → 进阶 → 实战）
+# iOS 新手导读（入门 → 进阶 → 实战）
 
 ## 适合谁
 
-这套路线适合有编程基础、准备从零开发 iOS 应用的工程师。主线是 **Swift + SwiftUI + SwiftData**，按入门、进阶、实战推进，最终交付一款可上架的应用。
+这套路线适合有编程基础、准备从零学习 iOS 开发的工程师。**新项目线是 Swift + SwiftUI + SwiftData**，按入门、进阶、实战推进，最终交付一款可上架的应用；**经典线是 Objective-C + UIKit**，同样从入门教到上架，适合学习经典技术栈或接手存量工程。
 
 熟悉 TypeScript 或 React 时，把 `View` 理解为组件，把 `@State` / `@Observable` 理解为状态，把 `NavigationStack` 理解为路由栈。熟悉 HarmonyOS ArkUI 时，SwiftUI 的声明式刷新与状态装饰器可直接对照。
 
-需要接手既有 Objective-C 工程时，读本文「老工程维护」一节，再进入 OC 支线文档。
+选择 Objective-C + UIKit 经典线（从零学习或接手存量工程）时，读本文「OC + UIKit 经典线」一节，再进入该线文档。
 
 ## 开始前准备
 
@@ -115,13 +115,12 @@ HabitTracker/
 - 能定位崩溃与内存问题，配置签名并完成 TestFlight 提交。
 - 完成 [学习评估](./learning-assessment.md) 中的阶段考核与项目评分。
 
-## 老工程维护
+## OC + UIKit 经典线
 
-接手 Objective-C + UIKit 工程时：
+这条线与 Swift 新项目线并列，同样从入门教到上架，适合两类读者：从零学习 OC + UIKit 的新手，以及接手存量工程的维护者。
 
-1. 先让它跑起来：Xcode 版本、Deployment Target、`pod install`、证书。
-2. 读 [附录：C 语言基础](./c-foundations.md)（指针与内存不熟时）。
-3. 按 OC 支线阶段零到阶段三推进，实战用 [维护老版习惯打卡 App](./project-practice.md)。
+- 新手：先读 [附录：C 语言基础](./c-foundations.md)（指针与内存不熟时必读），再按阶段零到阶段三推进，实战用 [老版习惯打卡 App](./project-practice.md)。
+- 维护者：先让它跑起来（Xcode 版本、Deployment Target、`pod install`、证书），再按界面 -> 数据 -> 架构改造的顺序补齐各阶段能力。
 
 OC 核心规则：属性优先 `nonatomic`；对象 `strong`；字符串 / 集合 / block 用 `copy`；代理 `weak`；网络回调回主线程更新 UI。
 

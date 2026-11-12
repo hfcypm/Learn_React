@@ -1,8 +1,8 @@
 # 阶段零：Objective-C 语言与 Xcode 工程
 
-> 本页属于 **OC 维护支线**。新项目请走 [Swift 阶段零](./swift-stage-0-foundations.md)，总览见 [学习路线 README](./README.md)。
+> 本页属于 **Objective-C + UIKit 经典线**：从零学习 OC 与接手存量工程都适用。若你开发全新项目且技术栈可选，请走 [Swift 阶段零](./swift-stage-0-foundations.md)；总览见 [学习路线 README](./README.md)。
 
-**目标**：掌握 Objective-C 的类、属性、内存管理与生命周期，能创建并读懂一个既有 Xcode 工程。
+**目标**：掌握 Objective-C 的类、属性、内存管理与生命周期，能从零创建并读懂一个 Xcode 工程。
 
 **前置知识**：C 语言基础（变量、函数、指针、结构体）与面向对象概念。不熟悉时先读第 0 节，再进入正式内容。
 

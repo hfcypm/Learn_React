@@ -2,7 +2,7 @@
 
 **目标**：让学习内容与工程拥有清晰的版本边界，降低 IDE 升级、系统升级与技术栈迁移的风险。
 
-Swift 主线基线：**Swift 5.9+ / iOS 17+ / Xcode 15+**，使用 Observation 与 SwiftData。OC 维护支线兼容 iOS 12+，使用 SceneDelegate 的工程以 iOS 13 为基线。
+新项目线基线：**Swift 5.9+ / iOS 17+ / Xcode 15+**，使用 Observation 与 SwiftData。OC 经典线兼容 iOS 12+，使用 SceneDelegate 的工程以 iOS 13 为基线。
 
 ## 1. 版本配套关系
 

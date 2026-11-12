@@ -10,7 +10,7 @@
 | 桌面应用 | 本地工具、效率软件、跨平台客户端 | React -> TypeScript -> Electron 或 Tauri |
 | AI 应用 | Chat、Agent、知识库问答 | Next.js -> AI 应用前端 -> LangChain |
 | HarmonyOS 应用 | 鸿蒙原生 App、元服务、多设备协同 | ArkTS -> ArkUI -> Stage 模型 -> Kit 系统能力 -> 分布式 |
-| iOS 应用 | iOS 原生 App、存量工程维护 | Swift -> SwiftUI -> SwiftData -> 上架（OC/UIKit 为维护支线） |
+| iOS 应用 | iOS 原生 App、存量工程维护 | 新项目线 Swift -> SwiftUI -> SwiftData -> 上架；经典线 OC -> UIKit -> Core Data -> 上架 |
 | Android 性能 | 卡顿、掉帧、主线程阻塞 | Perfetto |
 
 ## 2. Web 应用主线
@@ -80,11 +80,11 @@ Swift（语言） -> SwiftUI（声明式 UI 与状态）
    -> Widget / App Intents / 本地化
 ```
 
-- [iOS 应用开发学习路线](./ios-learning-path/README.md) 以 Swift + SwiftUI 为主线，按入门、进阶、实战推进新项目开发。
+- [iOS 应用开发学习路线](./ios-learning-path/README.md) 提供两条完整路线：新项目线 Swift + SwiftUI 按入门、进阶、实战推进；经典线 Objective-C + UIKit 同样从零教到上架，并覆盖存量工程维护。
 - 语言底座是 Swift：可选值、值类型、协议与 `async/await`。有 TypeScript 基础时迁移很快。
 - 界面主线是 SwiftUI + Observation（`@Observable`），持久化用 SwiftData，基线 iOS 17。
 - 综合实战：[习惯打卡 App](./ios-learning-path/swift-project-practice.md) 串起列表、导航、网络、SwiftData、分层与上架。
-- 存量 Objective-C 工程走维护支线：[OC 阶段文档](./ios-learning-path/stage-0-foundations.md) 与 [维护老版习惯打卡 App](./ios-learning-path/project-practice.md)。
+- 经典线 Objective-C + UIKit（从零学习或接手存量工程）：[OC 阶段文档](./ios-learning-path/stage-0-foundations.md) 与 [老版习惯打卡 App](./ios-learning-path/project-practice.md)。
 - 这条路线与 HarmonyOS 主线可以对照：SwiftUI 对应 ArkUI，`App` 生命周期对应 UIAbility，`@Observable` 对应 `@ObservedV2`。
 
 ## 7. Android 性能主线
@@ -112,12 +112,12 @@ Swift（语言） -> SwiftUI（声明式 UI 与状态）
 | AI + 桌面客户端 | AI 主线 + Electron/Tauri | 可选：在桌面壳中嵌入 AI 前端 |
 | 鸿蒙原生应用 | HarmonyOS 主线全部 | [多设备记账元服务](./harmonyos-learning-path/project-practice.md) |
 | iOS 原生应用 | iOS 主线全部 | [习惯打卡 App](./ios-learning-path/swift-project-practice.md) |
-| iOS 老工程维护 | OC 维护支线 | [维护老版习惯打卡 App](./ios-learning-path/project-practice.md) |
+| iOS 经典线（OC + UIKit） | OC 经典线 | [老版习惯打卡 App](./ios-learning-path/project-practice.md) |
 | Android 客户端卡顿 | Perfetto | [个股详情页卡顿排查](./perfetto-learning-path/project-practice.md) |
 
 ## 9. 通用建议
 
-- Web / 桌面 / AI 三条主线都以 React 与 TypeScript 为共同底座，HarmonyOS 主线以 ArkTS（TypeScript 超集）为语言底座，iOS 主线以 Objective-C + UIKit 为底座，先夯实语言与组件化心智再进入分支。
+- Web / 桌面 / AI 三条主线都以 React 与 TypeScript 为共同底座，HarmonyOS 主线以 ArkTS（TypeScript 超集）为语言底座，iOS 新项目线以 Swift + SwiftUI 为底座、经典线以 Objective-C + UIKit 为底座，先夯实语言与组件化心智再进入分支。
 - 数据库原理（PostgreSQL）建议在任何数据相关路线之前掌握，避免被 ORM 掩盖底层行为。
 - 每个综合实战都是多路线知识的验收场，完成主线后再做对应实战。
 - 不确定选型时，先看 [Electron vs Tauri](./electron-vs-tauri.md) 这类对比文档，再做最小原型验证。

@@ -1,10 +1,10 @@
 # 学习评估与项目评分
 
-**目标**：用阶段考核、排错题与项目评分检验 iOS 开发能力。主线检验 Swift + SwiftUI 从入门到上架；OC 支线检验老工程维护，避免“看懂了但改不动”。
+**目标**：用阶段考核、排错题与项目评分检验 iOS 开发能力。新项目线检验 Swift + SwiftUI 从入门到上架；OC 经典线检验 OC + UIKit 从入门到上架与存量工程维护，避免“看懂了但改不动”。
 
-主线实战参考 [综合实战：习惯打卡 App](./swift-project-practice.md)。接手存量工程时加考 OC 支线，参考 [维护老版习惯打卡 App](./project-practice.md)。
+新项目线实战参考 [综合实战：习惯打卡 App](./swift-project-practice.md)。OC 经典线按第 2 节考核，实战参考 [老版习惯打卡 App](./project-practice.md)。
 
-## 1. 阶段考核（Swift 主线）
+## 1. 阶段考核（Swift 新项目线）
 
 ### 入门零：Swift 与工程
 
@@ -55,9 +55,9 @@
 - 完成中英字符串目录与深色模式预览。
 - 用 `UIViewRepresentable` 或 `UIHostingController` 做单向互操作。
 
-## 2. 阶段考核（OC 维护支线）
+## 2. 阶段考核（OC + UIKit 经典线）
 
-接手存量工程时使用。C 语言预备不计入总分，任一项答不上来先读 [附录：C 语言基础](./c-foundations.md)。
+OC 经典线（从零学习或接手存量工程）均适用。C 语言预备不计入总分，任一项答不上来先读 [附录：C 语言基础](./c-foundations.md)。
 
 ### 前置：C 语言
 
@@ -110,7 +110,7 @@
 
 给出现象，要求说出排查顺序与至少两个可能原因。
 
-**Swift 主线**
+**Swift 新项目线**
 
 - Deployment Target 为 iOS 16 时使用 `@Observable` 编译失败。
 - Preview 空白或崩溃。
@@ -126,7 +126,7 @@
 - 审核被拒隐私清单。
 - 小组件不刷新。
 
-**OC 支线**
+**OC 经典线**
 
 - 工程用 `.xcodeproj` 打开后编译报找不到 AFNetworking。
 - Storyboard 启动后白屏。
@@ -143,7 +143,7 @@
 
 总分 100 分，70 分通过，90 分优秀。
 
-### Swift 主线（习惯打卡 App）
+### Swift 新项目线（习惯打卡 App）
 
 | 维度 | 分值 | 评分重点 |
 |---|---:|---|
@@ -156,7 +156,7 @@
 | 发布 | 8 | 隐私清单、Archive、TestFlight |
 | 系统能力（加分可计入此项） | 6 | Widget、Intent、本地化 |
 
-### OC 支线（老版习惯打卡 App）
+### OC 经典线（老版习惯打卡 App）
 
 | 维度 | 分值 | 评分重点 |
 |---|---:|---|
@@ -170,7 +170,7 @@
 
 ## 5. 项目评审问题
 
-**Swift 主线**
+**Swift 新项目线**
 
 - Swift 的值类型与引用类型在 SwiftUI 刷新里分别意味着什么？
 - 为什么优先 `@Observable` 而不是 `ObservableObject`？
@@ -185,7 +185,7 @@
 - Widget 为什么要用 App Group？
 - 上架前隐私清单最容易漏哪些 API？
 
-**OC 支线**
+**OC 经典线**
 
 - Objective-C 的消息发送与 C 函数调用有什么本质差异？
 - 为什么代理用 `weak`、block 用 `copy`、字符串用 `copy`？
