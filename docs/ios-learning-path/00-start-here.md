@@ -119,7 +119,7 @@ Storyboard 启动白屏 / 黑屏
 
 ## 阶段项目路线
 
-从 [综合实战：习惯打卡 App](./project-practice.md) 开始，每完成一个阶段就扩展一块：工程与模型、界面与导航、网络与 Core Data、分层与发布。每个代码片段都标明上下文，避免把孤立片段误当成完整项目。
+从 [综合实战：习惯打卡 App](./05-project-practice.md) 开始，每完成一个阶段就扩展一块：工程与模型、界面与导航、网络与 Core Data、分层与发布。每个代码片段都标明上下文，避免把孤立片段误当成完整项目。
 
 ## 完成标准
 
@@ -131,4 +131,4 @@ Storyboard 启动白屏 / 黑屏
 - 能用 GCD 处理并发并在主线程更新 UI。
 - 能拆分 Controller / Service / Model，接入 CocoaPods 与 XCTest。
 - 能定位崩溃与内存问题，配置签名并完成 TestFlight 提交。
-- 完成 [学习评估](./learning-assessment.md) 中的阶段考核与项目评分。
+- 完成 [学习评估](./06-learning-assessment.md) 中的阶段考核与项目评分。

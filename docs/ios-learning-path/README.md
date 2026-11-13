@@ -4,10 +4,10 @@
 
 ## 先看这里
 
-- [新手导读](./start-here.md)：前置条件、学习顺序、工程心智模型和统一排错顺序。
-- [综合实战：习惯打卡 App](./project-practice.md)：从零构建或接手维护，从 Hello World 到上架。
-- [学习评估与项目评分](./learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
-- [版本边界与升级](./version-governance.md)：iOS / Xcode / CocoaPods / Core Data 的版本差异与升级检查。
+- [新手导读](./00-start-here.md)：前置条件、学习顺序、工程心智模型和统一排错顺序。
+- [综合实战：习惯打卡 App](./05-project-practice.md)：从零构建或接手维护，从 Hello World 到上架。
+- [学习评估与项目评分](./06-learning-assessment.md)：阶段考核、排错题、项目评分和评审问题。
+- [版本边界与升级](./07-version-governance.md)：iOS / Xcode / CocoaPods / Core Data 的版本差异与升级检查。
 
 ## 学习阶段总览
 
@@ -35,19 +35,19 @@
 
 **入门**
 
-- [阶段零：Objective-C 语言与 Xcode 工程](./stage-0-foundations.md)
-- [阶段一：UIKit 与 Storyboard/XIB](./stage-1-uikit.md)
+- [阶段零：Objective-C 语言与 Xcode 工程](./01-stage-0-foundations.md)
+- [阶段一：UIKit 与 Storyboard/XIB](./02-stage-1-uikit.md)
 
 **进阶**
 
-- [阶段二：数据、网络、持久化与并发](./stage-2-data-network.md)
-- [阶段三：工程化、测试与发布](./stage-3-engineering-release.md)
+- [阶段二：数据、网络、持久化与并发](./03-stage-2-data-network.md)
+- [阶段三：工程化、测试与发布](./04-stage-3-engineering-release.md)
 
 **实战**
 
-- [综合实战：习惯打卡 App](./project-practice.md)
-- [学习评估与项目评分](./learning-assessment.md)
-- [版本边界与升级](./version-governance.md)
+- [综合实战：习惯打卡 App](./05-project-practice.md)
+- [学习评估与项目评分](./06-learning-assessment.md)
+- [版本边界与升级](./07-version-governance.md)
 
 ## 架构主线
 
@@ -87,7 +87,7 @@ AppDelegate / SceneDelegate（入口与生命周期）
 
 ## 版本边界
 
-本路线兼容 **iOS 12 及以上**；使用 SceneDelegate 的工程以 **iOS 13** 为基线。各系统版本差异、MRC/ARC、Core Data 迁移与升级检查，参见 [版本边界与升级](./version-governance.md)。
+本路线兼容 **iOS 12 及以上**；使用 SceneDelegate 的工程以 **iOS 13** 为基线。各系统版本差异、MRC/ARC、Core Data 迁移与升级检查，参见 [版本边界与升级](./07-version-governance.md)。
 
 ## 前置知识
 
@@ -96,7 +96,7 @@ AppDelegate / SceneDelegate（入口与生命周期）
 - 一门编程语言基础：变量、函数、类与对象、流程控制。
 - 面向对象的基本概念：封装、继承、多态。
 - 命令行、Git 与依赖管理的基本概念。
-- 有 Java 背景？各阶段文档开头内置「Java 对照速查」，总表与心智差异见 [新手导读](./start-here.md)。
+- 有 Java 背景？各阶段文档开头内置「Java 对照速查」，总表与心智差异见 [新手导读](./00-start-here.md)。
 
 OC 的指针用法与内存管理会在阶段零结合实例讲解。有 [HarmonyOS 学习路线](../harmonyos-learning-path/README.md) 基础的读者，可以把 `UIViewController` 生命周期对照 UIAbility。
 

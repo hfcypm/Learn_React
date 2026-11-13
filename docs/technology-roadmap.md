@@ -83,7 +83,7 @@ Objective-C（语言与 ARC 内存管理）
 - [iOS 应用开发学习路线](./ios-learning-path/README.md) 从零教到上架：OC 语言与 Xcode、UIKit 界面、数据网络并发、工程化发布，并覆盖存量工程维护。
 - 语言底座是 Objective-C：消息发送、属性修饰符、ARC 内存管理与 block。
 - 界面主线是 UIKit + Auto Layout + Storyboard，持久化用 Core Data，依赖管理用 CocoaPods，基线 iOS 12+。
-- 综合实战：[习惯打卡 App](./ios-learning-path/project-practice.md) 串起列表、导航、网络、Core Data、分层与上架。
+- 综合实战：[习惯打卡 App](./ios-learning-path/05-project-practice.md) 串起列表、导航、网络、Core Data、分层与上架。
 - 这条路线与 HarmonyOS 主线可以对照：`UIViewController` 生命周期对应 UIAbility 与页面生命周期，`UITableView` 复用对应 List 组件懒加载。
 
 ## 7. Android 性能主线
@@ -110,7 +110,7 @@ Objective-C（语言与 ARC 内存管理）
 | AI 聊天/知识库 | Next.js + AI 前端 + LangChain | [知识库客服机器人](./langchain-learning-path/project-practice.md) |
 | AI + 桌面客户端 | AI 主线 + Electron/Tauri | 可选：在桌面壳中嵌入 AI 前端 |
 | 鸿蒙原生应用 | HarmonyOS 主线全部 | [多设备记账元服务](./harmonyos-learning-path/project-practice.md) |
-| iOS 原生应用 | iOS 主线全部 | [习惯打卡 App](./ios-learning-path/project-practice.md) |
+| iOS 原生应用 | iOS 主线全部 | [习惯打卡 App](./ios-learning-path/05-project-practice.md) |
 | Android 客户端卡顿 | Perfetto | [个股详情页卡顿排查](./perfetto-learning-path/project-practice.md) |
 
 ## 9. 通用建议
