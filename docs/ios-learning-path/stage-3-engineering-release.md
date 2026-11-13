@@ -6,6 +6,27 @@
 
 **前置知识**：阶段二的网络、持久化与并发。
 
+## Java 对照速查（工程与发布篇）
+
+| iOS | Java | 关键差异 |
+|---|---|---|
+| Controller / ViewModel / Service / Model | Spring 的 Controller / Service / Repository | 分层动机一致：单向依赖、可测试；只是界面层换成 UIKit |
+| 构造器注入 Service | Spring `@Autowired` | OC 无 IoC 容器，手动构造注入 ≈ 不用框架的纯 DI |
+| CocoaPods + `Podfile.lock` | Maven `pom.xml` / Gradle lockfile | lock 文件必须进版本库，与 Gradle 依赖锁定纪律相同 |
+| `pod install` vs `pod update` | 固定版本安装 vs `mvn -U` 刷新 | install 按 lock 装，update 才解析新版本，混用导致版本漂移 |
+| XCTest | JUnit 5 | `setUp` / `tearDown` ≈ `@BeforeEach` / `@AfterEach`，断言一一对应，另支持 UI 测试 |
+| `xcodebuild test` | `mvn test` / `gradle test` | CI 里都是命令行驱动 scheme / 模块跑测试 |
+| LLDB（`po`、`bt`） | jdb / IDEA 调试器 | 断点、单步、表达式求值同源 |
+| Instruments（Time Profiler / Leaks） | JProfiler / VisualVM | 时间采样、泄漏检测、内存分配曲线一一对应 |
+| 崩溃日志 + dSYM 符号化 | Java 栈帧自带行号 | OC 的 release 包必须归档 dSYM 才能还原符号，像 C/C++ 的分离调试信息 |
+| Clang 静态分析 | SpotBugs / ErrorProne | 编译期与静态规则的最后一道网 |
+
+三条提醒：
+
+1. **错误左移不够**：Java 编译器拦得住的拼写、类型、签名问题，在 OC 常变成运行时 `unrecognized selector`——测试与静态分析密度要高于同规模 Java 项目。
+2. **dSYM 纪律**：Java 栈直接可读；OC 崩溃地址需要 dSYM 符号化，每次 Archive 都要归档对应 dSYM，否则线上崩溃无法定位。
+3. **没有依赖容器**：分层解耦靠协议 + 构造注入手动完成，等价于把 Spring 换成纯手工 DI，换来的是启动快、无魔法。
+
 ## 1. 老工程的典型问题
 
 | 问题 | 表现 | 改造方向 |

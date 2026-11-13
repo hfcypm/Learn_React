@@ -6,6 +6,29 @@
 
 **前置知识**：阶段一的 UIKit 与页面交互。
 
+## Java 对照速查（数据与并发篇）
+
+| iOS | Java | 关键差异 |
+|---|---|---|
+| `NSURLSession` | `HttpURLConnection` / OkHttp | 回调默认在后台线程，“回主线程刷 UI”的纪律与 OkHttp 一致 |
+| `NSJSONSerialization` | Jackson / Gson | OC 无注解绑定：`NSDictionary` 手工取值映射模型，防御性判空比 Java 多 |
+| `NSNumber` | `Integer` / `Double` 装箱 | JSON 数字统一成 `NSNumber`，用 `intValue` / `doubleValue` 取 |
+| GCD `dispatch_async` | `executor.submit` | 串行队列 ≈ 单线程池；`dispatch_get_main_queue` ≈ UI 线程 |
+| `dispatch_once` | 静态初始化 / DCL 单例 | GCD 原子保证，比手写 double-checked locking 简单 |
+| `NSOperationQueue` | `ExecutorService` | 面向任务对象、可取消、可设依赖 |
+| 主线程刷新 UI | Swing EDT / Android 主线程 | `dispatch_async(main_queue)` ≈ `SwingUtilities.invokeLater` |
+| Core Data 上下文 | JPA `EntityManager` / Hibernate Session | 托管对象、脏检查、save 落库；对象离开上下文 ≈ detached entity |
+| Core Data 模型迁移 | Flyway / Liquibase | 轻量迁移自动推断，复杂迁移要 Mapping Model |
+| `NSFetchedResultsController` | 无直接对应 | 盯住数据库并驱动列表增量刷新，≈ Spring Data 分页 + 事件刷新的组合 |
+| `NSUserDefaults` | `Properties` / `SharedPreferences` | 键值持久化，别存大对象与敏感数据 |
+| Keychain | 无标准对应 | 系统级加密存储，密码与 token 放这里 |
+
+三条提醒：
+
+1. **回调线程**：`NSURLSession` 的 completion 不在主线程，等价 OkHttp 异步回调；“后台取数、主线程刷 UI”两边纪律一致。
+2. **Core Data 的托管对象有归属**：跨上下文传递会失效，思路像 detached entity；后台上下文写、主上下文读、用通知合并是 iOS 标准打法。
+3. **没有注解式 JSON 绑定**：字段拼错、类型不符不会在编译期暴露，解析层要集中判空判型，把崩溃挡在边界。
+
 ## 1. 网络请求
 
 ```objc

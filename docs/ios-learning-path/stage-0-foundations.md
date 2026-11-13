@@ -6,6 +6,32 @@
 
 **前置知识**：C 语言基础（变量、函数、指针、结构体）与面向对象概念。不熟悉时先读第 0 节，再进入正式内容。
 
+## Java 对照速查（语言篇）
+
+写过 Java 再看 OC，一半的差异只是语法皮。先用这张表建立映射，再进入正文；总表与心智差异见 [新手导读](./start-here.md)。
+
+| Objective-C | Java | 关键差异 |
+|---|---|---|
+| 消息发送 `[obj method:arg]` | 方法调用 `obj.method(arg)` | OC 是运行时消息机制：向 nil 发消息合法返回零值，Java 抛 NullPointerException |
+| `.h` 声明 + `.m` 实现 | `interface` + `class` | OC 声明与实现物理分文件；Java 一个文件自包含 |
+| `@property (nonatomic, strong)` | 字段 + getter/setter | OC 自动合成存取器，但必须显式选内存语义修饰符 |
+| 指定初始化器 `initWithName:` | 构造器 | OC 初始化器是普通方法约定，需手写 `[super init]` 并链式委托 |
+| `protocol` | `interface` | 协议支持 `@optional` 方法，调用前要 `respondsToSelector:` 检查 |
+| `category` 分类 | 无直接对应 | 能给任何类（含系统类）追加方法；Java 只能写工具类或装饰器 |
+| `block ^{...}` | lambda | block 是对象、按拷贝语义捕获变量，持 self 需 `__weak` 防循环引用 |
+| `__weak` / `__strong` | `WeakReference` / 强引用 | ARC 的显式所有权声明，日常使用频率远高于 Java 弱引用 |
+| `NSString` 不可变 | `String` 不可变 | `NSMutableString` ≈ `StringBuilder`；`stringWithFormat:` ≈ `String.format` |
+| `NSArray` / `NSDictionary` | `List` / `Map` | OC 不可变与可变成对出现；泛型只是编译期提示 |
+| `NSError **` 输出参数 | 受检异常 `throws` | OC 错误走返回值 + 出参，`@try` 基本不用于业务 |
+| `id` / `NSObject` | `Object` | OC 动态性更强，很多 Java 编译期错误在 OC 变成运行时崩溃 |
+| KVC / KVO | 反射 / `PropertyChangeListener` | 字符串键访问与观察，运行时特性 |
+
+三条心智转变：
+
+1. **空安全方向相反**：Java 防的是 null 调用；OC 的 nil 调用安全，崩溃主要来自野指针、数组越界与 `unrecognized selector`。
+2. **ARC 不是 GC**：编译期在确定位置插入 `retain` / `release`，没有分代回收与 STW 暂停；代价是循环引用必须自己用 `weak` 打破（block 持 self、代理互持是两大高发点）。
+3. **编译期检查更少**：方法拼错、类型不符在 Java 是编译错误，在 OC 常要等运行时才炸——单元测试与静态分析的密度要相应提高。
+
 ## 0. 预备知识
 
 ### 0.1 先看一个能跑的最小程序

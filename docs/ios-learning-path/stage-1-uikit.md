@@ -6,6 +6,27 @@
 
 **前置知识**：阶段零的 Objective-C 语法、属性与生命周期。
 
+## Java 对照速查（UIKit 界面篇）
+
+写过 Android 或 JavaFX 的话，UIKit 的心智可以整体迁移；纯后端 Java 背景则先把“控制器”当“一屏”来理解。
+
+| UIKit | Java 侧参照 | 关键差异 |
+|---|---|---|
+| `UIViewController` | Android `Activity` / `Fragment` | 生命周期同构：一次性初始化放 `viewDidLoad`（≈ `onCreate`），每次进场放 `viewWillAppear`（≈ `onStart`） |
+| Storyboard / XIB | Android XML 布局 / JavaFX FXML | 声明式布局文件 + 代码绑定；`IBOutlet` ≈ `findViewById` 的结果注入 |
+| `IBAction` | `@OnClick` 回调 | 连线本质是延迟绑定的方法回调 |
+| Auto Layout | ConstraintLayout / JavaFX 约束 | 同一套线性方程思路，优先约束不要硬编码 frame |
+| `UITableView` 复用 | `RecyclerView` + `ViewHolder` | 机制同源；`prepareForReuse` ≈ `onViewRecycled`，都要重置状态 |
+| delegate / dataSource 协议 | 回调接口 / Listener | 一个控制器可实现多个协议，类似 Java 类实现多接口 |
+| `UINavigationController` push/pop | Fragment 栈 | 返回行为由导航栈管理，`popViewControllerAnimated:` 清栈到指定页 |
+| `UIAlertController` | `AlertDialog` / `JDialog` | 连续 present 会崩，与对话框重叠问题同源 |
+
+三条提醒：
+
+1. **UIViewController 是“一屏”不是 View**：它拥有生命周期、布局与回调绑定，职责接近“Activity + 容器”合体；把业务全塞进去的坑，Java 里叫 God Activity，这里叫 Massive ViewController。
+2. **连线是弱引用延迟注入**：Storyboard 连线断开时属性为 nil，`viewDidLoad` 里要判空，习惯等同防御 `findViewById` 返回 null。
+3. **delegate 换汤不换药**：数据源、事件回调全走协议——Java 写内部类 Listener，OC 让控制器实现协议方法并把自己设为 delegate。
+
 ## 1. UIViewController
 
 控制器是页面的核心，负责生命周期、布局与交互：

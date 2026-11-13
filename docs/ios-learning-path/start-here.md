@@ -36,6 +36,32 @@ sudo xcodebuild -license accept
 
 OC 核心规则：属性优先 `nonatomic`；对象 `strong`；字符串 / 集合 / block 用 `copy`；代理 `weak`；网络回调回主线程更新 UI。
 
+## 有 Java 背景？先看对照总表
+
+如果写过 Java，先把整体映射建立起来再学细节，速度会快很多。各阶段文档开头有对应的「Java 对照速查」，这里是总表：
+
+| iOS / OC | Java | 一句话对照 |
+|---|---|---|
+| 消息发送 `[obj method]` | 方法调用 `obj.method()` | OC 向 nil 发消息不崩，Java 抛 NPE |
+| `.h` + `.m` | `interface` + `class` | OC 声明与实现物理分离 |
+| `@property` | 字段 + getter/setter | OC 要选 strong / weak / copy / assign 内存语义 |
+| ARC 引用计数 | JVM GC | ARC 编译期确定释放点，循环引用要自己破 |
+| `protocol` | `interface` | 协议有 `@optional` 方法 |
+| `block` | lambda | block 是对象，注意 `__weak` 防循环引用 |
+| `NSString` / `NSMutableString` | `String` / `StringBuilder` | 同一套不可变设计 |
+| `NSArray` / `NSDictionary` | `List` / `Map` | OC 不可变 / 可变成对出现 |
+| `NSError **` | 受检异常 | OC 错误走返回值与出参 |
+| GCD / NSOperation | ExecutorService / CompletableFuture | 主线程刷 UI 纪律一致 |
+| Core Data | JPA / Hibernate | 上下文 ≈ EntityManager，模型迁移是重点 |
+| CocoaPods | Maven / Gradle | `Podfile` ≈ `pom.xml`，lock 必须提交 |
+| XCTest | JUnit | 断言与生命周期几乎一一对应 |
+
+最大的三个心智转变：
+
+1. **内存管理**：从“GC 兜底”换成“引用计数 + 所有权规则”。ARC 管不了循环引用，block 持 self、代理互持必须用 `weak` 显式打破。
+2. **空安全方向相反**：Java 防 null 调用；OC 给 nil 发消息是合法 no-op，崩溃更多来自野指针、越界与 `unrecognized selector`。
+3. **编译期检查更少**：OC 运行时更动态，很多 Java 编译错误在 OC 是运行时崩溃，测试与静态分析的优先级要更高。
+
 ## 学习顺序
 
 | 阶段 | 先回答的问题 | 阶段产出 |

@@ -96,6 +96,7 @@ AppDelegate / SceneDelegate（入口与生命周期）
 - 一门编程语言基础：变量、函数、结构体/类、流程控制。
 - 面向对象的基本概念：封装、继承、多态。
 - 命令行、Git 与依赖管理的基本概念。
+- 有 Java 背景？各阶段文档开头内置「Java 对照速查」，总表与心智差异见 [新手导读](./start-here.md)。
 
 OC 是 C 的超集，指针与内存等 C 概念会在阶段零结合实例讲解。有 [HarmonyOS 学习路线](../harmonyos-learning-path/README.md) 基础的读者，可以把 `UIViewController` 生命周期对照 UIAbility。
 
