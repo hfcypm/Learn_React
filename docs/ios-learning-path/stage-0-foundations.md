@@ -1,6 +1,6 @@
 # 阶段零：Objective-C 语言与 Xcode 工程
 
-> 本页属于 **Objective-C + UIKit 经典线**：从零学习 OC 与接手存量工程都适用。若你开发全新项目且技术栈可选，请走 [Swift 阶段零](./swift-stage-0-foundations.md)；总览见 [学习路线 README](./README.md)。
+> 本页属于 **Objective-C + UIKit 学习路线**：从零学习 OC 与接手存量工程都适用。总览见 [学习路线 README](./README.md)。
 
 **目标**：掌握 Objective-C 的类、属性、内存管理与生命周期，能从零创建并读懂一个 Xcode 工程。
 
@@ -89,7 +89,7 @@ print_habit(habit);
 - **Bundle Identifier**：App 的唯一标识，签名与上架都依赖它。
 - **ARC**：自动引用计数，编译器在合适位置插入引用计数操作。
 
-如果 C 基础薄弱，先补：[附录：C 语言基础](./c-foundations.md) 覆盖变量与类型、分支与循环、函数与参数、指针与取地址、结构体、内存与预处理。这些在读老代码时每天都会遇到。
+如果 C 基础薄弱，重点补：变量与类型、指针与取地址、结构体、栈与堆内存。OC 是 C 的超集，这些概念在读代码时每天都会遇到。
 
 ## 1. 类与对象
 

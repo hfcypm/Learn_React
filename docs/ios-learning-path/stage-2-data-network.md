@@ -1,6 +1,6 @@
 # 阶段二：数据、网络、持久化与并发
 
-> 本页属于 **Objective-C + UIKit 经典线**：从零学习与接手存量工程都适用。若你开发全新项目且技术栈可选，请走 [Swift 阶段三](./swift-stage-3-data-network.md)。
+> 本页属于 **Objective-C + UIKit 学习路线**：从零学习与接手存量工程都适用。总览见 [学习路线 README](./README.md)。
 
 **目标**：用 NSURLSession 完成网络请求与 JSON 解析，用 Core Data / NSUserDefaults / Keychain 持久化，用 GCD 控制线程并保证 UI 回主线程。
 

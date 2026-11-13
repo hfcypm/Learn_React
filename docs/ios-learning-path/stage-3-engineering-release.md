@@ -1,8 +1,8 @@
 # 阶段三：工程化、测试与发布
 
-> 本页属于 **Objective-C + UIKit 经典线**：从零学习与接手存量工程都适用。若你开发全新项目且技术栈可选，请走 [Swift 阶段四](./swift-stage-4-engineering.md)。
+> 本页属于 **Objective-C + UIKit 学习路线**：从零学习与接手存量工程都适用。总览见 [学习路线 README](./README.md)。
 
-**目标**：把工程整理成可维护的分层结构，接入 CocoaPods 与 OC/Swift 混编，补测试、定位崩溃，并完成签名发布；这些方法对新项目与存量改造同样适用。
+**目标**：把工程整理成可维护的分层结构，接入 CocoaPods 管理依赖，补测试、定位崩溃，并完成签名发布；这些方法对新项目与存量改造同样适用。
 
 **前置知识**：阶段二的网络、持久化与并发。
 
@@ -144,47 +144,9 @@ pod update AFNetworking
 
 引入前先确认工程现有技术栈，避免重复造轮子或引入第二套同类库。
 
-## 4. Objective-C 与 Swift 混编
+## 4. 测试
 
-### 4.1 OC 调 Swift
-
-使用自动生成的 `ProductModuleName-Swift.h`：
-
-```objc
-#import "LegacyHabit-Swift.h"
-
-SwiftFeatureViewController *vc = [[SwiftFeatureViewController alloc] init];
-[self.navigationController pushViewController:vc animated:YES];
-```
-
-Swift 侧需要 `@objc` 或继承 `NSObject` 才能暴露给 OC：
-
-```swift
-@objcMembers
-final class SwiftFeatureViewController: UIViewController { }
-```
-
-### 4.2 Swift 调 OC
-
-在 Bridging Header 中导入 OC 头文件：
-
-```objc
-// LegacyHabit-Bridging-Header.h
-#import "Habit.h"
-#import "HabitService.h"
-```
-
-在 Build Settings 的 `Objective-C Bridging Header` 指向该文件。
-
-要点：
-
-- 混编会增加编译时间与心智负担，改造时按模块逐步迁移。
-- 迁移顺序：先 Model，再 Service，最后 ViewController。
-- 避免同一功能同时存在 OC 与 Swift 两套实现。
-
-## 5. 测试
-
-### 5.1 单元测试（XCTest）
+### 4.1 单元测试（XCTest）
 
 ```objc
 #import <XCTest/XCTest.h>
@@ -218,7 +180,7 @@ final class SwiftFeatureViewController: UIViewController { }
 - ViewModel 的状态流转（加载、成功、失败）。
 - 网络层用协议或 block 注入 Mock，避免真实请求。
 
-### 5.2 UI 测试
+### 4.2 UI 测试
 
 ```objc
 - (void)testAddHabit {
@@ -234,9 +196,9 @@ final class SwiftFeatureViewController: UIViewController { }
 
 关键路径用 UI 测试兜底，避免回归。
 
-## 6. 调试与崩溃排查
+## 5. 调试与崩溃排查
 
-### 6.1 LLDB
+### 5.1 LLDB
 
 ```text
 po self.viewModel.habits
@@ -245,7 +207,7 @@ bt                 # 查看调用栈
 breakpoint set -n "-[HabitListViewController viewDidLoad]"
 ```
 
-### 6.2 Instruments
+### 5.2 Instruments
 
 | 工具 | 用途 |
 |---|---|
@@ -255,14 +217,14 @@ breakpoint set -n "-[HabitListViewController viewDidLoad]"
 | Zombies | 释放后访问（EXC_BAD_ACCESS） |
 | Network | 请求耗时与流量 |
 
-### 6.3 崩溃日志
+### 5.3 崩溃日志
 
 - 从 Xcode Organizer 或设备“分析与改进”导出崩溃日志。
 - 必须有对应版本的 `.dSYM` 才能符号化。
 - 先看异常类型（`EXC_BAD_ACCESS`、`EXC_CRASH`、`SIGABRT`），再看调用栈定位到具体方法。
 - 保留 `dSYM` 并纳入归档，避免线上无法符号化。
 
-### 6.4 常见崩溃
+### 5.4 常见崩溃
 
 | 崩溃 | 原因 |
 |---|---|
@@ -272,13 +234,13 @@ breakpoint set -n "-[HabitListViewController viewDidLoad]"
 | 约束冲突 | Auto Layout 约束不完整 |
 | `NSInternalInconsistencyException` | Storyboard 连接失效、cell 复用标识符未注册 |
 
-### 6.5 View Debugger 与静态分析
+### 5.5 View Debugger 与静态分析
 
 - **View Debugger**：运行后点 Xcode 的 “Debug View Hierarchy”，检查视图层级、遮挡、约束与 `hidden` 状态，定位“看不到/点不到”的问题。
 - **静态分析**：`Product -> Analyze`（或 `xcodebuild analyze`）能发现内存泄漏、未使用变量、空指针路径等问题，提交前跑一遍。
 - **警告清零**：把编译器警告当错误处理，尤其是 ARC 相关、弃用 API 与格式字符串警告。
 
-## 7. 性能
+## 6. 性能
 
 - 启动：减少 `didFinishLaunchingWithOptions` 中的同步 IO 与大批量初始化，懒加载非首屏模块。
 - 列表：cell 复用、`prepareForReuse`、避免在 `cellForRow` 做重计算与同步网络。
@@ -286,16 +248,16 @@ breakpoint set -n "-[HabitListViewController viewDidLoad]"
 - 主线程：耗时任务移出主线程，避免 `dispatch_sync` 到主队列造成死锁。
 - 内存：及时释放大对象，检查循环引用与未取消的定时器/请求。
 
-## 8. 签名与发布
+## 7. 签名与发布
 
-### 8.1 配置
+### 7.1 配置
 
 1. 加入 Apple Developer Program。
 2. Xcode target 的 `Signing & Capabilities` 选择 Team，勾选自动签名。
 3. 设置唯一 Bundle Identifier。
 4. 配置 App 图标、启动图、版本号（Version）与构建号（Build）。
 
-### 8.2 隐私清单
+### 7.2 隐私清单
 
 使用特定 API（如 UserDefaults、文件时间戳）需要 `PrivacyInfo.xcprivacy`：
 
@@ -313,7 +275,7 @@ breakpoint set -n "-[HabitListViewController viewDidLoad]"
 
 权限用途（相机、通知、定位）在 `Info.plist` 写清 `UsageDescription`，缺失会被审核拒绝。
 
-### 8.3 TestFlight 与 App Store
+### 7.3 TestFlight 与 App Store
 
 ```text
 1. Xcode -> Product -> Archive
@@ -331,7 +293,7 @@ breakpoint set -n "-[HabitListViewController viewDidLoad]"
 - 真机关键路径跑通（登录、网络异常、深色模式、离线）。
 - 崩溃与警告清零。
 
-### 8.4 命令行构建与持续集成
+### 7.4 命令行构建与持续集成
 
 ```bash
 # 构建并归档
@@ -353,22 +315,21 @@ xcodebuild -exportArchive \
 - 签名凭据放 CI 的密钥管理，不提交到仓库。
 - 每次合并前至少跑单元测试与静态分析。
 
-## 9. 验收
+## 8. 验收
 
 - 能把 Massive ViewController 拆成 Controller / ViewModel / Service / Model。
 - 能用 CocoaPods 管理依赖并用 `.xcworkspace` 构建。
-- 能完成 OC 与 Swift 的双向调用配置。
 - 能写出 XCTest 单元测试与关键路径 UI 测试。
 - 能用 LLDB、Instruments 与 View Debugger 定位崩溃、泄漏与卡顿。
 - 能用静态分析与命令行构建接入持续集成。
 - 能配置签名，Archive 后上传 TestFlight。
 
-## 10. 排错
+## 9. 排错
 
 | 现象 | 排查 |
 |---|---|
 | `pod install` 失败 | Ruby 环境、CocoaPods 版本、Podfile 平台版本 |
-| 混编找不到头文件 | Bridging Header 路径、`-Swift.h` 是否生成 |
+| 头文件找不到 | 用 `.xcworkspace` 打开、Header Search Paths、`PODS` 配置 |
 | Archive 失败 | 签名 Team、证书、Deployment Target |
 | 上传被拒（隐私） | 是否缺少 `PrivacyInfo.xcprivacy` 或用途说明 |
 | 崩溃无法符号化 | 是否保留对应 `.dSYM` |

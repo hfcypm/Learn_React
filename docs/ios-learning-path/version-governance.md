@@ -1,37 +1,36 @@
-# iOS 版本边界与迁移
+# iOS 版本边界与升级（Objective-C + UIKit）
 
-**目标**：让学习内容与工程拥有清晰的版本边界，降低 IDE 升级、系统升级与技术栈迁移的风险。
+**目标**：让学习内容与工程拥有清晰的版本边界，降低 IDE 升级、系统升级带来的风险。
 
-新项目线基线：**Swift 5.9+ / iOS 17+ / Xcode 15+**，使用 Observation 与 SwiftData。OC 经典线兼容 iOS 12+，使用 SceneDelegate 的工程以 iOS 13 为基线。
+本路线兼容 **iOS 12 及以上**；使用 SceneDelegate 的工程以 **iOS 13** 为基线。
 
 ## 1. 版本配套关系
 
-iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共同决定可用能力。
+iOS 工程由“系统版本 + Xcode + 依赖管理”共同决定可用能力。
 
 | 层级 | 说明 |
 |---|---|
 | Deployment Target | 工程支持的最低系统版本，决定可用 API 下限 |
 | 设备系统版本 | 用户设备上的 iOS 版本 |
 | Xcode | IDE 与 SDK，版本过高可能无法打开过老工程 |
-| Swift 版本 | 混编时决定 Swift 语法与并发检查强度 |
-| CocoaPods / SPM | 依赖获取与版本锁定方式 |
+| CocoaPods | 依赖获取与版本锁定方式 |
 
 查询方式：
 
 - 工程：target 的 General -> Minimum Deployments。
 - Xcode：`xcodebuild -version`。
-- 依赖：`Podfile.lock` / `Package.resolved`。
+- 依赖：`Podfile.lock`。
 
 ## 2. iOS 版本的代际差异
 
-| 版本 | 关键变化 | 对老工程的影响 |
+| 版本 | 关键变化 | 对 OC 工程的影响 |
 |---|---|---|
 | iOS 12 及更早 | 无 SceneDelegate，窗口在 AppDelegate | 多窗口适配需补 SceneDelegate |
-| iOS 13 | 引入 SceneDelegate、深色模式、SwiftUI | 启动流程与配色需要适配 |
+| iOS 13 | 引入 SceneDelegate、深色模式 | 启动流程与配色需要适配 |
 | iOS 14 | 隐私权限细化、Widget、App Clips | 权限文案与跟踪授权 |
 | iOS 15 | 通知摘要、App 内活动 | 通知行为变化 |
-| iOS 16 | 锁屏、`NavigationStack`（SwiftUI） | 主要影响 SwiftUI |
-| iOS 17 | Observation、SwiftData、隐私清单 | 新项目能力增强，老工程需补隐私清单 |
+| iOS 16 | 锁屏定制 | 系统能力适配 |
+| iOS 17 | 隐私清单 | 工程需补 `PrivacyInfo.xcprivacy` |
 
 存量 OC 工程升级时，优先关注：启动流程（AppDelegate -> SceneDelegate）、深色模式、权限与隐私声明、第三方库的最低系统版本。
 
@@ -41,7 +40,7 @@ iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共�
 |---|---|---|
 | 引用计数 | 手动 `retain` / `release` / `autorelease` | 编译器自动插入 |
 | `dealloc` | 需调用 `[super dealloc]` | 不调用 `[super dealloc]` |
-| 循环引用 | 手动打破 | 仍需 `weak` / `unowned` 打破 |
+| 循环引用 | 手动打破 | 仍需 `weak` 打破 |
 | 编译标志 | `-fno-objc-arc` | 默认开启 |
 
 老工程中混有 MRC 文件时：
@@ -51,61 +50,18 @@ iOS 工程由“系统版本 + Xcode + Swift/OC 编译器 + 依赖管理”共�
 3. 优先把独立小文件迁移到 ARC，再逐步扩大范围。
 4. 迁移后重点检查：野指针、过度释放、`dealloc` 中的 `[super dealloc]`。
 
-## 4. UI 技术栈代际：UIKit 与 SwiftUI
+## 4. 依赖管理：CocoaPods 要点
 
-| 维度 | UIKit | SwiftUI |
-|---|---|---|
-| 范式 | 命令式，控制器 + 视图 | 声明式，视图组合 |
-| 布局 | Auto Layout / frame | 声明式修饰符 |
-| 导航 | UINavigationController | NavigationStack（替代 `NavigationView`） |
-| 状态 | 属性 + 手动刷新 | `@State` / `@Observable`（替代 `ObservableObject`） |
-| 成熟度 | 生态成熟、老工程主流 | 新项目主线 |
+| 维度 | 说明 |
+|---|---|
+| 配置文件 | `Podfile` / `Podfile.lock` |
+| 打开方式 | `.xcworkspace` |
+| 版本锁定 | 提交 `Podfile.lock`，团队安装一致版本 |
+| 常见坑 | 用 `.xcodeproj` 打开导致找不到头文件；`pod install` 与 `pod update` 混用导致版本漂移 |
 
-新项目策略：SwiftUI 到底，Deployment Target 17，避免一上来混用两套导航与两套观察体系。
+存量工程继续用 CocoaPods；引入新库前先确认工程已有依赖，避免同类库重复引入。
 
-存量工程策略：
-
-- 以 UIKit 为主，新页面可评估 SwiftUI。
-- 混用通过 `UIHostingController` 承载 SwiftUI 视图。
-- 不在同一页面同时维护两套状态来源。
-
-## 5. 语言代际：Objective-C 与 Swift
-
-| 维度 | Objective-C | Swift |
-|---|---|---|
-| 类型安全 | 弱，运行时消息 | 强，编译期检查 |
-| 内存 | ARC（或 MRC） | ARC |
-| 并发 | GCD / NSOperation | async/await / actor |
-| 互操作 | 通过 Bridging Header 与 `-Swift.h` | 通过 `@objc` 暴露 |
-
-迁移顺序建议：Model -> Service -> ViewModel -> ViewController。每迁移一层都补测试，避免一次性重写。
-
-## 6. 依赖管理代际：CocoaPods 与 SPM
-
-| 维度 | CocoaPods | SPM |
-|---|---|---|
-| 配置文件 | `Podfile` / `Podfile.lock` | `Package.swift` / `Package.resolved` |
-| 打开方式 | `.xcworkspace` | `.xcodeproj` / `.xcworkspace` |
-| 生态 | 存量库多 | 新库增长快 |
-| 二进制依赖 | 支持较好 | 支持中 |
-
-存量工程继续用 CocoaPods 更稳；新引入的库优先评估 SPM，避免同一工程两套依赖体系混用导致冲突。
-
-## 7. 持久化代际：Core Data 与 SwiftData
-
-| 维度 | Core Data | SwiftData |
-|---|---|---|
-| 声明 | `.xcdatamodeld` | `@Model` |
-| 查询 | `NSFetchRequest` / `NSFetchedResultsController` | `@Query` |
-| 上下文 | `NSManagedObjectContext` | `ModelContext` |
-| 最低系统 | 长期存在 | iOS 17+ |
-| 存量工程 | 继续用 | 新模块可评估 |
-
-SwiftData 轻量变更（加可选字段）可推断；复杂迁移写 `VersionedSchema` + `SchemaMigrationPlan`。不要把已上线属性从非可选改成不兼容类型。
-
-Core Data 存量规则见下一节。
-
-## 8. Core Data 模型版本与迁移
+## 5. Core Data 模型版本与迁移
 
 - `.xcdatamodeld` 每次结构变更新建版本，并设置 Current Version，不要直接改旧版本。
 - 轻量迁移覆盖：新增/删除属性、重命名属性（设置 renaming identifier）、新增实体。
@@ -121,7 +77,7 @@ desc.shouldInferMappingModelAutomatically = YES;
 - 迁移前备份 store，测试必须覆盖“旧版本数据 -> 新版本”的升级路径。
 - 大表迁移放后台上下文执行，并给用户展示进度，避免启动卡死。
 
-## 9. 升级前检查
+## 6. 升级前检查
 
 1. 备份或打 tag，确认可回滚。
 2. 阅读 Xcode 与 iOS 版本说明，确认最低系统版本与弃用 API。
@@ -132,7 +88,7 @@ desc.shouldInferMappingModelAutomatically = YES;
 7. 检查 Core Data 模型版本与迁移方案。
 8. 在分支完整跑通 dev、测试与 Archive。
 
-## 10. 升级后检查
+## 7. 升级后检查
 
 - 冷启动、页面跳转、返回正常。
 - 列表复用与刷新正常。
@@ -142,18 +98,13 @@ desc.shouldInferMappingModelAutomatically = YES;
 - 崩溃与内存警告清零。
 - 构建产物可签名、可安装、可上架。
 
-## 11. 迁移常见坑
+## 8. 升级常见坑
 
 - 只升级 Xcode 未调整 Deployment Target，导致 API 不存在。
-- 用较新 Xcode 打开很老的工程，项目格式或 Swift 版本不兼容，直接无法编译。
+- 用较新 Xcode 打开很老的工程，项目格式不兼容，直接无法编译。
 - 用了 iOS 13+ 的 SceneDelegate 但工程仍按旧启动流程配置，出现黑屏。
 - 新增隐私相关 API 未补 `PrivacyInfo.xcprivacy`，审核被拒。
 - 把 MRC 文件的 `release` 直接删除，导致过度释放崩溃。
-- OC/Swift 混编时 Bridging Header 路径错误或 `@objc` 缺失。
-- CocoaPods 与 SPM 同时引入同一库，产生重复符号。
 - 直接修改 Core Data 旧模型版本而非新建版本，导致老用户升级失败。
 - 升级三方库后 API 行为变化，未做回归测试。
-- 新项目 Deployment Target 低于 17，却使用 `@Observable` / SwiftData。
-- 同时使用 `NavigationView` 与 `NavigationStack`，路径状态分裂。
-- SwiftData 直接改已上线模型版本，老用户打开即崩溃。
 - Widget 与主应用未配置 App Group，timeline 读不到数据。

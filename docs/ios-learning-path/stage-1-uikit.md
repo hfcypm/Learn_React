@@ -1,6 +1,6 @@
 # 阶段一：UIKit 与 Storyboard/XIB
 
-> 本页属于 **Objective-C + UIKit 经典线**：从零学习 UIKit 与改造存量界面都适用。若你开发全新项目且技术栈可选，请走 [Swift 阶段一](./swift-stage-1-swiftui.md)。
+> 本页属于 **Objective-C + UIKit 学习路线**：从零学习 UIKit 与改造存量界面都适用。总览见 [学习路线 README](./README.md)。
 
 **目标**：用 UIKit 的控制器、Auto Layout、UITableView 与导航控制器从零构建界面，并能改造存量界面，掌握页面传值与回调。
 

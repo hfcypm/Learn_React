@@ -1,12 +1,10 @@
-# 综合实战：老版习惯打卡 App
+# 综合实战：习惯打卡 App（Objective-C + UIKit）
 
-> 本页属于 **Objective-C + UIKit 经典线**：从零构建与接手维护都适用。若你开发全新 App 且技术栈可选，请走 [Swift 综合实战：习惯打卡 App](./swift-project-practice.md)。
+> 本页属于 **Objective-C + UIKit 学习路线**：从零构建与接手维护都适用。总览见 [学习路线 README](./README.md)。
 
 ## 1. 项目目标
 
 围绕 UIKit + Storyboard + CocoaPods + Core Data 交付习惯打卡 App `LegacyHabit`，支持两种用法：**从零构建**——按各阶段文档的动手任务先自己搭出骨架，再用本文对照补全；**接手维护**——以第 2 节的遗留工程为起点，在不推倒重写的前提下完成“跑通 -> 修界面 -> 接数据 -> 分层改造 -> 上架”的维护闭环。
-
-若技术栈可选且开发全新 App，可改走 Swift 线实战：[习惯打卡 App](./swift-project-practice.md)。两份实战是同一产品主题、两套技术栈，方便对照。
 
 ```text
 跑通工程 -> 修复列表与导航 -> 接入网络与持久化
@@ -41,7 +39,6 @@
 - 本地通知：每天固定时间提醒打卡（需要通知权限）。
 - 数据迁移：为模型新增字段，验证老数据升级不丢失。
 - 分层改造：拆出 ViewModel 与 Service，控制器只做绑定。
-- 混编：新增一个 Swift 设置页，通过 Bridging Header 调用 OC 模型。
 - 可观测性：接入日志与崩溃上报（可选）。
 - 发布：签名并上传 TestFlight。
 
@@ -531,4 +528,4 @@ desc.shouldInferMappingModelAutomatically = YES;
 | 零 | 跑通工程、读懂模型 | OC 语法、属性、ARC、生命周期 |
 | 一 | 列表、Cell、新增、跳转 | UIKit、Auto Layout、UITableView、回调 |
 | 二 | 网络、Core Data、缓存、通知 | NSURLSession、GCD、持久化、迁移 |
-| 三 | 分层、测试、混编、发布 | 架构改造、XCTest、签名上架 |
+| 三 | 分层、测试、发布 | 架构改造、XCTest、签名上架 |
