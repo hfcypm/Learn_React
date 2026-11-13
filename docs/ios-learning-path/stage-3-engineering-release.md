@@ -18,7 +18,7 @@
 | `xcodebuild test` | `mvn test` / `gradle test` | CI 里都是命令行驱动 scheme / 模块跑测试 |
 | LLDB（`po`、`bt`） | jdb / IDEA 调试器 | 断点、单步、表达式求值同源 |
 | Instruments（Time Profiler / Leaks） | JProfiler / VisualVM | 时间采样、泄漏检测、内存分配曲线一一对应 |
-| 崩溃日志 + dSYM 符号化 | Java 栈帧自带行号 | OC 的 release 包必须归档 dSYM 才能还原符号，像 C/C++ 的分离调试信息 |
+| 崩溃日志 + dSYM 符号化 | Java 栈帧自带行号 | OC 的 release 包必须归档 dSYM 才能还原符号 |
 | Clang 静态分析 | SpotBugs / ErrorProne | 编译期与静态规则的最后一道网 |
 
 三条提醒：

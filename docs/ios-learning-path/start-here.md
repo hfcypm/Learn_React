@@ -25,7 +25,7 @@ sudo xcodebuild -license accept
 
 ## 核心观念
 
-- **Objective-C**：iOS 经典开发语言，C 的超集，消息发送 + 运行时，`.h` 声明接口、`.m` 实现。
+- **Objective-C**：iOS 经典开发语言，消息发送 + 运行时，`.h` 声明接口、`.m` 实现。
 - **ARC**：自动引用计数。编译器帮你插入 `retain` / `release`，但循环引用仍需用 `weak` 打破。
 - **UIKit**：命令式 UI 框架。控制器搭建界面、处理回调，界面刷新靠手动调用 `reloadData` 等方法。
 - **AppDelegate / SceneDelegate**：`AppDelegate` 管启动与全局事件；iOS 13+ 用 `SceneDelegate` 管理界面场景。

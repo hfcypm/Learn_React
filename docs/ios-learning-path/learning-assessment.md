@@ -78,7 +78,7 @@
 
 ## 4. 项目评审问题
 
-- Objective-C 的消息发送与 C 函数调用有什么本质差异？
+- Objective-C 的消息发送与 Java 方法调用有什么本质差异？
 - 为什么代理用 `weak`、block 用 `copy`、字符串用 `copy`？
 - ARC 下还会出现循环引用吗？常见有哪几类？
 - `UIViewController` 的 `viewDidLoad` 与 `viewWillAppear` 分别适合做什么？
